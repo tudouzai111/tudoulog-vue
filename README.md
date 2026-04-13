@@ -76,3 +76,12 @@ pnpm lint
 # 代码格式化
 pnpm format
 ```
+
+## License
+
+This project is **dual-licensed**:
+
+- **All source code** (e.g., `.py`, `.js`, `.css`, `.html` files) is licensed under the **MIT License** – see the `LICENSE` file for details.
+- **All blog post content** (Markdown files under `content/posts/` or similar directories) is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** – see `LICENSE-CC-BY-NC.md` for details.
+
+In short: You can freely use, modify, and distribute the **code** for any purpose (including commercial). For the **written articles**, you may share and adapt them only for **non-commercial purposes**, and you must give appropriate credit to the original author.
