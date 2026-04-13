@@ -44,16 +44,16 @@ onMounted(async () => {
 
   if (!contentRef.value) return
 
-  // 获取所有h2 h3元素
-  const elements = contentRef.value.querySelectorAll('h2, h3')
+  // 获取所有h1 h2元素
+  const elements = contentRef.value.querySelectorAll('h1, h2')
   // 导航集合
   const items: Heading[] = []
   // 记录每个基础 slug 的出现次数，用来处理标题名相同的情况
   const slugCount = new Map<string, number>()
 
-  // 遍历所有h2 h3元素，设置id，title，level属性放入items中
+  // 遍历所有h1 h2元素，设置id，title，level属性放入items中
   elements.forEach((element) => {
-    const level = element.tagName === 'H2' ? 2 : 3
+    const level = element.tagName === 'H1' ? 1 : 2
 
     let id = element.id
     if (!id) {
@@ -80,17 +80,17 @@ onMounted(async () => {
   })
 
   // 设置不同标题的继承关系
-  // h3是最近的h2的子集
+  // h2是最近的h1的子集
   const tree: Heading[] = []
-  // 最新的h2
-  let lastH2: Heading | null = null
+  // 最新的h1
+  let lastH1: Heading | null = null
 
   items.forEach((item) => {
-    if (item.level === 2) {
-      lastH2 = { ...item, children: [] }
-      tree.push(lastH2)
-    } else if (item.level === 3 && lastH2 !== null) {
-      lastH2.children!.push({ ...item, children: [] })
+    if (item.level === 1) {
+      lastH1 = { ...item, children: [] }
+      tree.push(lastH1)
+    } else if (item.level === 2 && lastH1 !== null) {
+      lastH1.children!.push({ ...item, children: [] })
     } else {
       tree.push({ ...item, children: [] })
     }

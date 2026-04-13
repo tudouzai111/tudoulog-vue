@@ -3,7 +3,7 @@ title: '为什么要写纯静态土豆博客'
 date: '2026-03-03'
 tags: [ '生活' ]
 excerpt: '记录一下写博客的过程'
-coverImage: 'coverImage.png'
+coverImage: ''
 ---
 
 ## 为什么要写这个博客项目

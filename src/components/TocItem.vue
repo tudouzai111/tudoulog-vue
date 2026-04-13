@@ -20,14 +20,14 @@ defineEmits<{
     >
       {{ heading.title }}
     </a>
-    <!--  递归渲染h3子节点  -->
+    <!--  递归渲染h2子节点  -->
     <ul v-if="heading.children && heading.children.length" class="toc-sublist">
       <TocItem
-        v-for="h3 in heading.children"
-        :key="h3.id"
+        v-for="h2 in heading.children"
+        :key="h2.id"
         :active-id="activeId"
-        :heading="h3"
-        @click="$emit('click', h3.id)"
+        :heading="h2"
+        @click="$emit('click', h2.id)"
       >
       </TocItem>
     </ul>

@@ -1,14 +1,14 @@
 ---
 title: 'Spring Boot 配置类的学习'
 date: '2026-04-01'
-tags: [ 'SpringBoot', '后端', 'Web开发' ]
+tags: ['编程', 'SpringBoot', '后端开发', 'Web开发']
 excerpt: '记录springboot中各种的配置类，由于这些配置类不常写，但是也是很重要的，避免遗忘所以记录'
 coverImage: ''
 ---
 
-## 统一返回结构与全局异常处理
+# 统一返回结构与全局异常处理
 
-### 1. 创建统一返回类 `Result<T>`
+## 1. 创建统一返回类 `Result<T>`
 
 ```java
 @Data
@@ -57,7 +57,7 @@ public class Result<T> {
 }
 ```
 
-### 2. 自定义业务异常类
+## 2. 自定义业务异常类
 
 ```java
 @Getter
@@ -84,7 +84,7 @@ public class BusinessException extends BaseException implements Serializable {
 }
 ```
 
-### 3. 全局异常处理器
+## 3. 全局异常处理器
 
 ```java
 @Slf4j
@@ -106,7 +106,6 @@ public class GlobalExceptionHandler {
 }
 ```
 
-## 跨域配置
+# 跨域配置
 
 > 本人决定转向考公了，所以暂时不写了💀
-

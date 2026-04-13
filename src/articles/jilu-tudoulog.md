@@ -6,11 +6,11 @@ excerpt: '写博客的时候是边问ai边写的，所以打算记录一下写�
 coverImage: 'jilu-tudoulog.jpg'
 ---
 
-## 如何实现读取Markdown并动态生成文章列表
+# 如何实现读取Markdown并动态生成文章列表
 
-### 1. 安装并配置插件
+## 1. 安装并配置插件
 
-#### 1.1 安装插件
+### 1.1 安装插件
 
 ```bash
 pnpm add vite-plugin-vue-markdown -D
@@ -20,7 +20,7 @@ pnpm add vite-plugin-vue-markdown -D
 pnpm install markdown-it-shiki shiki
 ```
 
-#### 1.2 配置插件
+### 1.2 配置插件
 
 在 `vite.config.ts` 中引入插件：
 
@@ -92,9 +92,9 @@ export default defineConfig({
 import 'github-markdown-css'
 ```
 
-### 2. 新建md文档并配置ts动态读取
+## 2. 新建md文档并配置ts动态读取
 
-#### 2.1 新建md文档
+### 2.1 新建md文档
 
 可以在一个文件夹比如`articles`文件夹内新建任意名字的md文件并编写：
 
@@ -115,7 +115,7 @@ excerpt: 这是我的第一篇用 Markdown 写的文章。
 
 #### 2.2 articleList.ts
 
-通过`import`导入的md文件 ，插件会处理`frontmatter`属性并生成一个默认导出的vue组件`default`  
+通过`import`导入的md文件 ，插件会处理`frontmatter`属性并生成一个默认导出的vue组件`default`
 同时`vite-plugin-vue-markdown`支持`frontmatter`分离，可以实现只获取md的meta元数据，按需加载组件
 
 ```ts
@@ -156,7 +156,7 @@ export const articles = Object.entries(modules)
   .sort((a, b) => b.date.localeCompare(a.date))
 ```
 
-#### 2.3 articlePage.vue
+### 2.3 articlePage.vue
 
 现在就可以通过引入articleList获取文章列表信息了
 
@@ -164,7 +164,7 @@ export const articles = Object.entries(modules)
 import { articles } from '@/utils/articleList'
 ```
 
-#### 2.4 articleDetail.vue
+### 2.4 articleDetail.vue
 
 显示markdown正文内容
 
@@ -187,9 +187,9 @@ const article = computed(() => articles.find((a) => a.id === articleId))
 </div>
 ```
 
-## 如何实现组件的过渡动画
+# 如何实现组件的过渡动画
 
-### 1. transition
+## 1. transition
 
 `transition`为包裹的内容添加进入、离开和列表移动的过渡效果。<br/>
 当 `<transition name="xx">` 包裹的内容发生变化时，Vue 会在不同阶段添加/移除以下类名：<br/>
@@ -202,7 +202,7 @@ const article = computed(() => articles.find((a) => a.id === articleId))
 | `xx-leave-active` | 离开触发时添加，过渡结束后移除 | 定义离开过渡的**持续过程**               |
 | `xx-leave-to`     | 离开触发后下一帧添加，过渡结束后移除 | 定义离开的**结束状态**                   |
 
-### 2. transition-group
+## 2. transition-group
 
 `transition-group`用于 v-for 渲染的列表，它会渲染一个真实的容器（通过 tag 指定），并为每个子项添加过渡类名。
 
@@ -216,7 +216,7 @@ const article = computed(() => articles.find((a) => a.id === articleId))
   ，适合动态列表。
 * JavaScript 钩子：更灵活，可精确控制每个项的延迟。
 
-### 3. 示例
+## 3. 示例
 
 ```html
 <router-view v-slot="{ Component }">
@@ -248,12 +248,12 @@ const article = computed(() => articles.find((a) => a.id === articleId))
 
 **初始渲染动画`appear`**
 
-默认首次加载不会触发动画。若需要，添加 `appear` 属性  
+默认首次加载不会触发动画。若需要，添加 `appear` 属性
 它会复用 enter 相关的类名，也可单独指定 `appear-class` / `appear-active-class` / `appear-to-class`
 
-## 如何实现页面目录导航
+# 如何实现页面目录导航
 
-### 1. 定义目录类
+## 1. 定义目录类
 
 ```ts
 export interface Heading {
@@ -264,10 +264,10 @@ export interface Heading {
 }
 ```
 
-### 2. 修改文章详情页
+## 2. 修改文章详情页
 
-给文章正文内容用`ref="contentRef"`包裹，用于获取内部标题标签  
-收集文章正文的标题标签并处理到集合中用来目录显示使用  
+给文章正文内容用`ref="contentRef"`包裹，用于获取内部标题标签
+收集文章正文的标题标签并处理到集合中用来目录显示使用
 约定`h2`是每一节的标题`h3`是分段标题，也可以自己修改
 
 ```ts
@@ -353,7 +353,7 @@ onMounted(async () => {
 })
 ```
 
-### 3. TocItem.vue
+## 3. TocItem.vue
 
 单个`h2`目录项组件
 
@@ -395,7 +395,7 @@ defineEmits<{
 </li>
 ```
 
-### 4. Toc.vue
+## 4. Toc.vue
 
 ```ts
 import type { Heading } from '@/types'
@@ -510,9 +510,9 @@ const handleClick = (id: string) => {
 </aside>
 ```
 
-#### 扩展：实现窄屏宽屏下目录导航的响应式显示样式
+### 扩展：实现窄屏宽屏下目录导航的响应式显示样式
 
-在宽屏下默认显示目录导航栏  
+在宽屏下默认显示目录导航栏
 在窄屏下显示目录按钮并默认隐藏目录导航栏，通过按钮点击切换显示
 
 ```ts
@@ -570,9 +570,9 @@ const toggleToc = () => {
 </transition>
 ```
 
-## 标签组件
+# 标签组件
 
-### 1. 定义标签常量
+## 1. 定义标签常量
 
 文章列表页的标签可选中用于过滤筛选，文章详情页的标签点击跳转
 
@@ -583,9 +583,9 @@ export type TagMode = (typeof TAG_MODE)[number]
 export const TAG_MODE_DEFAULT = TAG_MODE[0]
 ```
 
-### 2. 编写标签组件
+## 2. 编写标签组件
 
-#### ts
+### ts
 
 ```ts
 // 接收标签数组，标签模式和选中的标签数组
@@ -628,7 +628,7 @@ const handleTagClick = (tag: string) => {
 }
 ```
 
-#### vue
+### vue
 
 ```html
 <div aria-label="标签列表" class="tags" role="list">
@@ -650,7 +650,7 @@ const handleTagClick = (tag: string) => {
 </div>
 ```
 
-### 3. 使用示例
+## 3. 使用示例
 
 选中模式
 
@@ -668,11 +668,11 @@ const handleTagClick = (tag: string) => {
 />
 ```
 
-## 修改CSS主题色
+# 修改CSS主题色
 
 就像首页那样
 
-### 1. 编写CSS主题色变量
+## 1. 编写CSS主题色变量
 
 ```css
 /* 主色 - 感知均匀的高亮度五色板 */
@@ -690,7 +690,7 @@ const handleTagClick = (tag: string) => {
 --main-light: var(--teal-light);
 ```
 
-### 2. 定义主题色常量
+## 2. 定义主题色常量
 
 ```ts
 export const THEMES = ['teal', 'pink', 'purple'] as const
@@ -698,7 +698,7 @@ export type Theme = (typeof THEMES)[number]
 export const DEFAULT_THEME: Theme = THEMES[0]
 ```
 
-### 3. 在App.vue中添加主题色修改逻辑
+## 3. 在App.vue中添加主题色修改逻辑
 
 因为`App.vue`是整个vue的根组件，是必须加载的，所以不会因为页面切换后再刷新导致主题色失效
 
@@ -736,7 +736,7 @@ onMounted(() => {
 })
 ```
 
-### 4. 修改颜色组件
+## 4. 修改颜色组件
 
 ```ts
 import { inject, type Ref } from 'vue'
@@ -758,7 +758,7 @@ const { activeTheme, setTheme } = inject('theme') as {
 />
 ```
 
-### 5. 扩展：provide / inject 和defineProps / defineEmits之间的区别
+## 5. 扩展：provide / inject 和defineProps / defineEmits之间的区别
 
 * 前者可以跨越任意层级，无需逐层传递，后者仅限父子组件
 * provide / inject对传递的值没有类型限制，所以也可以传递函数

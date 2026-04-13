@@ -28,7 +28,7 @@ export const articles = Object.entries(modules)
       date: mod.date || '未知日期',
       tags: mod.tags || [],
       excerpt: mod.excerpt || '',
-      coverImage: mod.coverImage ? imgPath + mod.coverImage : '',
+      coverImage: mod.coverImage ? imgPath + mod.coverImage : imgPath + 'coverImage.png',
       component: mod.default, // 插件转换的vue组件属性
     }
   })
