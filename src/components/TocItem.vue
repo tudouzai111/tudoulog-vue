@@ -23,11 +23,11 @@ defineEmits<{
     <!--  递归渲染h2子节点  -->
     <ul v-if="heading.children && heading.children.length" class="toc-sublist">
       <TocItem
-        v-for="h2 in heading.children"
-        :key="h2.id"
+        v-for="child in heading.children"
+        :key="child.id"
         :active-id="activeId"
-        :heading="h2"
-        @click="$emit('click', h2.id)"
+        :heading="child"
+        @click="$emit('click', child.id)"
       >
       </TocItem>
     </ul>
@@ -60,7 +60,7 @@ a.active {
   border-left-color: var(--main-light) !important;
 }
 .toc-sublist {
-  padding-left: 0.75rem;
+  padding-left: 1rem;
   list-style: none;
   margin: 0;
 }

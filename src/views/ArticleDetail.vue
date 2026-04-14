@@ -33,6 +33,56 @@ function slugify(text: string): string {
     .replace(/[^\w\u4e00-\u9fa5-]/g, '') // 保留中文，字母，数字，连字符
 }
 
+function generateTocTree(contentRef: HTMLElement): Heading[] {
+  const elements = contentRef.querySelectorAll('h1, h2, h3, h4, h5, h6')
+  const slugCount = new Map<string, number>()
+
+  // 辅助：生成唯一 slug
+  const generateId = (text: string): string => {
+    const baseSlug = slugify(text) || 'heading'
+    const count = slugCount.get(baseSlug) || 0
+    const id = count === 0 ? baseSlug : `${baseSlug}-${count}`
+    slugCount.set(baseSlug, count + 1)
+    return id
+  }
+
+  // 核心：用栈维护层级关系
+  const stack: Heading[] = [] // 栈顶是当前处理的父节点
+  const root: Heading[] = [] // 最终结果
+
+  elements.forEach((el) => {
+    const level = parseInt(el.tagName.slice(1)) // H2 -> 2
+    const title = el.textContent || ''
+
+    // 生成/复用 id
+    let id = el.id
+    if (!id) {
+      id = generateId(title)
+      el.id = id // 回填 DOM，用于锚点跳转
+    }
+
+    const node: Heading = { id, title, level, children: [] }
+
+    // 栈操作：找到正确的父节点
+    while (stack.length > 0 && stack[stack.length - 1]!.level >= level) {
+      stack.pop() // 当前节点层级 ≤ 栈顶，说明栈顶不是父节点
+    }
+
+    if (stack.length === 0) {
+      // 没有父节点，直接挂到根
+      root.push(node)
+    } else {
+      // 挂到栈顶（当前父节点）的 children 里
+      stack[stack.length - 1]!.children!.push(node)
+    }
+
+    // 当前节点入栈，可能成为后续节点的父节点
+    stack.push(node)
+  })
+
+  return root
+}
+
 onMounted(async () => {
   if (article.value) {
     // 设置标题为文章标题
@@ -44,58 +94,7 @@ onMounted(async () => {
 
   if (!contentRef.value) return
 
-  // 获取所有h1 h2元素
-  const elements = contentRef.value.querySelectorAll('h1, h2')
-  // 导航集合
-  const items: Heading[] = []
-  // 记录每个基础 slug 的出现次数，用来处理标题名相同的情况
-  const slugCount = new Map<string, number>()
-
-  // 遍历所有h1 h2元素，设置id，title，level属性放入items中
-  elements.forEach((element) => {
-    const level = element.tagName === 'H1' ? 1 : 2
-
-    let id = element.id
-    if (!id) {
-      const rawText = element.textContent || 'heading'
-      let baseSlug = slugify(rawText)
-      // 如果 baseSlug 为空（例如只有特殊字符），赋值为默认值
-      if (!baseSlug) baseSlug = 'heading'
-      const count = slugCount.get(baseSlug) || 0
-      if (count === 0) {
-        id = baseSlug
-      } else {
-        id = `${baseSlug}-${count}`
-      }
-      // 更新计数器
-      slugCount.set(baseSlug, count + 1)
-      // 将生成的 id 赋给元素
-      element.id = id
-    }
-    items.push({
-      id,
-      title: element.textContent || '',
-      level,
-    })
-  })
-
-  // 设置不同标题的继承关系
-  // h2是最近的h1的子集
-  const tree: Heading[] = []
-  // 最新的h1
-  let lastH1: Heading | null = null
-
-  items.forEach((item) => {
-    if (item.level === 1) {
-      lastH1 = { ...item, children: [] }
-      tree.push(lastH1)
-    } else if (item.level === 2 && lastH1 !== null) {
-      lastH1.children!.push({ ...item, children: [] })
-    } else {
-      tree.push({ ...item, children: [] })
-    }
-  })
-  headings.value = tree
+  headings.value = generateTocTree(contentRef.value)
   console.log('articleDetail headings:', headings.value)
 })
 </script>
@@ -110,6 +109,13 @@ onMounted(async () => {
         class="cover-wrapper"
       >
         <img :alt="article.title" :src="article.coverImage" class="article-cover" loading="eager" />
+      </header>
+
+      <div class="article-info">
+        <div class="article-meta">
+          <h1 class="article-title">{{ article.title }}</h1>
+          <time :datetime="article.date" class="article-time">{{ article.date }}</time>
+        </div>
         <div class="tags-position">
           <TagComponent
             :mode="TAG_MODE[1]"
@@ -117,11 +123,7 @@ onMounted(async () => {
             @click-tag="goToListWithTag"
           />
         </div>
-        <div class="article-meta">
-          <h1 class="article-title">{{ article.title }}</h1>
-          <time :datetime="article.date" class="article-time">{{ article.date }}</time>
-        </div>
-      </header>
+      </div>
 
       <div v-if="article.excerpt" class="article-excerpt">{{ article.excerpt }}</div>
 
@@ -174,14 +176,6 @@ onMounted(async () => {
   z-index: 0;
 }
 
-.cover-wrapper::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 100%);
-  z-index: 2;
-}
-
 .article-cover {
   position: relative;
   display: block;
@@ -192,26 +186,12 @@ onMounted(async () => {
   z-index: 1;
 }
 
-.tags-position {
-  position: absolute;
-  top: var(--spacing);
-  left: var(--spacing);
-  right: var(--spacing);
-  z-index: 3;
-}
-
-.article-meta {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: var(--spacing-lg) var(--spacing);
-  z-index: 3;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+.article-info {
+  padding: var(--spacing-lg);
 }
 
 .article-title {
-  color: #fff;
+  color: var(--dark-gray);
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0 0 var(--spacing-xs);
@@ -221,6 +201,10 @@ onMounted(async () => {
 .article-time {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
+}
+
+.tags-position {
+  padding-top: var(--spacing-sm);
 }
 
 .article-excerpt {

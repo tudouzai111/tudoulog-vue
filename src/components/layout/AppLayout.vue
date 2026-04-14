@@ -34,6 +34,7 @@ const isHome = computed(() => route.path === '/')
 .main-content {
   padding: 0 var(--spacing-sm);
   max-width: 100%;
+  min-width: 0;
   flex: 1;
 }
 </style>

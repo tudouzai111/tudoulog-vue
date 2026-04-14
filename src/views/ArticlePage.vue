@@ -60,7 +60,7 @@ const filteredArticles = computed(() => {
 // 分页
 const currentPage = ref(1)
 // 一页最多显示几个
-const pageSize = ref(5)
+const pageSize = ref(10)
 // 总共几页
 const totalPages = computed(() => Math.ceil(filteredArticles.value.length / pageSize.value))
 // 当前页显示的文章
@@ -370,21 +370,15 @@ watch(currentPage, () => {
 
 /* 文章列表 */
 .article-list {
-  column-count: 1;
-  column-gap: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
   width: 100%;
-}
-@media (min-width: 768px) {
-  .article-list {
-    column-count: 2;
-  }
 }
 
 .article-list a {
   display: block;
   text-decoration: none;
-  break-inside: avoid;
-  margin-bottom: var(--spacing-sm);
 }
 
 /* 分页 */
