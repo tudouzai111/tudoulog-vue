@@ -141,12 +141,7 @@ onMounted(async () => {
 
 <style scoped>
 .article-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
   max-width: 1200px;
-  width: 100%;
 }
 
 .article-card {
@@ -199,7 +194,7 @@ onMounted(async () => {
 }
 
 .article-time {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--mid-gray);
   font-size: 0.875rem;
 }
 
