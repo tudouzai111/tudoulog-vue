@@ -1,6 +1,6 @@
 # tudoulog
 
-一个用 Vue 3 + Vite 构建的 Markdown 博客系统。可以直接用 Markdown 写文章，支持代码高亮和标签分类以及搜索功能。
+一个用 Vue 3 + Vite 构建的 Markdown 博客系统。可以直接用 Markdown 写文章，通过ts识别md生成动态文章列表，所以只需要写md就可以使用博客，支持代码高亮和标签分类以及搜索功能。
 
 ## 主要功能
 
@@ -10,6 +10,12 @@
 - 🏷️ 文章标签管理
 - 📅 按时间排序
 - 🎨 响应式设计
+
+## 截图
+
+![首页](public/img/readme_1.png)
+![文章](public/img/readme_2.png)
+![文章详情](public/img/readme_3.png)
 
 ## 技术栈
 
@@ -61,21 +67,10 @@ src/
 ├── views/              # 页面
 ```
 
-## 命令
+## 联系我
 
-```bash
-# 构建生产版本
-pnpm build
-
-# 预览构建结果
-pnpm preview
-
-# 代码检查
-pnpm lint
-
-# 代码格式化
-pnpm format
-```
+QQ：1715593110<br/>
+Email：1715593110@qq.com
 
 ## License
 
