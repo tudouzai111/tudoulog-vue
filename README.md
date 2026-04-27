@@ -1,3 +1,5 @@
+> 由于本人 GitHub 账号被标记，项目已迁移到 Gitee [tudoulog-vue](https://gitee.com/tudouza1/tudoulog-vue)
+
 # tudoulog
 
 一个用 Vue 3 + Vite 构建的 Markdown 博客系统。可以直接用 Markdown 写文章，通过ts识别md生成动态文章列表，所以只需要写md就可以使用博客，支持代码高亮和标签分类以及搜索功能。
