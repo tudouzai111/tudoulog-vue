@@ -1,4 +1,4 @@
-> 由于本人 GitHub 账号被标记，项目已迁移到 Gitee [tudoulog-vue](https://gitee.com/tudouza1/tudoulog-vue)
+> 博客Cloudflare地址：https://tudoulog.pages.dev/
 
 # tudoulog
 

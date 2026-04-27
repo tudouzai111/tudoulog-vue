@@ -46,6 +46,17 @@ const socialLinks = [
               gitee.com/tudouza1/tudoulog-vue
             </a>
           </div>
+          <div class="info-item">
+            <span class="info-label">Cloudflare地址</span>
+            <a
+              class="info-link"
+              href="https://tudoulog.pages.dev/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              tudoulog.pages.dev
+            </a>
+          </div>
 
           <div class="info-item">
             <span class="info-label">联系方式</span>

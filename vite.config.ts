@@ -7,7 +7,7 @@ import Markdown from 'vite-plugin-vue-markdown'
 import Shiki from 'markdown-it-shiki'
 
 export default defineConfig({
-  base: '/tudoulog-vue/',
+  base: '/',
   plugins: [
     vue({
       include: [/\.vue$/, /\.md$/], // 让 Vue 处理 .md 文件
