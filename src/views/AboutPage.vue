@@ -25,7 +25,7 @@ const socialLinks = [
 
         <div class="info-grid">
           <div class="info-item">
-            <span class="info-label">项目地址</span>
+            <span class="info-label">GitHub项目地址</span>
             <a
               class="info-link"
               href="https://github.com/TuDouZa1/tudoulog-vue"
@@ -35,6 +35,18 @@ const socialLinks = [
               github.com/TuDouZa1/tudoulog-vue
             </a>
           </div>
+          <div class="info-item">
+            <span class="info-label">Gitee项目地址</span>
+            <a
+              class="info-link"
+              href="https://gitee.com/tudouza1/tudoulog-vue"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              gitee.com/tudouza1/tudoulog-vue
+            </a>
+          </div>
+
           <div class="info-item">
             <span class="info-label">联系方式</span>
             <span class="info-value">QQ: 1715593110</span>

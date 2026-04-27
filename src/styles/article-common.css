@@ -40,10 +40,6 @@
 }
 
 @media (max-width: 768px) {
-  .article-page {
-    padding: 0 var(--spacing-xs);
-  }
-
   .article-empty h1 {
     font-size: 2rem;
   }

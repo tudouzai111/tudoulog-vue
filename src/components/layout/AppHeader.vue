@@ -10,6 +10,7 @@
         <router-link active-class="nav-item-active" class="nav-item" to="/article">
           文章
         </router-link>
+        <router-link active-class="nav-item-active" class="nav-item" to="/word"> 废话 </router-link>
         <router-link active-class="nav-item-active" class="nav-item" to="/about">
           关于
         </router-link>

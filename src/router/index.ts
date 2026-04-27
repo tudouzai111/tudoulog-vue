@@ -22,6 +22,12 @@ const router = createRouter({
           meta: { title: '文章列表-土豆博客' },
         },
         {
+          path: 'word',
+          name: 'WordPage',
+          component: () => import('@/views/WordPage.vue'),
+          meta: { title: '废话-土豆博客' },
+        },
+        {
           path: 'article/:id',
           name: 'ArticleDetail',
           component: () => import('@/views/ArticleDetail.vue'),

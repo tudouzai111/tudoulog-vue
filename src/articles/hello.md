@@ -1,7 +1,7 @@
 ---
 title: '为什么要写纯静态土豆博客'
 date: '2026-03-03'
-tags: [ '生活' ]
+tags: ['日常']
 excerpt: '记录一下写博客的过程'
 coverImage: ''
 ---
