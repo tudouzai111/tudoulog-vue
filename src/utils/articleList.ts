@@ -19,6 +19,7 @@ const modules: Record<string, MarkdownModule> = import.meta.glob('@/articles/*.m
 
 // 生成文章数组
 export const articles = Object.entries(modules)
+  .filter(([path]) => !path.includes('AGENTS.md'))
   .map(([path, mod]) => {
     const id = path.split('/').pop()!.replace('.md', '')
     const imgPath = baseUrl + 'img/cover/'

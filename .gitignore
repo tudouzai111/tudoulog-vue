@@ -84,6 +84,10 @@ pids
 # Qoder AI assistant
 .qoder/
 
+# OpenCode / oh-my-openagent
+.opencode/
+.sisyphus/
+
 # Temporary files
 *.tmp
 *.temp
