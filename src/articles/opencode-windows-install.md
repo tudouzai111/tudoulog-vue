@@ -1,6 +1,6 @@
 ---
 title: 'Windows下安装OpenCode并配置oh-my-openagent和superpowers'
-date: '2026-05-18'
+date: '2026-05-20'
 tags: ['AI工具', 'OpenCode', '教程']
 excerpt: '从零开始在Windows上安装OpenCode终端AI编码助手，并配置oh-my-openagent和superpowers插件'
 coverImage: 'opencode-install.png'
@@ -64,7 +64,21 @@ opencode --version
 
 看到版本号即表示安装成功。
 
-## 二、配置Shell（解决PowerShell下bash命令不兼容问题）
+## 二、安装Bun
+
+oh-my-openagent的安装推荐使用bun，先安装bun：
+
+```powershell
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+安装完成后验证：
+
+```bash
+bun --version
+```
+
+## 三、配置Shell（解决PowerShell下bash命令不兼容问题）
 
 OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等），但Windows自带的PowerShell 5.1并不支持`&&`操作符，直接执行会报错：
 
@@ -111,20 +125,6 @@ OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等）�
 - **使用WSL**：WSL里是原生Linux bash，不存在兼容问题，也是OpenCode官方推荐的方式
 - **升级PowerShell 7+**：PS7支持`&&`操作符，但`set VAR=value`这类bash赋值语法仍需留意
 
-## 三、安装Bun
-
-oh-my-openagent的安装推荐使用bun，先安装bun：
-
-```powershell
-powershell -c "irm bun.sh/install.ps1 | iex"
-```
-
-安装完成后验证：
-
-```bash
-bun --version
-```
-
 ## 四、安装oh-my-openagent
 
 oh-my-openagent（原oh-my-opencode）是一个强大的AI开发代理编排框架，提供纪律代理（Discipline Agents）、团队模式（Team Mode）、Hash锚定编辑、LSP集成等功能。
@@ -160,7 +160,7 @@ superpowers插件提供了丰富的开发技能，包括Playwright浏览器自�
 
 1. **找到OpenCode配置文件**
 
-   全局配置文件位于用户目录下的`%APPDATA%\opencode\opencode.json`（即`C:\Users\你的用户名\AppData\Roaming\opencode\opencode.json`）
+   全局配置文件位于 `~/.config/opencode/opencode.json`（即 `C:\Users\你的用户名\.config\opencode\opencode.json`）
 
 2. **添加superpowers插件**
 
@@ -205,27 +205,132 @@ do you have superpowers?
 
 如果返回确认有superpowers（列出可用技能等），则表示配置成功。
 
-## 六、配置LLM提供商
+## 六、配置模型
 
-OpenCode支持多种LLM提供商，首次运行时会引导配置。你可以：
+OpenCode 提供了一套完整的模型配置体系，从全局默认模型到每个子代理的专用模型，均可按需设置。以下配置均基于 OpenCode Zen——OpenCode 内置的免费模型提供商，无需 API Key。
 
-- **免费模型**：直接选择免费模型无需API Key
-- **自带API Key**：配置OpenAI、Anthropic、Google等提供商的API Key
-- **ChatGPT Plus**：配置浏览器Cookie使用ChatGPT Plus额度
+### OpenCode Zen 免费模型
 
-配置方式在`opencode.json`中添加provider：
+查看所有可用免费模型：
+
+```bash
+# 列出 OpenCode Zen 所有可用模型
+opencode models opencode
+```
+
+常见免费模型：
+
+| 模型 ID | 说明 |
+|---------|------|
+| `opencode/big-pickle` | 最强免费模型，适合深度推理、架构设计 |
+| `opencode/deepseek-v4-flash-free` | DeepSeek V4 Flash（免费版，200K上下文） |
+| `opencode/qwen3.6-plus-free` | Qwen 3.6 Plus（免费版） |
+| `opencode/minimax-m2.5-free` | MiniMax M2.5（免费版） |
+| `opencode/nemotron-3-super-free` | Nemotron 3 Super（免费版） |
+
+> 以上模型均**完全免费**，可按需分配无需担心费用。
+
+### 设置 OpenCode 默认模型
+
+在全局配置文件（`~/.config/opencode/opencode.json`）中添加 `model` 字段：
 
 ```json
 {
-  "provider": {
-    "openai": {
-      "apiKey": "sk-xxx"
-    }
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/deepseek-v4-flash-free",
+  "small_model": "opencode/deepseek-v4-flash-free"
+}
+```
+
+- `model`：主模型，用于编码和复杂任务
+- `small_model`：轻量模型，用于标题生成等简单任务。不设置时会自动选择更便宜的模型
+
+### 配置 oh-my-openagent 多 Agent 模型
+
+oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务特点使用不同的模型，在性能和成本之间取得平衡。
+
+配置文件位于 `~/.config/opencode/oh-my-openagent.json`，分为 `agents`（子代理）和 `categories`（任务分类）两部分：
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
+  "agents": {
+    "hephaestus": { "model": "opencode/minimax-m2.5-free" },
+    "oracle":      { "model": "opencode/big-pickle" },
+    "librarian":   { "model": "opencode/qwen3.6-plus-free" },
+    "explore":     { "model": "opencode/qwen3.6-plus-free" },
+    "prometheus":  { "model": "opencode/big-pickle" },
+    "metis":       { "model": "opencode/qwen3.6-plus-free" },
+    "momus":       { "model": "opencode/big-pickle" },
+    "multimodal-looker": { "model": "opencode/qwen3.6-plus-free" },
+    "atlas":       { "model": "opencode/nemotron-3-super-free" },
+    "sisyphus-junior": { "model": "opencode/deepseek-v4-flash-free" }
+  },
+  "categories": {
+    "visual-engineering": { "model": "opencode/qwen3.6-plus-free" },
+    "ultrabrain":         { "model": "opencode/big-pickle" },
+    "deep":               { "model": "opencode/big-pickle" },
+    "artistry":           { "model": "opencode/deepseek-v4-flash-free" },
+    "quick":              { "model": "opencode/qwen3.6-plus-free" },
+    "unspecified-low":    { "model": "opencode/qwen3.6-plus-free" },
+    "unspecified-high":   { "model": "opencode/minimax-m2.5-free" },
+    "writing":            { "model": "opencode/qwen3.6-plus-free" }
   }
 }
 ```
 
-## 七、OpenCode常用命令
+#### Agent 分工与推荐模型
+
+| Agent | 职责 | 推荐模型 |
+|-------|------|---------|
+| `hephaestus` | 执行代理，处理具体编码任务 | `minimax-m2.5-free` |
+| `oracle` | 高IQ顾问，架构/调试难题 | `big-pickle`（强模型） |
+| `librarian` | 搜索外部文档和代码示例 | `qwen3.6-plus-free` |
+| `explore` | 搜索代码库结构和模式 | `qwen3.6-plus-free` |
+| `prometheus` | 任务规划和分解 | `big-pickle`（强模型） |
+| `metis` | 需求分析，识别模糊点 | `qwen3.6-plus-free` |
+| `momus` | 审查计划，发现遗漏 | `big-pickle`（强模型） |
+| `sisyphus-junior` | 执行委派的具体子任务 | `deepseek-v4-flash-free` |
+
+#### Category 分工与推荐模型
+
+| Category | 适用场景 | 推荐模型 |
+|----------|---------|---------|
+| `visual-engineering` | 前端UI/UX、样式、动画 | `qwen3.6-plus-free` |
+| `ultrabrain` | 复杂逻辑、架构决策 | `big-pickle`（强模型） |
+| `deep` | 深度研究 + 端到端实现 | `big-pickle`（强模型） |
+| `artistry` | 创意类、非常规方案 | `deepseek-v4-flash-free` |
+| `quick` | 简单修改、修 typo | `qwen3.6-plus-free` |
+| `writing` | 文档、技术写作 | `qwen3.6-plus-free` |
+
+#### 配置思路
+
+合理分配模型的核心原则：
+
+- **高推理需求**（oracle、prometheus、momus、ultrabrain、deep）→ 用 `big-pickle` 等强模型，保证输出质量
+- **高频搜索**（explore、librarian）→ 用 `qwen3.6-plus-free`，速度快 token 消耗大但免费
+- **视觉/前端**（visual-engineering）→ `qwen3.6-plus-free` 或更强模型
+- **简单任务**（quick、unspecified-low）→ 最便宜的模型即可
+
+### 配置优先级
+
+模型选择遵循以下优先级（从上到下递减）：
+
+| 优先级 | 配置方式 | 说明 |
+|--------|---------|------|
+| 1 | `opencode -m provider/model` | 命令行参数，临时切换 |
+| 2 | 项目根目录的 `opencode.json` | 项目级配置，覆盖全局 |
+| 3 | `~/.config/opencode/opencode.json` | 全局配置，用户偏好 |
+| 4 | 最近使用的模型 | OpenCode 自动记住 |
+| 5 | 内置默认 | 兜底 |
+
+### 验证配置
+
+启动 OpenCode 后输入 `/models`，查看当前使用的模型，确认显示为目标模型 ID。
+
+## 七、常用命令与功能
+
+### OpenCode 内置命令
 
 进入OpenCode的TUI后，直接输入斜杠命令即可调用：
 
@@ -252,9 +357,7 @@ OpenCode支持多种LLM提供商，首次运行时会引导配置。你可以：
 
 > **提示**：输入 `/` 后按 Tab 可以看到当前可用的所有命令列表。
 
-## 八、常用功能一览
-
-### oh-my-openagent核心功能
+### oh-my-openagent 核心功能
 
 | 功能 | 说明 |
 |------|------|
@@ -263,7 +366,7 @@ OpenCode支持多种LLM提供商，首次运行时会引导配置。你可以：
 | `/init-deep` | 自动生成项目层级AGENTS.md文件 |
 | Team Mode | 多代理并行协作，实时可视化 |
 
-### superpowers内置技能
+### superpowers 内置技能
 
 | 技能 | 用途 |
 |------|------|
@@ -280,17 +383,18 @@ OpenCode支持多种LLM提供商，首次运行时会引导配置。你可以：
 ## 注意事项
 
 1. **Windows原生 vs WSL**：OpenCode官方推荐Windows用户使用WSL获得最佳体验，因为部分shell工具（如ripgrep、git工具链）在WSL下工作更顺畅
-2. **模型选择**：oh-my-openagent会自动根据任务类型选择最优模型，无需手动切换
-3. **插件冲突**：如果同时安装了多个插件，注意配置不要有冲突
-4. **API费用**：使用付费模型会产生API费用，建议先用免费模型测试
+2. **插件冲突**：如果同时安装了多个插件，注意配置不要有冲突
+3. **配置文件位置**：OpenCode的全局配置文件为 `~/.config/opencode/opencode.json`，oh-my-openagent的配置文件为 `~/.config/opencode/oh-my-openagent.json`，两者各自独立
+4. **模型选择**：oh-my-openagent 会自动根据任务类型选择对应的 category 模型，无需手动切换。如需调整，修改 `oh-my-openagent.json` 即可
+5. **OpenCode Zen 免费模型需要联网**，离线环境下无法使用
 
 ## 总结
 
 整个安装配置流程：
 
 ```
-安装OpenCode → 配置Shell为Git Bash → 安装Bun →
-bunx oh-my-openagent install → 配置opencode.json添加superpowers → 重启验证
+安装OpenCode → 安装Bun → 配置Shell为Git Bash →
+安装oh-my-openagent → 添加superpowers插件 → 配置默认模型与多Agent模型
 ```
 
-配置完成后你就拥有了一个强大的终端AI开发环境，可以享受纪律代理编排、团队并行开发、浏览器自动化等一系列高级功能。
+配置完成后你就拥有了一个强大的终端AI开发环境，可以享受纪律代理编排、团队并行开发、浏览器自动化等一系列高级功能，且所有模型均为免费，无需担心API费用。
