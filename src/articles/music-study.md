@@ -1,7 +1,7 @@
 ---
 title: '乐理'
 date: '2026-03-04'
-tags: [ '乐理', '音乐' ]
+tags: ['乐理']
 excerpt: '记录一下学习的乐理基础的知识'
 coverImage: ''
 ---

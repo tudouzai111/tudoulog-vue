@@ -1,7 +1,7 @@
 ---
 title: 'Flutter'
 date: '2026-04-14'
-tags: [ '编程', 'Flutter', '客户端开发', 'Dart' ]
+tags: ['Flutter', 'Dart']
 excerpt: 'Flutter环境的安装编译，Dart的基础语法，Flutter组件框架的学习，暂时只学了基础以后如果感兴趣有时间了可能会学的更深入'
 coverImage: ''
 ---
