@@ -8,7 +8,6 @@ Markdown article source files. `vite-plugin-vue-markdown` transforms these into 
 articles/
 ├── flutter.md
 ├── hello.md
-├── jilu-tudoulog.md
 ├── music-study.md
 ├── oklch.md
 ├── ruanjian-list.md
