@@ -94,7 +94,7 @@ OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等）�
 
 #### 方式一：全局配置（推荐）
 
-在OpenCode全局配置文件`%APPDATA%\opencode\opencode.json`中添加`shell`字段：
+在OpenCode全局配置文件`"C:\Users\TuDouZai\.config\opencode\oh-my-openagent.json"`中添加`shell`字段：
 
 ```json
 {
@@ -124,6 +124,8 @@ OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等）�
 
 - **使用WSL**：WSL里是原生Linux bash，不存在兼容问题，也是OpenCode官方推荐的方式
 - **升级PowerShell 7+**：PS7支持`&&`操作符，但`set VAR=value`这类bash赋值语法仍需留意
+
+> 其实安装opencode配置好shell后就可以让ai自己来安装插件了
 
 ## 四、安装oh-my-openagent
 
@@ -225,10 +227,8 @@ opencode models opencode
 | `opencode/big-pickle` | 最强免费模型，适合深度推理、架构设计 |
 | `opencode/deepseek-v4-flash-free` | DeepSeek V4 Flash（免费版，200K上下文） |
 | `opencode/qwen3.6-plus-free` | Qwen 3.6 Plus（免费版） |
-| `opencode/minimax-m2.5-free` | MiniMax M2.5（免费版） |
-| `opencode/nemotron-3-super-free` | Nemotron 3 Super（免费版） |
 
-> 以上模型均**完全免费**，可按需分配无需担心费用。
+> 以上模型均**完全免费**，可按需分配无需担心费用。不同时间免费模型都不一样，要自己查一下！
 
 ### 设置 OpenCode 默认模型
 
