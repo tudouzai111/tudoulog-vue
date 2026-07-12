@@ -64,21 +64,7 @@ opencode --version
 
 看到版本号即表示安装成功。
 
-## 二、安装Bun
-
-oh-my-openagent的安装推荐使用bun，先安装bun：
-
-```powershell
-powershell -c "irm bun.sh/install.ps1 | iex"
-```
-
-安装完成后验证：
-
-```bash
-bun --version
-```
-
-## 三、配置Shell（解决PowerShell下bash命令不兼容问题）
+## 二、配置Shell（解决PowerShell下bash命令不兼容问题）
 
 OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等），但Windows自带的PowerShell 5.1并不支持`&&`操作符，直接执行会报错：
 
@@ -128,6 +114,20 @@ OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等）�
 - **升级PowerShell 7+**：PS7支持`&&`操作符，但`set VAR=value`这类bash赋值语法仍需留意
 
 > 其实安装opencode配置好shell后就可以让ai自己来安装插件了
+
+## 三、安装Bun
+
+oh-my-openagent的安装推荐使用bun，先安装bun：
+
+```powershell
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+安装完成后验证：
+
+```bash
+bun --version
+```
 
 ## 四、安装oh-my-openagent
 
@@ -211,7 +211,7 @@ do you have superpowers?
 
 ## 六、配置模型
 
-OpenCode 提供了一套完整的模型配置体系，从全局默认模型到每个子代理的专用模型，均可按需设置。以下配置均基于 OpenCode Zen——OpenCode 内置的免费模型提供商，无需 API Key。
+OpenCode 提供了一套完整的模型配置体系，从全局默认模型到每个子代理的专用模型，均可按需设置，无需 API Key。
 
 ### OpenCode Zen 免费模型
 
@@ -222,15 +222,7 @@ OpenCode 提供了一套完整的模型配置体系，从全局默认模型到�
 opencode models opencode
 ```
 
-常见免费模型：
-
-| 模型 ID | 说明 |
-|---------|------|
-| `opencode/big-pickle` | 最强免费模型，适合深度推理、架构设计 |
-| `opencode/deepseek-v4-flash-free` | DeepSeek V4 Flash（免费版，200K上下文） |
-| `opencode/qwen3.6-plus-free` | Qwen 3.6 Plus（免费版） |
-
-> 以上模型均**完全免费**，可按需分配无需担心费用。不同时间免费模型都不一样，要自己查一下！
+> 不同时间免费模型都不一样，要自己查一下！
 
 ### 设置 OpenCode 默认模型
 
@@ -252,6 +244,8 @@ opencode models opencode
 oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务特点使用不同的模型，在性能和成本之间取得平衡。
 
 配置文件位于 `~/.config/opencode/oh-my-openagent.json`，分为 `agents`（子代理）和 `categories`（任务分类）两部分：
+
+> 这些配置都可以让 ai 去配置
 
 ```json
 {
@@ -382,21 +376,11 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 | `writing-plans` | 编写实施计划 |
 | `dispatching-parallel-agents` | 并行分发独立任务 |
 
-## 注意事项
-
-1. **Windows原生 vs WSL**：OpenCode官方推荐Windows用户使用WSL获得最佳体验，因为部分shell工具（如ripgrep、git工具链）在WSL下工作更顺畅
-2. **插件冲突**：如果同时安装了多个插件，注意配置不要有冲突
-3. **配置文件位置**：OpenCode的全局配置文件为 `~/.config/opencode/opencode.json`，oh-my-openagent的配置文件为 `~/.config/opencode/oh-my-openagent.json`，两者各自独立
-4. **模型选择**：oh-my-openagent 会自动根据任务类型选择对应的 category 模型，无需手动切换。如需调整，修改 `oh-my-openagent.json` 即可
-5. **OpenCode Zen 免费模型需要联网**，离线环境下无法使用
-
 ## 总结
 
 整个安装配置流程：
 
 ```
-安装OpenCode → 安装Bun → 配置Shell为Git Bash →
-安装oh-my-openagent → 添加superpowers插件 → 配置默认模型与多Agent模型
+安装OpenCode → 配置Shell为Git Bash
+安装Bun → 安装oh-my-openagent → 添加superpowers插件 → 配置默认模型与多Agent模型
 ```
-
-配置完成后你就拥有了一个强大的终端AI开发环境，可以享受纪律代理编排、团队并行开发、浏览器自动化等一系列高级功能，且所有模型均为免费，无需担心API费用。
