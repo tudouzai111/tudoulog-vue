@@ -6,14 +6,22 @@ Markdown article source files. `vite-plugin-vue-markdown` transforms these into 
 ## STRUCTURE
 ```
 articles/
-├── flutter.md
-├── hello.md
-├── music-study.md
-├── oklch.md
-├── ruanjian-list.md
-├── springboot-config.md
-├── suan-fa.md
-└── win11bug.md
+├── blog-markdown-system.md  # 博客Markdown系统设计
+├── clash.md                 # Clash配置教程
+├── cloudflare.md            # CloudFlare部署HTML
+├── flutter.md               # Flutter学习笔记
+├── hello.md                 # 第一篇博客（入门介绍）
+├── music-study.md           # 乐理学习笔记
+├── oklch.md                 # OKLCH色彩空间
+├── opencode-web.md          # OpenCode Web配置
+├── opencode-windows-install.md  # OpenCode Windows安装
+├── ruanjian-list.md         # 软件推荐列表
+├── springboot-config.md     # SpringBoot配置
+├── suan-fa.md               # 算法笔记
+├── tag-component-theme.md   # 标签组件主题
+├── toc-component.md         # 目录组件实现
+├── vue-transitions.md       # Vue过渡动画
+└── win11bug.md              # Win11 Bug记录
 ```
 
 ## WHERE TO LOOK
@@ -30,7 +38,7 @@ title: '文章标题'
 date: '2026-02-22'
 tags: ['Vue', 'Markdown', '博客']
 excerpt: '文章摘要'
-coverImage: '/src/assets/img/coverImage.png'
+coverImage: 'coverImage.png'  # filename only — code prepends baseUrl + 'img/cover/'
 ---
 ```
 

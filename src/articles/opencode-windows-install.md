@@ -90,15 +90,17 @@ OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等）�
 
 如果你已经安装了Git for Windows（大概率已装），自带的Git Bash可以直接在OpenCode中使用。
 
+先把 Git 安装目录下的 bash 配置到环境变量 path 里，如： `D:\software\Git\bin` 
+
 有两种配置方式：
 
 #### 方式一：全局配置（推荐）
 
-在OpenCode全局配置文件`"C:\Users\TuDouZai\.config\opencode\oh-my-openagent.json"`中添加`shell`字段：
+在OpenCode全局配置文件`"C:\Users\TuDouZai\.config\opencode\opencode.json"`中添加`shell`字段：
 
 ```json
 {
-  "shell": "C:\\Program Files\\Git\\bin\\bash.exe"
+  "shell": "bash"
 }
 ```
 
@@ -110,7 +112,7 @@ OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等）�
 
 ```json
 {
-  "shell": "C:\\Program Files\\Git\\bin\\bash.exe"
+  "shell": "bash"
 }
 ```
 

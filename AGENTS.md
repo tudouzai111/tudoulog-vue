@@ -1,10 +1,12 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-05-18
+**Generated:** 2026-07-12
+**Commit:** 875d64f8
+**Branch:** master
 **Stack:** Vue 3.5 + TypeScript 5.9 + Vite 7 + Vue Router 5
 
 ## OVERVIEW
-Markdown blog system ("土豆博客"). Articles written as `.md` files in `src/articles/`; `vite-plugin-vue-markdown` transforms them into Vue components at build time. Deployed on Cloudflare Pages.
+Markdown blog system ("土豆博客"). Articles written as `.md` files in `src/articles/`; `vite-plugin-vue-markdown` transforms them into Vue components at build time. Deployed on GitHub Pages (CI) + Cloudflare Pages (auto-deploy).
 
 ## STRUCTURE
 ```
@@ -64,7 +66,7 @@ pnpm preview          # Preview production build
 ```
 
 ## NOTES
-- Node >= 20.19.0 required (pnpm package manager)
+- Node ^20.19.0 or >=22.12.0 required (pnpm package manager)
 - `DemoPreview` component registered globally in `main.ts`
 - Article IDs derived from filename (e.g., `hello.md` → id `hello`)
 - Cover images served from `baseUrl + 'img/cover/'`
