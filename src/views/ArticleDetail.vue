@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
-import { computed, nextTick, onMounted, ref } from 'vue'
-import { articles } from '@/utils/articleList'
+import { computed, defineAsyncComponent, nextTick, onMounted, ref } from 'vue'
+import { articles, loadArticleComponent } from '@/utils/articleList'
 import type { Heading } from '@/types'
 
 import 'github-markdown-css'
@@ -97,6 +97,14 @@ onMounted(async () => {
   headings.value = generateTocTree(contentRef.value)
   console.log('articleDetail headings:', headings.value)
 })
+
+// 根据当前文章 id 生成异步组件
+const articleComponent = computed(() => {
+  if (!article.value) return null
+  return defineAsyncComponent({
+    loader: () => loadArticleComponent(article.value!.id)!,
+  })
+})
 </script>
 
 <template>
@@ -130,7 +138,7 @@ onMounted(async () => {
       <!-- 文章内容 -->
       <section class="article-content">
         <div ref="contentRef" class="markdown-body">
-          <component :is="article.component" v-if="article.component" />
+          <component :is="articleComponent" v-if="articleComponent" />
         </div>
         <TocComponent :headings="headings" />
       </section>
