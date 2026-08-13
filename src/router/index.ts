@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { articles } from '@/utils/articleList.ts'
 import { useLoadingBar } from '@/utils/useLoadingBar.ts'
 
-const { isLoading } = useLoadingBar()
+const { start: startLoading, finish: finishLoading } = useLoadingBar()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -73,13 +73,13 @@ router.afterEach((to) => {
 })
 
 router.beforeEach(() => {
-  isLoading.value = true
+  startLoading()
 })
 router.afterEach(() => {
-  isLoading.value = false
+  finishLoading()
 })
 router.onError(() => {
-  isLoading.value = false
+  finishLoading()
 })
 
 export default router
