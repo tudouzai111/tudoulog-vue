@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { articles } from '@/utils/articleList'
 import CardComponent from '@/components/CardComponent.vue'
 import TagComponent from '@/components/TagComponent.vue'
 import '@/styles/article-common.css'
 import '@/styles/tag-common.css'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 
 // 搜索
 const searchQuery = ref('')
@@ -21,14 +22,17 @@ const clearSearch = () => {
 
 // 标签筛选
 const selectedTags = ref<string[]>([])
-onMounted(() => {
-  const tagsQuery = route.query.tags
-  if (tagsQuery) {
-    if (typeof tagsQuery === 'string') {
-      selectedTags.value = tagsQuery.split(',').filter((tag) => tag.trim().length > 0)
+watch(
+  () => route.query.tags,
+  (tags) => {
+    if (tags) {
+      if (typeof tags === 'string') {
+        selectedTags.value = tags.split(',').filter((tag) => tag.trim().length > 0)
+      }
     }
-  }
-})
+  },
+  { immediate: true },
+)
 const removeTag = (tag: string) => {
   const index = selectedTags.value.indexOf(tag)
   if (index !== -1) {
@@ -70,16 +74,17 @@ const showArticles = computed(() => {
   return filteredArticles.value.slice(startArticle, endArticle)
 })
 // 当筛选或搜索导致过滤的文章列表变化时，重置当前页为第一页
-watch(filteredArticles, () => (currentPage.value = 1))
+// 筛选标签后清除url的page参数
+watch(filteredArticles, () => {
+  currentPage.value = 1
+  const query: Record<string, string> = {}
+  if (selectedTags.value.length > 0) {
+    query.tags = selectedTags.value.join(',')
+  }
+  router.replace({ query })
+})
 // 页面输入跳转
 const inputPageNum = ref('')
-const changePage = () => {
-  const pageNum = Number(inputPageNum.value)
-  if (!isNaN(pageNum) && pageNum > 0 && pageNum <= totalPages.value) {
-    currentPage.value = pageNum
-  }
-  inputPageNum.value = ''
-}
 // 分页按钮显示逻辑
 const showPageBtn = computed<number[]>(() => {
   const total = totalPages.value
@@ -120,12 +125,25 @@ const showPageBtn = computed<number[]>(() => {
   }
   return range
 })
+// 切换页面
+const goToPage = (n: number) => {
+  router.replace({ query: { ...route.query, page: n } })
+}
 // 切换页码后页面回到最顶端
 watch(currentPage, () => {
   nextTick(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' }) // 平滑滚动
   })
 })
+// 切换页码后修改currentPage值
+watch(
+  () => route.query.page,
+  (page) => {
+    const n = Number(page)
+    currentPage.value = !isNaN(n) && n >= 1 ? Math.min(n, totalPages.value) : 1
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -216,7 +234,7 @@ watch(currentPage, () => {
         :disabled="currentPage === 1"
         aria-label="上一页"
         type="button"
-        @click="currentPage--"
+        @click="goToPage(--currentPage)"
       >
         上一页
       </button>
@@ -226,7 +244,7 @@ watch(currentPage, () => {
         :class="item === currentPage ? 'page-btn-active' : 'page-btn'"
         class="page-btn"
         type="button"
-        @click="currentPage = item"
+        @click="goToPage(item)"
       >
         {{ item }}
       </button>
@@ -235,7 +253,7 @@ watch(currentPage, () => {
         :disabled="currentPage === totalPages"
         aria-label="下一页"
         type="button"
-        @click="currentPage++"
+        @click="goToPage(++currentPage)"
       >
         下一页
       </button>
@@ -248,7 +266,7 @@ watch(currentPage, () => {
         inputmode="numeric"
         placeholder="Go"
         type="text"
-        @keyup.enter="changePage"
+        @keyup.enter="goToPage(Number(inputPageNum))"
       />
     </nav>
 
