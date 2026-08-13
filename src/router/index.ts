@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { articles } from '@/utils/articleList.ts'
+import { useLoadingBar } from '@/utils/useLoadingBar.ts'
+
+const { isLoading } = useLoadingBar()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +70,16 @@ const router = createRouter({
 router.afterEach((to) => {
   // 如果路由元信息中有 title，则设置；否则使用默认标题
   document.title = (to.meta.title as string) || '土豆博客'
+})
+
+router.beforeEach(() => {
+  isLoading.value = true
+})
+router.afterEach(() => {
+  isLoading.value = false
+})
+router.onError(() => {
+  isLoading.value = false
 })
 
 export default router

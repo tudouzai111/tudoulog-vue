@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import LoadingBar from '@/components/LoadingBar.vue'
 
 const route = useRoute()
 // 首页不显示底部
@@ -11,11 +12,12 @@ const isHome = computed(() => route.path === '/')
 
 <template>
   <div class="layout">
+    <LoadingBar />
     <AppHeader />
     <main class="main-content">
       <router-view v-slot="{ Component }">
         <transition appear mode="out-in" name="page">
-          <component :is="Component" :key="$route.fullPath" />
+          <component :is="Component" :key="$route.path" />
         </transition>
       </router-view>
     </main>
