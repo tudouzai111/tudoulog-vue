@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
-import { computed, defineAsyncComponent, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
+import type { Component } from 'vue'
 import { articles, loadArticleComponent } from '@/utils/articleList'
 import type { Heading } from '@/types'
 
@@ -83,28 +84,34 @@ function generateTocTree(contentRef: HTMLElement): Heading[] {
   return root
 }
 
-onMounted(async () => {
-  if (article.value) {
+// 懒加载的文章正文组件实例
+const articleComp = ref<Component | null>(null)
+
+// 文章组件为异步加载，需等待其渲染完成后才能提取标题生成目录
+watch(
+  article,
+  async (a) => {
+    if (!a) return
     // 设置标题为文章标题
-    document.title = article.value.title + '-土豆博客'
-  }
+    document.title = a.title + '-土豆博客'
 
-  // 等待 DOM 更新，确保文章已渲染完毕
-  await nextTick()
+    // 清空旧内容与旧目录
+    articleComp.value = null
+    headings.value = []
 
-  if (!contentRef.value) return
+    const comp = await loadArticleComponent(a.id)
+    if (!comp) return
 
-  headings.value = generateTocTree(contentRef.value)
-  console.log('articleDetail headings:', headings.value)
-})
+    articleComp.value = comp
 
-// 根据当前文章 id 生成异步组件
-const articleComponent = computed(() => {
-  if (!article.value) return null
-  return defineAsyncComponent({
-    loader: () => loadArticleComponent(article.value!.id)!,
-  })
-})
+    // 等待异步组件渲染进 DOM
+    await nextTick()
+    if (contentRef.value) {
+      headings.value = generateTocTree(contentRef.value)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -138,7 +145,7 @@ const articleComponent = computed(() => {
       <!-- 文章内容 -->
       <section class="article-content">
         <div ref="contentRef" class="markdown-body">
-          <component :is="articleComponent" v-if="articleComponent" />
+          <component :is="articleComp" v-if="articleComp" />
         </div>
         <TocComponent :headings="headings" />
       </section>
