@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 const words = [
   {
+    word: '创了个GitHub新号😋',
+    data: '2026-8-20',
+  },
+  {
     word: '牛魔的Github给我号标记了😡，搞得我只能push，提交工单国内还搞不了😡',
     data: '2026-4-27',
   },
