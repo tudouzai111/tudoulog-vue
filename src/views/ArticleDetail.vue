@@ -456,7 +456,7 @@ watch(
 
 .article-meta-line {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--spacing);
   flex-wrap: wrap;
 }

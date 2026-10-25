@@ -28,22 +28,41 @@ async function sendAction(action: 'view' | 'like') {
   return (await res.json()) as { views: number; likes: number }
 }
 
+// 查询失败自动重试（瞬时网络抖动会导致统计闪没）
+async function fetchWithRetry() {
+  let lastError: unknown
+  for (let i = 0; i < 3; i++) {
+    try {
+      return await fetchStats()
+    } catch (error) {
+      lastError = error
+      await new Promise((resolve) => setTimeout(resolve, 800 * (i + 1)))
+    }
+  }
+  throw lastError
+}
+
 onMounted(async () => {
   try {
-    const stats = await fetchStats()
+    const stats = await fetchWithRetry()
     views.value = stats.views
     likes.value = stats.likes
     available.value = true
     liked.value = localStorage.getItem(LIKE_KEY) === '1'
-
-    // 每个会话只计一次浏览
-    if (sessionStorage.getItem(VIEW_KEY) !== '1') {
-      sessionStorage.setItem(VIEW_KEY, '1')
-      const after = await sendAction('view')
-      views.value = after.views
-    }
   } catch {
     available.value = false
+    return
+  }
+
+  // 浏览计数失败只影响计数，不隐藏整个组件
+  if (sessionStorage.getItem(VIEW_KEY) !== '1') {
+    sessionStorage.setItem(VIEW_KEY, '1')
+    try {
+      const after = await sendAction('view')
+      views.value = after.views
+    } catch {
+      // 忽略
+    }
   }
 })
 
