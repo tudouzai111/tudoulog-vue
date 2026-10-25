@@ -9,9 +9,6 @@
 <body>
 <main data-pagefind-body>
 <h1>Windows下安装OpenCode并配置oh-my-openagent和superpowers</h1>
-<blockquote>
-<p>文章使用AI润色</p>
-</blockquote>
 <h2>前言</h2>
 <p>OpenCode是一个开源的终端AI编码助手，支持多种LLM提供商。搭配oh-my-openagent（OmO）和superpowers插件后，可以获得强大的AI开发团队编排能力。本篇记录在Windows下的完整安装配置过程。</p>
 <p>官网：<a href="https://opencode.ai/zh">https://opencode.ai/zh</a></p>
@@ -46,7 +43,7 @@ curl -fsSL https://opencode.ai/install | bash
 <p>看到版本号即表示安装成功。</p>
 <h2>二、配置Shell（解决PowerShell下bash命令不兼容问题）</h2>
 <p>OpenCode生成的指令默认使用bash语法（如<code>&amp;&amp;</code>、<code>set VAR=value</code>等），但Windows自带的PowerShell 5.1并不支持<code>&amp;&amp;</code>操作符，直接执行会报错：</p>
-<pre><code>&amp;&amp; 运算符在此版本的 PowerShell 中无效
+<pre><code class="language-plain">&amp;&amp; 运算符在此版本的 PowerShell 中无效
 </code></pre>
 <h3>解决方法：配置Git Bash</h3>
 <p>如果你已经安装了Git for Windows（大概率已装），自带的Git Bash可以直接在OpenCode中使用。</p>
@@ -111,6 +108,8 @@ curl -fsSL https://opencode.ai/install | bash
 <li>
 <p><strong>添加superpowers插件</strong></p>
 <p>在<code>plugins</code>数组中添加<code>&quot;superpowers@git+https://github.com/obra/superpowers.git&quot;</code>：</p>
+</li>
+</ol>
 <pre><code class="language-json">{
   &quot;plugins&quot;: [
     &quot;superpowers@git+https://github.com/obra/superpowers.git&quot;
@@ -125,20 +124,20 @@ curl -fsSL https://opencode.ai/install | bash
   ]
 }
 </code></pre>
-</li>
+<ol start="3">
 <li>
 <p><strong>保存文件</strong></p>
 </li>
 <li>
 <p><strong>重启OpenCode</strong></p>
 <p>完全退出当前OpenCode会话，然后重新启动：</p>
-<pre><code class="language-bash">opencode
-</code></pre>
 </li>
 </ol>
+<pre><code class="language-bash">opencode
+</code></pre>
 <h3>验证superpowers</h3>
 <p>在OpenCode中发送：</p>
-<pre><code>do you have superpowers?
+<pre><code class="language-plain">do you have superpowers?
 </code></pre>
 <p>如果返回确认有superpowers（列出可用技能等），则表示配置成功。</p>
 <h2>六、配置模型</h2>
@@ -501,7 +500,7 @@ opencode models opencode
 </table>
 <h2>总结</h2>
 <p>整个安装配置流程：</p>
-<pre><code>安装OpenCode → 配置Shell为Git Bash
+<pre><code class="language-plain">安装OpenCode → 配置Shell为Git Bash
 安装Bun → 安装oh-my-openagent → 添加superpowers插件 → 配置默认模型与多Agent模型
 </code></pre>
 
