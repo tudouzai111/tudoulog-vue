@@ -87,21 +87,25 @@ const groups = computed(() => {
 }
 
 .year-item {
+  position: relative;
   display: flex;
   align-items: baseline;
   gap: var(--spacing);
   padding: 0.45rem 0;
 }
 
+/* 圆点精确骑在竖线上：线占 ol 左缘 0-2px，li 内容从 10px 起，
+   圆点宽 6px，中心对齐线中心需 left = 1 - 3 - 10 = -12px */
 .year-item::before {
   content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--main);
-  flex-shrink: 0;
-  align-self: center;
-  margin-left: -5px;
+  transform: translateY(-50%);
 }
 
 .item-date {
