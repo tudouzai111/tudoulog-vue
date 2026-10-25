@@ -1,22 +1,11 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
-import wordsData from '@/data/words.json'
-
-interface WordItem {
-  word: string
-  date: string
-}
-
-// 按日期降序，最新的在最上面
-const words = computed(() =>
-  [...(wordsData as WordItem[])].sort((a, b) => b.date.localeCompare(a.date)),
-)
+import { words } from 'virtual:words'
 </script>
 
 <template>
   <TransitionGroup appear class="word-page" name="list" tag="div">
     <section v-for="(word, index) in words" :key="word.date + index" class="word-card">
-      <p class="word-content">{{ word.word }}</p>
+      <p class="word-content">{{ word.body }}</p>
       <time class="word-time" :datetime="word.date">{{ word.date }}</time>
     </section>
   </TransitionGroup>
@@ -43,6 +32,7 @@ const words = computed(() =>
   line-height: 1.4;
   color: var(--dark-gray);
   margin: 0;
+  white-space: pre-wrap;
 }
 .word-time {
   color: var(--mid-gray);

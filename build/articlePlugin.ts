@@ -27,6 +27,11 @@ export interface ArticleMetaEntry {
   readingMinutes: number
 }
 
+export interface WordEntry {
+  date: string
+  body: string
+}
+
 interface ParsedFrontmatter {
   title?: string
   date?: string
@@ -106,7 +111,8 @@ export function readArticles(root: string): ArticleMetaEntry[] {
       updated: fm.updated,
       tags: fm.tags ?? [],
       excerpt: fm.excerpt ?? '',
-      coverImageFile: fm.coverImage ?? '',
+      // 只取文件名：兼容手写的裸文件名和 CMS 写入的完整路径（如 /img/cover/x.png）
+      coverImageFile: fm.coverImage ? fm.coverImage.split('/').pop() ?? '' : '',
       draft: fm.draft ?? false,
       wordCount,
       readingMinutes,
@@ -115,8 +121,31 @@ export function readArticles(root: string): ArticleMetaEntry[] {
   return entries.sort((a, b) => b.date.localeCompare(a.date))
 }
 
+export function readWords(root: string): WordEntry[] {
+  const dir = join(root, 'src/words')
+  let files: string[]
+  try {
+    files = readdirSync(dir)
+  } catch {
+    return [] // 目录尚不存在时视为无内容
+  }
+  const entries: WordEntry[] = []
+  for (const file of files) {
+    if (!file.endsWith('.md') || file === 'AGENTS.md') continue
+    const raw = readFileSync(join(dir, file), 'utf8')
+    const fm = parseFrontmatter(raw)
+    const body = raw
+      .replace(/^---\r?\n[\s\S]*?\r?\n---/, '')
+      .trim()
+    if (!body) continue
+    entries.push({ date: fm.date || '未知日期', body })
+  }
+  return entries.sort((a, b) => b.date.localeCompare(a.date))
+}
+
 const VIRTUAL_META = 'virtual:article-meta'
 const VIRTUAL_COMPONENTS = 'virtual:article-components'
+const VIRTUAL_WORDS = 'virtual:words'
 
 function virtualMetaModule(articles: ArticleMetaEntry[]): string {
   // 草稿的元数据同样不进客户端产物，避免标题/摘要泄露
@@ -137,12 +166,22 @@ function virtualComponentsModule(articles: ArticleMetaEntry[]): string {
   return `export const componentMap = {\n${lines.join('\n')}\n}\n`
 }
 
+function virtualWordsModule(words: WordEntry[]): string {
+  return `export const words = ${JSON.stringify(words, null, 2)}\n`
+}
+
 export function articlePlugin(root: string): Plugin {
   let articles = readArticles(root)
-  const virtualIds = new Set(['\0' + VIRTUAL_META, '\0' + VIRTUAL_COMPONENTS])
+  let words = readWords(root)
+  const virtualIds = new Set([
+    '\0' + VIRTUAL_META,
+    '\0' + VIRTUAL_COMPONENTS,
+    '\0' + VIRTUAL_WORDS,
+  ])
 
   const invalidateVirtualModules = (server: ViteDevServer) => {
     articles = readArticles(root)
+    words = readWords(root)
     for (const id of virtualIds) {
       const mod = server.moduleGraph.getModuleById(id)
       if (mod) void server.moduleGraph.invalidateModule(mod)
@@ -152,15 +191,24 @@ export function articlePlugin(root: string): Plugin {
   return {
     name: 'tudou-article-meta',
     resolveId(id) {
-      if (id === VIRTUAL_META || id === VIRTUAL_COMPONENTS) return '\0' + id
+      if (id === VIRTUAL_META || id === VIRTUAL_COMPONENTS || id === VIRTUAL_WORDS) {
+        return '\0' + id
+      }
     },
     load(id) {
       if (id === '\0' + VIRTUAL_META) return virtualMetaModule(articles)
       if (id === '\0' + VIRTUAL_COMPONENTS) return virtualComponentsModule(articles)
+      if (id === '\0' + VIRTUAL_WORDS) return virtualWordsModule(words)
     },
     configureServer(server) {
       const onChange = (file: string) => {
-        if (file.includes('articles') && file.endsWith('.md')) invalidateVirtualModules(server)
+        const normalized = file.replaceAll('\\', '/')
+        if (
+          (normalized.includes('/articles/') || normalized.includes('/words/')) &&
+          normalized.endsWith('.md')
+        ) {
+          invalidateVirtualModules(server)
+        }
       }
       server.watcher.on('add', onChange)
       server.watcher.on('change', onChange)

@@ -20,3 +20,11 @@ declare module 'virtual:article-components' {
   import type { Component } from 'vue'
   export const componentMap: Record<string, () => Promise<Component>>
 }
+
+declare module 'virtual:words' {
+  export interface WordEntry {
+    date: string
+    body: string
+  }
+  export const words: WordEntry[]
+}
