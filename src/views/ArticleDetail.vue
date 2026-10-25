@@ -308,7 +308,7 @@ watch(
           :to="`/article/${newerArticle.id}`"
           class="article-nav-link"
         >
-          <span class="nav-direction">← 较新一篇</span>
+          <span class="nav-direction">← 上一篇</span>
           <span class="nav-title">{{ newerArticle.title }}</span>
         </router-link>
         <span v-else class="article-nav-spacer" aria-hidden="true"></span>
@@ -317,7 +317,7 @@ watch(
           :to="`/article/${olderArticle.id}`"
           class="article-nav-link align-end"
         >
-          <span class="nav-direction">较早一篇 →</span>
+          <span class="nav-direction">下一篇 →</span>
           <span class="nav-title">{{ olderArticle.title }}</span>
         </router-link>
       </nav>
@@ -536,8 +536,7 @@ watch(
 }
 
 .related-item:hover {
-  border-color: var(--main);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-hover);
 }
 
 .related-item-title {
@@ -549,10 +548,6 @@ watch(
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.related-item:hover .related-item-title {
-  color: var(--main);
 }
 
 .related-item-meta {

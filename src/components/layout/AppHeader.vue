@@ -257,8 +257,8 @@ onUnmounted(() => {
 
 .nav-item:hover {
   cursor: pointer;
-  background: color-mix(in oklch, var(--main) 68%, black);
-  color: #fff;
+  background: color-mix(in srgb, var(--main) 22%, var(--white));
+  color: var(--dark-gray);
   font-weight: bold;
 }
 
@@ -268,8 +268,9 @@ onUnmounted(() => {
 }
 
 .nav-item-active {
-  background: color-mix(in oklch, var(--main) 68%, black) !important;
-  color: #fff !important;
+  background: var(--main) !important;
+  /* 亮青色底配深字，对比度比白字更高且保持品牌色 */
+  color: var(--dark-gray) !important;
   box-shadow: var(--shadow-main);
   font-weight: bold;
 }
