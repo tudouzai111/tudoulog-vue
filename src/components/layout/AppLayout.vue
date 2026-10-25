@@ -1,8 +1,14 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import LoadingBar from '@/components/LoadingBar.vue'
 import SearchModal from '@/components/SearchModal.vue'
+
+const route = useRoute()
+// 首页一屏铺满，不显示页脚
+const isHome = computed(() => route.path === '/')
 </script>
 
 <template>
@@ -16,7 +22,7 @@ import SearchModal from '@/components/SearchModal.vue'
         </transition>
       </router-view>
     </main>
-    <AppFooter />
+    <AppFooter v-if="!isHome" />
     <SearchModal />
   </div>
 </template>

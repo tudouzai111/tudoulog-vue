@@ -1,16 +1,8 @@
 <script lang="ts" setup>
 import { inject, onMounted, onUnmounted, ref, type Ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { type Theme, THEMES } from '@/constants/theme.ts'
-import { articles } from '@/utils/articleList'
-import CardComponent from '@/components/CardComponent.vue'
-import TagComponent from '@/components/TagComponent.vue'
-import { TAG_MODE } from '@/constants/tagMode.ts'
-import { useArticleStats } from '@/composables/useArticleStats'
-import { SOCIAL_LINKS } from '@/constants/social.ts'
 
 const baseUrl = import.meta.env.BASE_URL
-const router = useRouter()
 
 // 注入主题
 const { activeTheme, setTheme } = inject('theme') as {
@@ -18,16 +10,8 @@ const { activeTheme, setTheme } = inject('theme') as {
   setTheme: (theme: Theme) => void
 }
 
-// 首页展示最新的几篇文章
-const LATEST_COUNT = 4
-const latestArticles = ref(articles.slice(0, LATEST_COUNT))
-
-// 卡片浏览量/点赞
-const { statsMap, loadStats } = useArticleStats()
-onMounted(() => void loadStats(latestArticles.value.map((a) => a.id)))
-
-// 打字机副标题：想换签名就改这个数组
-const PHRASES = ['爱折腾的前端小白', '工具软件收藏家', '踩坑记录员', 'Cloudflare 重度用户']
+// 打字机签名：想换就改这个数组
+const PHRASES = ['这里是土豆博客', '一个纯静态个人博客', '这是一段文字', '这是一个打字机效果']
 const typedText = ref('')
 let typeTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -70,10 +54,6 @@ onMounted(() => {
 onUnmounted(() => {
   if (typeTimer) clearTimeout(typeTimer)
 })
-
-const goToListWithTag = (tag: string) => {
-  router.push({ path: '/article', query: { tags: tag } })
-}
 </script>
 
 <template>
@@ -105,55 +85,6 @@ const goToListWithTag = (tag: string) => {
             @click="setTheme(theme)"
           />
         </div>
-
-        <div class="social-row">
-          <a
-            v-for="link in SOCIAL_LINKS"
-            :key="link.name"
-            :aria-label="link.name"
-            :href="link.url"
-            :rel="link.external ? 'noopener' : undefined"
-            :target="link.external ? '_blank' : undefined"
-            class="social-link"
-            :title="link.name"
-          >
-            <svg
-              aria-hidden="true"
-              :fill="link.filled ? 'currentColor' : 'none'"
-              :stroke="link.filled ? 'none' : 'currentColor'"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              :stroke-width="link.filled ? 0 : 2"
-              viewBox="0 0 24 24"
-            >
-              <path :d="link.icon" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section v-if="latestArticles.length" aria-labelledby="latest-title" class="latest">
-      <div class="latest-header">
-        <h2 id="latest-title" class="latest-title">最新文章</h2>
-        <router-link class="latest-more" to="/article">查看全部 →</router-link>
-      </div>
-      <div class="latest-list">
-        <router-link
-          v-for="article in latestArticles"
-          :key="article.id"
-          :to="`/article/${article.id}`"
-        >
-          <CardComponent :card="article" :stats="statsMap[article.id] ?? null">
-            <template #tags>
-              <TagComponent
-                :mode="TAG_MODE[1]"
-                :tags="article.tags || []"
-                @click-tag="goToListWithTag"
-              />
-            </template>
-          </CardComponent>
-        </router-link>
       </div>
     </section>
   </div>
@@ -162,11 +93,9 @@ const goToListWithTag = (tag: string) => {
 <style scoped>
 .home {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px); /* 一屏铺满（顶栏约占 80px） */
 }
 
 .hero {
@@ -242,7 +171,7 @@ const goToListWithTag = (tag: string) => {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin-top: var(--spacing);
+  margin-top: 0.25rem;
 }
 
 .color-dot {
@@ -281,73 +210,5 @@ const goToListWithTag = (tag: string) => {
     width: 36px;
     height: 36px;
   }
-}
-
-.social-row {
-  display: flex;
-  gap: var(--spacing-lg);
-  justify-content: center;
-  margin-top: 0.25rem;
-}
-
-.social-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px;
-  color: var(--mid-gray);
-  transition: var(--transition-fast);
-}
-
-.social-link:hover {
-  color: var(--main);
-  transform: translateY(-3px);
-}
-
-.social-link svg {
-  width: 22px;
-  height: 22px;
-}
-
-/* 最新文章 */
-.latest {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding-bottom: var(--spacing-lg);
-}
-
-.latest-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 0 var(--spacing-xs);
-}
-
-.latest-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--dark-gray);
-}
-
-.latest-more {
-  font-size: 0.875rem;
-  color: var(--mid-gray);
-}
-
-.latest-more:hover {
-  color: var(--main);
-}
-
-.latest-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.latest-list a {
-  display: block;
-  text-decoration: none;
 }
 </style>
