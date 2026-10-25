@@ -6,7 +6,7 @@ excerpt: 'Flutter环境的安装编译，Dart的基础语法，Flutter组件框�
 coverImage: ''
 ---
 
-#  安装配置
+##  安装配置
 ## Windows
 ### Flutter SDK
 #### 下载
@@ -111,7 +111,7 @@ flutter doctor
 
 
 
-# 开始
+## 开始
 ## 新建项目
 ```bash
 flutter create my_app
@@ -182,7 +182,7 @@ Get-ChildItem -Path build\app\outputs\flutter-apk\ -Filter "app-*.apk" | Where-O
 }
 ```
 
-# Dart
+## Dart
 [https://dart.cn/language](https://dart.cn/language)
 
 ## 变量
@@ -663,7 +663,7 @@ void func() async {
 
 **推荐使用 async/await**
 
-# Flutter
+## Flutter
 [https://docs.flutter.cn/get-started/fundamentals/widgets](https://docs.flutter.cn/get-started/fundamentals/widgets)
 
 ## 组件
@@ -822,7 +822,7 @@ dev_dependencies:
 
 
 
-# 常用依赖
+## 常用依赖
 ## Hive
 
 

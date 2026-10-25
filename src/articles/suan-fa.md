@@ -8,7 +8,7 @@ coverImage: ''
 
 > 一些算法模板
 
-# 数组
+## 数组
 ## 二分法
 > 在单调性范围中找出符合条件的数，如单调递增的数组中找到第一个大于等于目标值的下标
 >
@@ -244,7 +244,7 @@ void solve2() {
 [我的很长，你算一下 | 星码StarryCoding](https://www.starrycoding.com/problem/63)
 [求逆序对个数 | 星码StarryCoding](https://www.starrycoding.com/problem/31)
 
-# 字符串
+## 字符串
 ## KMP
 ```cpp
 int *kmp_get_next(string &str)
@@ -300,7 +300,7 @@ int main()
 }
 ```
 
-# 二叉树
+## 二叉树
 ## 递归遍历
 ```cpp
 void traversal(TreeNode* cur, vector<int>& vec) {
@@ -358,7 +358,7 @@ vector<vector<int>> levelOrder(TreeNode* root) {
 }
 ```
 
-# 动态规划
+## 动态规划
 ## 背包问题
 ### 01背包
 > 每件物品只能取一次，取或不取
@@ -475,7 +475,7 @@ return dp[bag_size];
 ## 树状DP
 [337. 打家劫舍 III - 力扣（LeetCode）](https://leetcode.cn/problems/house-robber-iii/)
 
-# 图论
+## 图论
 ## DFS
 ```cpp
 vector<int> g[N];
@@ -916,7 +916,7 @@ while (z--) {
 | Floyd | 多源点求最短路 |
 
 
-# 数论
+## 数论
 ## 常用数学算法总结
 ```cpp
 bool isPrime(int n) {  // 判断质数
@@ -1089,7 +1089,7 @@ public:
 
 
 
-# 一些例子
+## 一些例子
 ### 最长递增子序列
 **二分法(O(n log n))**
 

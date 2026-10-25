@@ -6,7 +6,7 @@ excerpt: '备份记录一些好用的软件'
 coverImage: 'ruanjian-list.png'
 ---
 
-# PC软件
+## PC软件
 
 ## 开发软件
 
@@ -53,7 +53,7 @@ coverImage: 'ruanjian-list.png'
 ：WPS人人皆知，在这里写出来是想说，office文档处理还得是WPS，因为WPS大文档的兼容性以及加载和阅读体验很好，
 而开源office类软件在大型文档以及兼容性方面的支持很差，WPS只要在设置里把所有推广设置全部关闭用起来还是可以的<br>
 
-# 安卓软件
+## 安卓软件
 
 ## 工具软件
 

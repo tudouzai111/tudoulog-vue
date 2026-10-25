@@ -8,7 +8,7 @@ coverImage: 'win11bug.png'
 
 > 文章使用AI润色
 
-# 问题现象
+## 问题现象
 
 - 笔记本挂机黑屏唤醒后**极度卡顿**
 - 任务管理器显示：**内存占用99%、磁盘100%**，但进程列表看不出哪个程序占用高
@@ -17,7 +17,7 @@ coverImage: 'win11bug.png'
 
   ![win11bug1.png](/img/win11bug1.png)
 
-# 查找元凶
+## 查找元凶
 
 ## RAMMap
 
@@ -35,13 +35,13 @@ coverImage: 'win11bug.png'
 
 ![win11bug3.png](/img/win11bug3.png)
 
-# 根本原因
+## 根本原因
 
 - Windows 下载并尝试安装 **KB5083769**（安全更新），但**安装失败**
 - 这次失败的更新过程，**破坏了系统环境或触发了驱动冲突**，导致这两个 Realtek 驱动疯狂泄漏内存
 - 注意：KB5083769 **实际上并未成功安装**
 
-# 解决过程
+## 解决过程
 
 | 操作过程                 | 结果                    |
 |----------------------|-----------------------|
@@ -53,12 +53,12 @@ coverImage: 'win11bug.png'
 > **关键发现**：问题不是驱动，而是**更新过程中的某些临时状态或残留文件“污染”了系统**
 > 当暂停更新并重启，那个冲突状态被清除了，驱动就能正常工作。
 
-# 总结
+## 总结
 
 - 使用 **WUB（Windows Update Blocker）** 工具**永久暂停更新**
 - 停止更新的系统才是最好的系统
 
-# 附录
+## 附录
 
 RAMMap的下载链接：https://learn.microsoft.com/en-us/sysinternals/downloads/rammap<br/>
 PoolMon的下载安装以及使用方法（转自腾讯云开发者社区）：https://cloud.tencent.com/developer/article/1871416<br/>

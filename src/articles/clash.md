@@ -6,13 +6,13 @@ excerpt: '翻墙'
 coverImage: ''
 ---
 
-# 安装 Clash
+## 安装 Clash
 
 https://clashofficial.com/zh-CN/index.html
 
 用`FlClash` 版示例因为内存占用低
 
-# 配置节点
+## 配置节点
 
 免费节点URL：https://sub-unify.pages.dev/sub?token=ZH&clash
 
