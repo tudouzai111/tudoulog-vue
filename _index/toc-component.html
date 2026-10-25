@@ -9,9 +9,6 @@
 <body>
 <main data-pagefind-body>
 <h1>Vue 3 实战：手写通用文章目录导航组件（栈算法 + 滚动高亮 + 响应式）</h1>
-<blockquote>
-<p>文章使用AI润色</p>
-</blockquote>
 <h2>1. 引言</h2>
 <p>在 Markdown 博客系统中，文章内容由标题（h1~h6）构成天然层级结构。提供一个自动生成的目录导航（Table of Contents），能显著提升阅读体验：读者可以一目了然文章大纲，点击即可跳转到对应章节。</p>
 <p>本文将从头实现一个通用 TOC 组件，包含三个核心能力：</p>
@@ -103,7 +100,7 @@ function generateTocTree(contentRef: HTMLElement): Heading[] {
 </ul>
 <h3>3.3 示例推演</h3>
 <p>假设有这样的标题结构：</p>
-<pre><code>H1: 介绍          (level 1)
+<pre><code class="language-plain">H1: 介绍          (level 1)
 H2: 安装          (level 2)
 H3: Windows      (level 3)
 H3: macOS        (level 3)
@@ -120,46 +117,14 @@ H2: 配置          (level 2)
 <th>挂载到</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>H1 介绍</td>
-<td>栈空，直接入栈</td>
-<td><code>[H1]</code></td>
-<td>root</td>
-</tr>
-<tr>
-<td>2</td>
-<td>H2 安装</td>
-<td>H1.level(1) &lt; 2，H1 是父节点，入栈</td>
-<td><code>[H1, H2]</code></td>
-<td>H1.children</td>
-</tr>
-<tr>
-<td>3</td>
-<td>H3 Windows</td>
-<td>H2.level(2) &lt; 3，H2 是父节点，入栈</td>
-<td><code>[H1, H2, H3]</code></td>
-<td>H2.children</td>
-</tr>
-<tr>
-<td>4</td>
-<td>H3 macOS</td>
-<td>H3.level(3) &gt;= 3，弹出前一个 H3。H2.level(2) &lt; 3，入栈</td>
-<td><code>[H1, H2, H3_new]</code></td>
-<td>H2.children</td>
-</tr>
-<tr>
-<td>5</td>
-<td>H2 配置</td>
-<td>H3.level(3) &gt;= 2，弹出 H3。H2.level(2) &gt;= 2，弹出 H2。H1.level(1) &lt; 2，入栈</td>
-<td><code>[H1, H2_new]</code></td>
-<td>H1.children</td>
-</tr>
-</tbody>
 </table>
+<p>| 1 | H1 介绍 | 栈空，直接入栈 | <code>[H1]</code> | root |`
+<code>| 2 | H2 安装 | H1.level(1) &lt; 2，H1 是父节点，入栈 | </code>[H1, H2]<code> | H1.children |</code>
+<code>| 3 | H3 Windows | H2.level(2) &lt; 3，H2 是父节点，入栈 | </code>[H1, H2, H3]<code> | H2.children |</code>
+<code>| 4 | H3 macOS | H3.level(3) &gt;= 3，弹出前一个 H3。H2.level(2) &lt; 3，入栈 | </code>[H1, H2, H3_new]<code> | H2.children |</code>
+<code>| 5 | H2 配置 | H3.level(3) &gt;= 2，弹出 H3。H2.level(2) &gt;= 2，弹出 H2。H1.level(1) &lt; 2，入栈 | </code>[H1, H2_new]` | H1.children |</p>
 <p>最终树结构：</p>
-<pre><code>root
+<pre><code class="language-plain">root
 ├── H1: 介绍
 │   ├── H2: 安装
 │   │   ├── H3: Windows
@@ -208,8 +173,8 @@ defineEmits&lt;{
 </code></pre>
 <p>关键点：</p>
 <ul>
-<li><strong>自引用</strong>：TocItem 的 template 中使用了 <code>&lt;TocItem&gt;</code>，这是 Vue 支持的递归组件模式。只要组件有 name 或在导入时注册了自己，就能在模板中调用自身。</li>
-<li><strong>事件冒泡</strong>：子节点的 click 事件通过 <code>$emit</code> 向上冒泡，最终由 TocComponent 统一处理滚动逻辑。这样每个 TocItem 不需要关心滚动细节。</li>
+<li><strong>自引用</strong>：TocItem 的 template 中使用了 <code>&lt;TocItem&gt;</code>，这是 Vue 支持的递归组件模式。只要组件有 name 或在导入时注册了自己，就能在模板中调用自身。`
+<code>- **事件冒泡**：子节点的 click 事件通过 </code>$emit` 向上冒泡，最终由 TocComponent 统一处理滚动逻辑。这样每个 TocItem 不需要关心滚动细节。</li>
 <li><strong>高亮透传</strong>：<code>activeId</code> 从顶层一直传递到每个叶子节点，每个 a 标签自行判断是否 active。</li>
 </ul>
 <hr>
