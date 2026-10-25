@@ -105,7 +105,7 @@ Transition 处理的是单个元素的进入离开，TransitionGroup 处理的�
   <h1 key="1" class="hero-title">土豆仔</h1>
   <p key="2" class="hero-subtitle">这是一个纯静态个人博客</p>
   <div key="3" class="hero-image-wrapper">
-    <img src="/img/tudouzai.jpeg" alt="土豆仔" class="hero-image" />
+    <img src="/img/tudouzai.webp" alt="土豆仔" class="hero-image" />
   </div>
   <div key="4" class="theme-picker">
     ...

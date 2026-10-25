@@ -257,7 +257,7 @@ onUnmounted(() => {
 
 .nav-item:hover {
   cursor: pointer;
-  background: color-mix(in oklch, var(--main) 80%, white);
+  background: color-mix(in oklch, var(--main) 68%, black);
   color: #fff;
   font-weight: bold;
 }
@@ -268,7 +268,7 @@ onUnmounted(() => {
 }
 
 .nav-item-active {
-  background: var(--main) !important;
+  background: color-mix(in oklch, var(--main) 68%, black) !important;
   color: #fff !important;
   box-shadow: var(--shadow-main);
   font-weight: bold;

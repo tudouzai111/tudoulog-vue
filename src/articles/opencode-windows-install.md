@@ -3,7 +3,7 @@ title: 'Windows下安装OpenCode并配置oh-my-openagent和superpowers'
 date: '2026-05-20'
 tags: ['AI工具', 'OpenCode', '教程']
 excerpt: '从零开始在Windows上安装OpenCode终端AI编码助手，并配置oh-my-openagent和superpowers插件'
-coverImage: 'opencode-install.png'
+coverImage: 'opencode-install.webp'
 ---
 
 > 文章使用AI润色

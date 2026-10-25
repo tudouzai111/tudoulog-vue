@@ -44,7 +44,7 @@ Cloudflare Pages 看到新 commit → 自动构建 → 一分钟后博客更新
 
 打开 [sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth) 仓库，README 里有 **Deploy to Cloudflare** 按钮，点它会进入 Cloudflare 的「设置您的应用程序」页面：
 
-![Cloudflare Worker 部署配置](/img/cms-worker-deploy.png)
+![Cloudflare Worker 部署配置](/img/cms-worker-deploy.webp)
 
 这个页面的字段怎么填（注意这是新版 Workers 流程的字段，跟老的 Pages 流程不一样）：
 
@@ -65,7 +65,7 @@ Cloudflare Pages 看到新 commit → 自动构建 → 一分钟后博客更新
 
 GitHub → Settings → Developer settings → OAuth Apps → **Register a new application**：
 
-![GitHub OAuth 应用注册](/img/cms-github-oauth-app.png)
+![GitHub OAuth 应用注册](/img/cms-github-oauth-app.webp)
 
 新版表单的字段：
 

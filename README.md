@@ -18,9 +18,9 @@
 
 ## 截图
 
-![首页](public/img/readme_1.png)
-![文章](public/img/readme_2.png)
-![文章详情](public/img/readme_3.png)
+![首页](public/img/readme_1.webp)
+![文章](public/img/readme_2.webp)
+![文章详情](public/img/readme_3.webp)
 
 ## 技术栈
 
@@ -54,7 +54,7 @@ title: '文章标题'
 date: '2026-02-22'
 tags: ['Vue', 'Markdown', '博客']
 excerpt: '文章摘要'
-coverImage: 'coverImage.png'
+coverImage: 'coverImage.webp'
 ---
 ```
 
@@ -70,7 +70,7 @@ coverImage: 'coverImage.png'
 | `updated`  |      | 更新日期 `YYYY-MM-DD`，用于 sitemap 的 lastmod             |
 | `draft`    |      | 设为 `true` 时文章不发布（不出现在列表，也不打进构建产物） |
 
-文章内图片放到 `public/img/` 下，用根路径引用：`![说明](/img/xxx.png)`。
+文章内图片放到 `public/img/` 下，用根路径引用：`![说明](/img/xxx.webp)`。
 
 ## 内容管理后台（CMS）
 

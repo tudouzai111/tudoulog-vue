@@ -38,7 +38,7 @@ title: '文章标题'
 date: '2026-02-22'
 tags: ['Vue', 'Markdown', '博客']
 excerpt: '文章摘要'
-coverImage: 'coverImage.png'  # filename only — code prepends baseUrl + 'img/cover/'
+coverImage: 'coverImage.webp'  # filename only — code prepends baseUrl + 'img/cover/'
 ---
 ```
 

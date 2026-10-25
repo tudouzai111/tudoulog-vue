@@ -40,7 +40,8 @@ const handleTagClick = (tag: string) => {
 </script>
 
 <template>
-  <div aria-label="标签列表" class="tags" role="list">
+  <!-- role=group：按钮组语义（list 会要求 listitem 子元素，a11y 审计不通过） -->
+  <div aria-label="标签列表" class="tags" role="group">
     <button
       v-for="tag in tags"
       :key="tag"

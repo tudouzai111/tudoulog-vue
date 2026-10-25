@@ -3,7 +3,7 @@ title: '分享一些好用的软件'
 date: '2026-03-03'
 tags: ['软件推荐']
 excerpt: '备份记录一些好用的软件'
-coverImage: 'ruanjian-list.png'
+coverImage: 'ruanjian-list.webp'
 ---
 
 ## PC软件

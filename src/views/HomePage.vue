@@ -38,7 +38,7 @@ const goToListWithTag = (tag: string) => {
         <p class="hero-subtitle">这是一个纯静态个人博客</p>
         <div class="hero-image-wrapper">
           <img
-            :src="`${baseUrl}img/tudouzai.jpeg`"
+            :src="`${baseUrl}img/tudouzai.webp`"
             alt="土豆仔"
             class="hero-image"
             loading="eager"

@@ -18,6 +18,13 @@
     <meta content="zh_CN" property="og:locale" />
     <meta content="summary" name="twitter:card" />
     <link href="https://tudoulog.pages.dev/" rel="canonical" />
+    <!-- 首页 LCP 元素是 Vue 渲染的头像，预加载让它尽早被发现 -->
+    <link
+      as="image"
+      fetchpriority="high"
+      href="/img/tudouzai.webp"
+      rel="preload"
+    />
     <title>TuDouLog</title>
     <link href="/img/tudou.png" rel="icon" type="image/png" />
     <script>

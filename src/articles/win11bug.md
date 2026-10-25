@@ -3,7 +3,7 @@ title: '一次内核级内存泄漏排查实录：16GB内存被吃掉13GB，元�
 date: '2026-04-26'
 tags: [ 'Windows', '日常' ]
 excerpt: '具体情况是突然电脑卡顿，内存占用99%，系统磁盘100%，CPU正常，任务管理器进程列表看不出谁占内存，重启无效'
-coverImage: 'win11bug.png'
+coverImage: 'win11bug.webp'
 ---
 
 > 文章使用AI润色
@@ -15,7 +15,7 @@ coverImage: 'win11bug.png'
 - CPU占用极低
 - 重启后问题依旧
 
-  ![win11bug1.png](/img/win11bug1.png)
+  ![win11bug1.png](/img/win11bug1.webp)
 
 ## 查找元凶
 
@@ -23,7 +23,7 @@ coverImage: 'win11bug.png'
 
 发现非分页池（Nonpaged Pool）高达 **13GB**（共16GB内存）可以知道是内核级内存泄漏问题
 
-![win11bug2.png](/img/win11bug2.png)
+![win11bug2.png](/img/win11bug2.webp)
 
 ## PoolMon
 
@@ -33,7 +33,7 @@ coverImage: 'win11bug.png'
 
 然后发现 Tag **`RTLF`** 占用了约 **10GB**，元凶是 **Realtek 音频驱动**
 
-![win11bug3.png](/img/win11bug3.png)
+![win11bug3.png](/img/win11bug3.webp)
 
 ## 根本原因
 
