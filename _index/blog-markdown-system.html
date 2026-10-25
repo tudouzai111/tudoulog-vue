@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Vite + Vue 3 搭建 Markdown 博客文章系统：从配置到动态路由</title>
+<meta data-pagefind-meta="date:2026-06-01" name="date">
+<meta data-pagefind-meta="excerpt:拆解如何用 Vite 7 + Vue 3.5 + TypeScript 搭建一套 Markdown 博客系统，重点讲 vite-plugin-vue-markdown 的配置、动态路由设计以及文章列表的自动发现" name="excerpt">
+</head>
+<body>
+<main data-pagefind-body>
+<h1>Vite + Vue 3 搭建 Markdown 博客文章系统：从配置到动态路由</h1>
+<blockquote>
+<p>文章使用AI润色</p>
+</blockquote>
+<h2>1. 引言</h2>
+<p>现在很多开发者选择用静态博客来记录技术积累。Markdown 写文章很顺手，但要把它集成到 Vue 3 项目里变成可访问的页面，中间有一层转换工作要做。这篇文章从零开始，拆解如何用 Vite 7 + Vue 3.5 + TypeScript 搭一套 Markdown 博客系统，重点讲 <code>vite-plugin-vue-markdown</code> 的配置、动态路由设计，以及文章列表的自动发现。</p>
+<p>项目的完整代码可以在 Gitee 上找到：<a href="https://gitee.com/tudouza1/tudoulog-vue">tudoulog-vue</a>。</p>
+<h2>2. 安装与配置 vite-plugin-vue-markdown</h2>
+<p>核心思路是用 <code>vite-plugin-vue-markdown</code> 这个插件，在构建时把 <code>.md</code> 文件转成 Vue 组件。这样我们就能像引用 <code>.vue</code> 文件一样引用 Markdown 文章。</p>
+<p>安装依赖（以下版本是项目当前使用的）：</p>
+<pre><code>pnpm add vite-plugin-vue-markdown markdown-it-shiki shiki
+</code></pre>
+<p><code>markdown-it-shiki</code> 负责用 Shiki 做代码高亮，<code>shiki</code> 是底层的语法高亮引擎。</p>
+<p>然后配置 <code>vite.config.ts</code>：</p>
+<pre><code class="language-ts">import { fileURLToPath, URL } from 'node:url'
+
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import vueDevTools from 'vite-plugin-vue-devtools'
+import Markdown from 'vite-plugin-vue-markdown'
+import Shiki from 'markdown-it-shiki'
+
+export default defineConfig({
+  base: '/',
+  plugins: [
+    vue({
+      include: [/\.vue$/, /\.md$/],
+    }),
+    vueDevTools(),
+    Markdown({
+      markdownItOptions: {
+        html: true,
+        linkify: true,
+        typographer: true,
+      },
+      markdownItUses: [
+        [Shiki, { theme: 'one-dark-pro' }],
+        (md: any) =&gt; {
+          const defaultRender =
+            md.renderer.rules.link_open ||
+            ((tokens: any, idx: any, options: any, env: any, self: any) =&gt; {
+              return self.renderToken(tokens, idx, options)
+            })
+
+          md.renderer.rules.link_open = (
+            tokens: any, idx: any, options: any, env: any, self: any,
+          ) =&gt; {
+            const hrefIndex = tokens[idx].attrIndex('href')
+            if (hrefIndex &gt;= 0) {
+              const href = tokens[idx].attrs[hrefIndex][1]
+              if (/^https?:\/\//.test(href)) {
+                tokens[idx].attrSet('target', '_blank')
+                tokens[idx].attrSet('rel', 'noopener noreferrer')
+              }
+            }
+            return defaultRender(tokens, idx, options, env, self)
+          }
+        },
+      ],
+      frontmatter: true,
+      exportFrontmatter: true,
+    }),
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue', 'vue-router'],
+        },
+      },
+    },
+  },
+})
+</code></pre>
+<p>几个关键点：</p>
+<ul>
+<li><code>vue({ include: [/\.vue$/, /\.md$/] })</code>：让 Vue 插件同时处理 <code>.md</code> 文件，这是让 Markdown 能当 Vue 组件用的前提。</li>
+<li><code>Shiki</code> 搭配 <code>one-dark-pro</code> 主题：代码高亮效果和 VS Code 的 One Dark Pro 一致，看起来舒服。</li>
+<li>自定义链接渲染器：判断链接是否以 <code>http://</code> 或 <code>https://</code> 开头，是的话自动加 <code>target=&quot;_blank&quot;</code> 和 <code>rel=&quot;noopener noreferrer&quot;</code>，实现外部链接新标签打开。这个纯 markdown-it 语法就能做，不需要额外库。</li>
+<li><code>frontmatter: true</code> + <code>exportFrontmatter: true</code>：读取 Markdown 文件的头部元数据（标题、日期、标签等），并导出成变量供组件使用。</li>
+<li><code>manualChunks: { vendor: ['vue', 'vue-router'] }</code>：把 Vue 和 Vue Router 单独打包成 vendor chunk，利用浏览器缓存节省带宽。</li>
+</ul>
+<h2>3. 编写 Markdown 文章</h2>
+<p>在 <code>src/articles/</code> 下新建 <code>.md</code> 文件，文件头部用 <code>---</code> 包裹 frontmatter：</p>
+<pre><code class="language-md">---
+title: '为什么要写纯静态土豆博客'
+date: '2026-03-03'
+tags: ['日常']
+excerpt: '记录一下写博客的过程'
+coverImage: ''
+---
+</code></pre>
+<p>字段说明：</p>
+<ul>
+<li><code>title</code>：文章标题，必填</li>
+<li><code>date</code>：发布日期，格式 <code>YYYY-MM-DD</code>，必填</li>
+<li><code>tags</code>：标签数组，可选，用于分类筛选</li>
+<li><code>excerpt</code>：摘要，可选，首页列表展示</li>
+<li><code>coverImage</code>：封面图片文件名，可选。实际路径由代码拼接生成</li>
+</ul>
+<p>文件名就是文章 ID。比如 <code>hello.md</code> 对应的 ID 就是 <code>hello</code>，路由里通过 <code>article/:id</code> 匹配。</p>
+<h2>4. 动态读取文章列表</h2>
+<p>有了 Markdown 文件，下一步是让程序自动发现它们。用 Vite 的 <code>import.meta.glob</code> 实现：</p>
+<pre><code class="language-ts">// src/utils/articleList.ts
+import type { Component } from 'vue'
+
+const baseUrl = import.meta.env.BASE_URL
+
+interface MarkdownModule {
+  default: Component
+  title?: string
+  date?: string
+  tags?: string[]
+  excerpt?: string
+  coverImage?: string
+}
+
+const modules: Record&lt;string, MarkdownModule&gt; = import.meta.glob(
+  '@/articles/*.md', { eager: true }
+)
+
+export const articles = Object.entries(modules)
+  .filter(([path]) =&gt; !path.includes('AGENTS.md'))
+  .map(([path, mod]) =&gt; {
+    const id = path.split('/').pop()!.replace('.md', '')
+    const imgPath = baseUrl + 'img/cover/'
+    return {
+      id,
+      title: mod.title || id,
+      date: mod.date || '未知日期',
+      tags: mod.tags || [],
+      excerpt: mod.excerpt || '',
+      coverImage: mod.coverImage ? imgPath + mod.coverImage : '',
+      component: mod.default,
+    }
+  })
+  .sort((a, b) =&gt; b.date.localeCompare(a.date))
+
+export function getAllTags(): string[] {
+  const tagSet = new Set&lt;string&gt;()
+  articles.forEach((article) =&gt; {
+    article.tags?.forEach((tag) =&gt; tagSet.add(tag))
+  })
+  return Array.from(tagSet).sort()
+}
+</code></pre>
+<p>几个设计细节：</p>
+<ul>
+<li><code>import.meta.glob</code> 的 <code>eager: true</code>：在构建时立即执行导入，运行时不需要异步等待。匹配 <code>@/articles/*.md</code> 下的所有文件。</li>
+<li><code>.filter(([path]) =&gt; !path.includes('AGENTS.md'))</code>：排除 <code>AGENTS.md</code>，这个是项目的知识库文件，不是文章。</li>
+<li><code>coverImage</code> 处理：只存文件名，路径由 <code>baseUrl + 'img/cover/'</code> 拼接。这样封面图统一放在 <code>public/img/cover/</code> 下，部署到 Cloudflare Pages 时路径正确。</li>
+<li><code>.sort((a, b) =&gt; b.date.localeCompare(a.date))</code>：按日期降序排列，最新文章排最前面。</li>
+<li><code>getAllTags()</code> 工具函数：遍历所有文章收集标签，去重并排序，供标签页使用。</li>
+</ul>
+<h2>5. 配置路由</h2>
+<p>路由设计决定用户怎么访问文章。这里用嵌套路由，所有页面共享一个 <code>AppLayout</code> 布局组件：</p>
+<pre><code class="language-ts">// src/router/index.ts
+import { createRouter, createWebHistory } from 'vue-router'
+import { articles } from '@/utils/articleList.ts'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'AppLayout',
+      component: () =&gt; import('@/components/layout/AppLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'HomePage',
+          component: () =&gt; import('@/views/HomePage.vue'),
+          meta: { title: '首页-土豆博客' },
+        },
+        {
+          path: 'article',
+          name: 'ArticlePage',
+          component: () =&gt; import('@/views/ArticlePage.vue'),
+          meta: { title: '文章列表-土豆博客' },
+        },
+        {
+          path: 'article/:id',
+          name: 'ArticleDetail',
+          component: () =&gt; import('@/views/ArticleDetail.vue'),
+          beforeEnter: (to) =&gt; {
+            if (!articles.find((a) =&gt; a.id === to.params.id)) {
+              return { name: 'NotFound' }
+            }
+          },
+        },
+        {
+          path: 'about',
+          name: 'AboutPage',
+          component: () =&gt; import('@/views/AboutPage.vue'),
+          meta: { title: '关于-土豆博客' },
+        },
+        {
+          path: '/:pathMatch(.*)*',
+          name: 'NotFound',
+          component: () =&gt; import('@/views/NotFoundPage.vue'),
+        },
+      ],
+    },
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
+    return { top: 0, behavior: 'smooth' }
+  },
+})
+
+router.afterEach((to) =&gt; {
+  document.title = (to.meta.title as string) || '土豆博客'
+})
+
+export default router
+</code></pre>
+<p>路由设计要点：</p>
+<ul>
+<li><strong>嵌套路由</strong>：<code>AppLayout</code> 为父路由，所有页面作为子路由。这样头部、底部等公共部分只需写一次。</li>
+<li><strong>动态路由 <code>article/:id</code></strong>：<code>id</code> 对应文件名（不含 <code>.md</code>）。比如访问 <code>/article/hello</code> 就渲染 <code>hello.md</code> 转换后的组件。</li>
+<li><strong><code>beforeEnter</code> 守卫</strong>：在进入文章详情前检查文章是否存在。如果 <code>articles</code> 列表里找不到对应的 <code>id</code>，直接重定向到 404 页面。这样访问不存在的文章不会白屏或报错。</li>
+<li><strong><code>/:pathMatch(.*)*</code> 通配路由</strong>：捕获所有未匹配的路径，指向自定义的 404 页面。</li>
+<li><strong><code>scrollBehavior</code></strong>：返回 <code>savedPosition</code> 支持浏览器前进后退恢复滚动位置；<code>to.hash</code> 实现锚点平滑滚动；默认回到顶部。</li>
+<li><strong><code>router.afterEach</code></strong>：每次路由切换后根据 <code>meta.title</code> 更新页面标题，没有设置的路由用默认标题&quot;土豆博客&quot;。</li>
+</ul>
+<h2>6. 渲染文章详情页</h2>
+<p>文章详情页的核心是渲染 Markdown 转换后的 Vue 组件。由于插件已经把 <code>.md</code> 文件转成了组件，直接动态挂载就行：</p>
+<pre><code class="language-vue">&lt;template&gt;
+  &lt;article class=&quot;article-page&quot;&gt;
+    &lt;div v-if=&quot;article&quot; class=&quot;article-card&quot;&gt;
+      &lt;!-- 封面区域 --&gt;
+      &lt;header
+        v-if=&quot;article.coverImage&quot;
+        :style=&quot;`background-image: url(${article.coverImage})`&quot;
+        class=&quot;cover-wrapper&quot;
+      &gt;
+        &lt;img
+          :alt=&quot;article.title&quot;
+          :src=&quot;article.coverImage&quot;
+          class=&quot;article-cover&quot;
+          loading=&quot;eager&quot;
+        /&gt;
+      &lt;/header&gt;
+
+      &lt;div class=&quot;article-info&quot;&gt;
+        &lt;div class=&quot;article-meta&quot;&gt;
+          &lt;h1 class=&quot;article-title&quot;&gt;{{ article.title }}&lt;/h1&gt;
+          &lt;time :datetime=&quot;article.date&quot; class=&quot;article-time&quot;&gt;
+            {{ article.date }}
+          &lt;/time&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 文章内容 --&gt;
+      &lt;section class=&quot;article-content&quot;&gt;
+        &lt;div ref=&quot;contentRef&quot; class=&quot;markdown-body&quot;&gt;
+          &lt;component :is=&quot;article.component&quot; v-if=&quot;article.component&quot; /&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+</code></pre>
+<p>核心就一行：<code>&lt;component :is=&quot;article.component&quot; /&gt;</code>。<code>article.component</code> 就是插件从 Markdown 转换出来的 Vue 组件，直接渲染就行。</p>
+<p>样式方面，项目引入了 <code>github-markdown-css</code>（<code>import 'github-markdown-css'</code>），给包裹内容的 <code>.markdown-body</code> 加上 GitHub 风格的排版样式，看起来很干净。</p>
+<p>封面图用了一个 blur 背景的视觉效果：封面图片正常显示，同时在它背后用 <code>::before</code> 伪元素模糊渲染同一张图作为背景，防止图片比例不匹配时出现空白。</p>
+<h2>7. 总结</h2>
+<p>这套方案的核心优势是简洁：</p>
+<ul>
+<li>写文章就是写 Markdown，放进 <code>src/articles/</code> 即可</li>
+<li><code>import.meta.glob</code> 自动发现文章，不需要手动注册</li>
+<li><code>vite-plugin-vue-markdown</code> 把 Markdown 转成组件，无需额外构建步骤</li>
+<li>动态路由 + <code>beforeEnter</code> 守卫做文章有效性校验</li>
+<li>外部链接自动新标签打开，代码高亮用 Shiki</li>
+</ul>
+<p>部署到 Cloudflare Pages 也很简单，Vite 构建输出静态文件，直接托管。整个系统依赖少，逻辑清晰，适合想自己控制博客代码的开发者。</p>
+<p>有问题欢迎在评论区交流。</p>
+
+</main>
+</body>
+</html>

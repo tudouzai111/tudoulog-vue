@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Vue 3 实战：手写通用文章目录导航组件（栈算法 + 滚动高亮 + 响应式）</title>
+<meta data-pagefind-meta="date:2026-06-01" name="date">
+<meta data-pagefind-meta="excerpt:从零实现一个通用的文章目录导航组件，涵盖栈算法构建目录树、递归组件渲染、滚动高亮和响应式布局" name="excerpt">
+</head>
+<body>
+<main data-pagefind-body>
+<h1>Vue 3 实战：手写通用文章目录导航组件（栈算法 + 滚动高亮 + 响应式）</h1>
+<blockquote>
+<p>文章使用AI润色</p>
+</blockquote>
+<h2>1. 引言</h2>
+<p>在 Markdown 博客系统中，文章内容由标题（h1~h6）构成天然层级结构。提供一个自动生成的目录导航（Table of Contents），能显著提升阅读体验：读者可以一目了然文章大纲，点击即可跳转到对应章节。</p>
+<p>本文将从头实现一个通用 TOC 组件，包含三个核心能力：</p>
+<ul>
+<li><strong>栈算法</strong>：将扁平的 h1~h6 标题列表构建为嵌套树结构</li>
+<li><strong>滚动高亮</strong>：随页面滚动自动标记当前阅读的章节</li>
+<li><strong>响应式交互</strong>：宽屏侧边栏常驻，窄屏底部抽屉式弹出</li>
+</ul>
+<p>代码基于 Vue 3 + TypeScript + <code>&lt;script setup&gt;</code> 语法，完整项目可在 Gitee 查看：<a href="https://gitee.com/tudouza1/tudoulog-vue">tudoulog-vue</a>。</p>
+<hr>
+<h2>2. 定义目录数据结构</h2>
+<p>先定义 Heading 类型。每个标题节点包含自身信息和一个 children 数组，用于挂载子标题：</p>
+<pre><code class="language-ts">// src/types/index.ts
+export interface Heading {
+  id: string       // 锚点 ID，用于跳转和高亮
+  title: string    // 标题文本
+  level: number    // 1~6，对应 h1~h6
+  children?: Heading[]  // 子标题列表
+}
+</code></pre>
+<p>嵌套结构的关键就在 <code>children</code> 字段。扁平的 h1~h6 经过算法处理后，变成一棵多叉树，递归组件再把这棵树渲染为嵌套的 ul/li。</p>
+<hr>
+<h2>3. 核心算法：用栈构建目录树</h2>
+<p>这是整个组件最精华的部分。常见的做法是只处理 h2/h3 两级，但我们的算法支持任意级别的标题混合出现，通用的栈结构能应对所有情况。</p>
+<h3>3.1 完整代码</h3>
+<pre><code class="language-ts">function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+  // 保留中文、字母、数字和连字符
+    .replace(/[^\w\u4e00-\u9fa5-]/g, '')
+}
+
+function generateTocTree(contentRef: HTMLElement): Heading[] {
+  const elements = contentRef.querySelectorAll('h1, h2, h3, h4, h5, h6')
+  const slugCount = new Map&lt;string, number&gt;()
+
+  // 为没有 id 的标题生成唯一锚点
+  const generateId = (text: string): string =&gt; {
+    const baseSlug = slugify(text) || 'heading'
+    const count = slugCount.get(baseSlug) || 0
+    const id = count === 0 ? baseSlug : `${baseSlug}-${count}`
+    slugCount.set(baseSlug, count + 1)
+    return id
+  }
+
+  const stack: Heading[] = []  // 维护当前层级路径
+  const root: Heading[] = []   // 最终目录树（森林）
+
+  elements.forEach((el) =&gt; {
+    const level = parseInt(el.tagName.slice(1))  // 'H2' -&gt; 2
+    const title = el.textContent || ''
+
+    // 优先使用元素已有的 id，否则自动生成
+    let id = el.id
+    if (!id) {
+      id = generateId(title)
+      el.id = id  // 回填 DOM，用于锚点跳转
+    }
+
+    const node: Heading = { id, title, level, children: [] }
+
+    // 核心逻辑：弹出所有 level &gt;= 当前节点的栈顶
+    while (stack.length &gt; 0 &amp;&amp; stack[stack.length - 1]!.level &gt;= level) {
+      stack.pop()
+    }
+
+    if (stack.length === 0) {
+      // 没有父节点，挂到根级
+      root.push(node)
+    } else {
+      // 栈顶就是当前节点的父节点
+      stack[stack.length - 1]!.children!.push(node)
+    }
+
+    // 当前节点入栈，它可能是后续节点的父节点
+    stack.push(node)
+  })
+
+  return root
+}
+</code></pre>
+<h3>3.2 算法原理解析</h3>
+<p>理解这个算法的关键是看 <code>stack</code> 数组。它始终保存着从根到当前节点的路径：</p>
+<ul>
+<li>遇到一个新标题时，<strong>从栈顶开始检查</strong>。如果栈顶的 level &gt;= 当前 level，说明栈顶不是父级（可能是同级或子级），弹出。</li>
+<li>重复弹出直到栈顶 level &lt; 当前 level，此时栈顶就是父节点。</li>
+<li>把当前节点挂到父节点的 children 中，然后当前节点入栈。</li>
+</ul>
+<h3>3.3 示例推演</h3>
+<p>假设有这样的标题结构：</p>
+<pre><code>H1: 介绍          (level 1)
+H2: 安装          (level 2)
+H3: Windows      (level 3)
+H3: macOS        (level 3)
+H2: 配置          (level 2)
+</code></pre>
+<p>逐行执行过程：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>当前标题</th>
+<th>栈操作</th>
+<th>栈内容</th>
+<th>挂载到</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>H1 介绍</td>
+<td>栈空，直接入栈</td>
+<td><code>[H1]</code></td>
+<td>root</td>
+</tr>
+<tr>
+<td>2</td>
+<td>H2 安装</td>
+<td>H1.level(1) &lt; 2，H1 是父节点，入栈</td>
+<td><code>[H1, H2]</code></td>
+<td>H1.children</td>
+</tr>
+<tr>
+<td>3</td>
+<td>H3 Windows</td>
+<td>H2.level(2) &lt; 3，H2 是父节点，入栈</td>
+<td><code>[H1, H2, H3]</code></td>
+<td>H2.children</td>
+</tr>
+<tr>
+<td>4</td>
+<td>H3 macOS</td>
+<td>H3.level(3) &gt;= 3，弹出前一个 H3。H2.level(2) &lt; 3，入栈</td>
+<td><code>[H1, H2, H3_new]</code></td>
+<td>H2.children</td>
+</tr>
+<tr>
+<td>5</td>
+<td>H2 配置</td>
+<td>H3.level(3) &gt;= 2，弹出 H3。H2.level(2) &gt;= 2，弹出 H2。H1.level(1) &lt; 2，入栈</td>
+<td><code>[H1, H2_new]</code></td>
+<td>H1.children</td>
+</tr>
+</tbody>
+</table>
+<p>最终树结构：</p>
+<pre><code>root
+├── H1: 介绍
+│   ├── H2: 安装
+│   │   ├── H3: Windows
+│   │   └── H3: macOS
+│   └── H2: 配置
+</code></pre>
+<p>这种方案比传统的&quot;只处理 h2/h3&quot;健壮得多。即使出现 <code>h1 &gt; h4 &gt; h2</code> 这种交叉层级，算法也能正确处理。</p>
+<hr>
+<h2>4. TocItem 递归组件</h2>
+<p>有了树形数据，渲染就是递归组件的事了。</p>
+<pre><code class="language-vue">&lt;!-- src/components/TocItem.vue --&gt;
+&lt;script lang=&quot;ts&quot; setup&gt;
+import type { Heading } from '@/types'
+
+defineProps&lt;{
+  heading: Heading
+  activeId: string
+}&gt;()
+
+defineEmits&lt;{
+  (e: 'click', id: string): void
+}&gt;()
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;li&gt;
+    &lt;a
+      :class=&quot;{ active: activeId === heading.id }&quot;
+      :href=&quot;'#' + heading.id&quot;
+      @click.prevent=&quot;$emit('click', heading.id)&quot;
+    &gt;
+      {{ heading.title }}
+    &lt;/a&gt;
+    &lt;!-- 递归渲染子标题 --&gt;
+    &lt;ul v-if=&quot;heading.children &amp;&amp; heading.children.length&quot; class=&quot;toc-sublist&quot;&gt;
+      &lt;TocItem
+        v-for=&quot;child in heading.children&quot;
+        :key=&quot;child.id&quot;
+        :active-id=&quot;activeId&quot;
+        :heading=&quot;child&quot;
+        @click=&quot;$emit('click', child.id)&quot;
+      /&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+</code></pre>
+<p>关键点：</p>
+<ul>
+<li><strong>自引用</strong>：TocItem 的 template 中使用了 <code>&lt;TocItem&gt;</code>，这是 Vue 支持的递归组件模式。只要组件有 name 或在导入时注册了自己，就能在模板中调用自身。</li>
+<li><strong>事件冒泡</strong>：子节点的 click 事件通过 <code>$emit</code> 向上冒泡，最终由 TocComponent 统一处理滚动逻辑。这样每个 TocItem 不需要关心滚动细节。</li>
+<li><strong>高亮透传</strong>：<code>activeId</code> 从顶层一直传递到每个叶子节点，每个 a 标签自行判断是否 active。</li>
+</ul>
+<hr>
+<h2>5. TocComponent：滚动高亮与响应式</h2>
+<p>TocComponent 是整个目录导航的容器，负责三个职责：缓存标题偏移量、监听滚动计算高亮、管理响应式布局。</p>
+<h3>5.1 偏移量缓存</h3>
+<p>每次渲染后，遍历 headings 树，获取每个标题对应的 DOM 元素位置：</p>
+<pre><code class="language-ts">const headingOffsets = ref&lt;{ id: string; top: number }[]&gt;([])
+
+const updateOffsets = () =&gt; {
+  const offsets: { id: string; top: number }[] = []
+  props.headings.forEach((h) =&gt; {
+    const el = document.getElementById(h.id)
+    if (el) offsets.push({ id: h.id, top: el.offsetTop })
+    h.children?.forEach((child) =&gt; {
+      const childEl = document.getElementById(child.id)
+      if (childEl) offsets.push({ id: child.id, top: childEl.offsetTop })
+    })
+  })
+  offsets.sort((a, b) =&gt; a.top - b.top)
+  headingOffsets.value = offsets
+}
+</code></pre>
+<p>为什么不用 getBoundingClientRect？因为 offsetTop 是相对于父容器的固定值，适合滚动场景。每次窗口 resize 或 headings 变化时重新计算。</p>
+<h3>5.2 滚动高亮算法</h3>
+<pre><code class="language-ts">const handleScroll = () =&gt; {
+  const scrollY = window.scrollY + 80  // 80px 偏移，让高亮稍微提前
+  const offsets = headingOffsets.value
+  if (!offsets.length) return
+
+  // 从后往前找，最后一个 top &lt;= scrollY 的标题就是当前阅读位置
+  let active = offsets[0]!.id
+  for (let i = offsets.length - 1; i &gt;= 0; i--) {
+    if (offsets[i]!.top &lt;= scrollY) {
+      active = offsets[i]!.id
+      break
+    }
+  }
+  activeId.value = active
+}
+</code></pre>
+<p>算法很直接：<strong>从后往前遍历</strong>，找到第一个 offsetTop 小于等于当前滚动位置的标题。因为标题在文档中按从上到下排列，最后一个满足条件的标题就是用户当前阅读到的位置。</p>
+<p>加上 80px 偏移量是为了让高亮&quot;提前&quot;一点点，用户滚动到标题附近时高亮立即切换，体验更流畅。</p>
+<h3>5.3 响应式交互</h3>
+<p>组件需要适配两种屏幕：</p>
+<ul>
+<li><strong>宽屏（&gt;= 768px）</strong>：TOC 作为侧边栏常驻，sticky 定位跟随滚动</li>
+<li><strong>窄屏（&lt; 768px）</strong>：TOC 默认隐藏，底部显示浮动按钮；点击后从底部滑出抽屉式面板</li>
+</ul>
+<p>用 <code>window.matchMedia</code> 监听屏幕宽度：</p>
+<pre><code class="language-ts">const mediaQuery = window.matchMedia('(min-width: 768px)')
+const isWideScreen = ref(mediaQuery.matches)
+
+// 显示状态：宽屏始终显示，窄屏由 toggle 控制
+const shouldShowToc = computed(() =&gt; {
+  return isWideScreen.value || isTocVisible.value
+})
+
+const toggleToc = () =&gt; {
+  isTocVisible.value = !isTocVisible.value
+}
+</code></pre>
+<p>窄屏下点击目录项后自动关闭面板：</p>
+<pre><code class="language-ts">const handleClick = (id: string) =&gt; {
+  const element = document.getElementById(id)
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' })
+    if (!isWideScreen.value) {
+      toggleToc()  // 关闭面板
+    }
+  }
+}
+</code></pre>
+<p>CSS 方面，宽屏下 TOC 使用 <code>position: sticky</code> 固定在右侧；窄屏下切换为 <code>position: fixed</code> 从底部弹出，配合 Vue transition 实现滑入动画。</p>
+<hr>
+<h2>6. 在文章详情中使用</h2>
+<p>在 ArticleDetail.vue 中集成 TOC 组件：</p>
+<pre><code class="language-vue">&lt;script lang=&quot;ts&quot; setup&gt;
+import { nextTick, onMounted, ref } from 'vue'
+import type { Heading } from '@/types'
+import TocComponent from '@/components/TocComponent.vue'
+
+const contentRef = ref&lt;HTMLElement | null&gt;(null)
+const headings = ref&lt;Heading[]&gt;([])
+
+onMounted(async () =&gt; {
+  // 等待 Markdown 渲染完成
+  await nextTick()
+  if (!contentRef.value) return
+
+  // 从 DOM 提取标题构建目录树
+  headings.value = generateTocTree(contentRef.value)
+})
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;section class=&quot;article-content&quot;&gt;
+    &lt;div ref=&quot;contentRef&quot; class=&quot;markdown-body&quot;&gt;
+      &lt;!-- Markdown 渲染后的文章内容 --&gt;
+      &lt;component :is=&quot;article.component&quot; v-if=&quot;article.component&quot; /&gt;
+    &lt;/div&gt;
+    &lt;!-- 目录导航 --&gt;
+    &lt;TocComponent :headings=&quot;headings&quot; /&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;style scoped&gt;
+.article-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+}
+&lt;/style&gt;
+</code></pre>
+<p>需要注意 <code>nextTick</code> 的时机。Markdown 内容通过 <code>v-if</code> 或动态组件渲染，必须等 DOM 更新完成后才能执行 <code>querySelectorAll</code> 获取标题元素。<code>generateTocTree</code> 还会自动为没有 id 的标题生成锚点并回填 DOM。</p>
+<hr>
+<h2>7. 总结</h2>
+<p>本文实现了一个完整的文章目录导航组件，核心亮点有三个：</p>
+<p><strong>栈算法构建目录树</strong>。利用一个栈维护层级路径，兼容任意 h1~h6 组合，比固定处理 h2/h3 的方案通用得多。代码只有十几行，思路清晰。</p>
+<p><strong>递归组件渲染树形结构</strong>。TocItem 自引用的模式天然适配多叉树，配合事件冒泡和属性透传，每个节点只关注自己的渲染。</p>
+<p><strong>滚动高亮 + 响应式布局</strong>。通过缓存 offsetTop + 滚动监听实现精确的阅读位置标记；matchMedia 搭配 computed 实现宽窄屏自适应，移动端体验完整。</p>
+<p>这个 TOC 组件不依赖任何第三方库，纯 Vue 3 + TypeScript 实现，可直接移植到任意 Markdown 渲染项目中使用。</p>
+
+</main>
+</body>
+</html>

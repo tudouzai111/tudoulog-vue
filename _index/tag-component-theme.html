@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Vue 3 组件设计：多功能标签组件与主题色切换系统</title>
+<meta data-pagefind-meta="date:2026-06-01" name="date">
+<meta data-pagefind-meta="excerpt:通过一个真实博客项目中的实战案例，分享 Vue 3 组件设计思路——包括三模式标签组件的 v-model 设计和 provide/inject 全局主题切换方案" name="excerpt">
+</head>
+<body>
+<main data-pagefind-body>
+<h1>Vue 3 组件设计：多功能标签组件与主题色切换系统</h1>
+<blockquote>
+<p>文章使用AI润色</p>
+</blockquote>
+<h2>1. 引言</h2>
+<p>在 Vue 3 项目开发中，组件复用和全局状态管理是两个常见场景。这篇文章通过一个真实博客项目中的两个实战案例，分享 Vue 3 的组件设计思路：</p>
+<ul>
+<li><strong>多功能标签组件</strong>：一个组件支持三种交互模式（选中、导航、只读），用 <code>v-model</code> 和事件分发适配不同场景</li>
+<li><strong>主题色切换系统</strong>：用 <code>provide/inject</code> 配合 CSS 变量（OKLCH 色彩空间）实现全局主题切换，无需引入 Pinia</li>
+</ul>
+<p>两个案例都来自我的博客项目，代码均已落地运行，完整项目可在 Gitee 查看：<a href="https://gitee.com/tudouza1/tudoulog-vue">tudoulog-vue</a>。</p>
+<h2>2. 标签模式定义</h2>
+<p>先看标签模式的类型定义。为了让类型更清晰，我把模式常量单独提取到一个文件 <code>src/constants/tagMode.ts</code>：</p>
+<pre><code class="language-ts">/** 模式：select=可选中，navigate=点击跳转，readonly=只读 */
+export const TAG_MODE = ['select', 'navigate', 'readonly']
+export type TagMode = (typeof TAG_MODE)[number]
+export const TAG_MODE_DEFAULT = TAG_MODE[0]
+</code></pre>
+<p>这里用了 TypeScript 的 <code>(typeof TAG_MODE)[number]</code> 来推导联合类型，这样 TAG_MODE 数组和 TagMode 类型保持同步，改一处就行。</p>
+<h2>3. 标签组件实现</h2>
+<p>核心组件 <code>TagComponent.vue</code> 根据 mode prop 切换三种行为：</p>
+<pre><code class="language-vue">&lt;script lang=&quot;ts&quot; setup&gt;
+import { computed } from 'vue'
+import { TAG_MODE, TAG_MODE_DEFAULT, type TagMode } from '@/constants/tagMode.ts'
+
+const props = withDefaults(
+  defineProps&lt;{ tags: string[]; modelValue?: string[]; mode?: TagMode }&gt;(),
+  { mode: TAG_MODE_DEFAULT, modelValue: () =&gt; [] },
+)
+const emit = defineEmits&lt;{
+  (e: 'update:modelValue', tags: string[]): void
+  (e: 'clickTag', tags: string): void
+}&gt;()
+
+const isSelectMode = computed(() =&gt; props.mode === TAG_MODE[0])
+const isNavigateMode = computed(() =&gt; props.mode === TAG_MODE[1])
+const isReadonlyMode = computed(() =&gt; props.mode === TAG_MODE[2])
+
+const isSelected = (tag: string) =&gt; props.modelValue?.includes(tag)
+
+const handleTagClick = (tag: string) =&gt; {
+  if (isReadonlyMode.value) return
+  if (isSelectMode.value) {
+    const currentTags = props.modelValue ? [...props.modelValue] : []
+    const index = currentTags.indexOf(tag)
+    if (index === -1) {
+      currentTags.push(tag)
+    } else {
+      currentTags.splice(index, 1)
+    }
+    emit('update:modelValue', currentTags)
+  } else if (isNavigateMode.value) {
+    emit('clickTag', tag)
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div aria-label=&quot;标签列表&quot; class=&quot;tags&quot; role=&quot;list&quot;&gt;
+    &lt;button
+      v-for=&quot;tag in tags&quot;
+      :key=&quot;tag&quot;
+      :aria-checked=&quot;isSelectMode ? isSelected(tag) : undefined&quot;
+      :class=&quot;[
+        'tag',
+        { 'tag-active': isSelectMode &amp;&amp; isSelected(tag) },
+        { 'tag-readonly': isReadonlyMode },
+      ]&quot;
+      :role=&quot;isSelectMode ? 'checkbox' : 'button'&quot;
+      type=&quot;button&quot;
+      @click.stop.prevent=&quot;handleTagClick(tag)&quot;
+    &gt;
+      {{ tag }}
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+<p>关键设计点：</p>
+<p><strong>withDefaults 处理可选 prop</strong>：<code>tags</code> 是必填，<code>modelValue</code> 和 <code>mode</code> 可选。<code>withDefaults</code> 第二个参数传 <code>() =&gt; []</code> 而不是 <code>[]</code>，避免引用共享。</p>
+<p><strong>v-model 双向绑定</strong>：select 模式下用 <code>modelValue</code> + <code>update:modelValue</code> 模式实现 v-model。标签被点击时切换选中状态，更新数组。</p>
+<p><strong>三种模式区分</strong>：</p>
+<ul>
+<li>select：点击切换选中 / 未选中，emit 整个数组</li>
+<li>navigate：点击发出标签名，父组件处理跳转</li>
+<li>readonly：点击直接 return，不做任何操作</li>
+</ul>
+<p><strong>无障碍属性</strong>：select 模式下 role 是 checkbox，配合 aria-checked；navigate 和 readonly 模式 role 是 button。</p>
+<h2>4. 文章列表页的标签筛选</h2>
+<p>文章列表页 <code>ArticlePage.vue</code> 用 select 模式做标签筛选。组件用法：</p>
+<pre><code class="language-vue">&lt;CardComponent :card=&quot;article&quot;&gt;
+  &lt;template #tags&gt;
+    &lt;TagComponent v-model=&quot;selectedTags&quot; :tags=&quot;article.tags || []&quot; /&gt;
+  &lt;/template&gt;
+&lt;/CardComponent&gt;
+</code></pre>
+<p>每张文章卡片内部都有标签组件，点击标签把它加入 <code>selectedTags</code> 数组。筛选逻辑用 computed 实现：</p>
+<pre><code class="language-ts">const filteredArticles = computed(() =&gt; {
+  return articles.filter((a) =&gt; {
+    const matchTags =
+      selectedTags.value.length === 0 ||
+      (a.tags &amp;&amp; selectedTags.value.every((tag) =&gt; a.tags.includes(tag)))
+    const query = searchQuery.value.trim().toLowerCase()
+    const matchSearch =
+      query === '' ||
+      a.title.toLowerCase().includes(query) ||
+      a.excerpt?.toLowerCase().includes(query) ||
+      a.tags?.some((tag) =&gt; tag.toLowerCase().includes(query))
+    return matchTags &amp;&amp; matchSearch
+  })
+})
+</code></pre>
+<p>筛选逻辑同时支持标签和搜索：标签用 <code>every</code> 确保文章包含所有选中标签（与关系）；搜索模糊匹配标题、摘要、标签。</p>
+<p>当选中的标签有变化时，搜索结果变化，配合分页逻辑自动重置到第一页：</p>
+<pre><code class="language-ts">watch(filteredArticles, () =&gt; (currentPage.value = 1))
+</code></pre>
+<h2>5. 文章详情页的标签导航</h2>
+<p>文章详情页 <code>ArticleDetail.vue</code> 用 navigate 模式，点击标签跳转到列表页并带上筛选参数：</p>
+<pre><code class="language-vue">&lt;TagComponent
+  :mode=&quot;TAG_MODE[1]&quot;
+  :tags=&quot;article.tags || []&quot;
+  @click-tag=&quot;goToListWithTag&quot;
+/&gt;
+</code></pre>
+<pre><code class="language-ts">const goToListWithTag = (tags: string) =&gt; {
+  router.push({
+    path: '/article',
+    query: { tags },
+  })
+}
+</code></pre>
+<p><code>ArticlePage.vue</code> 在 <code>onMounted</code> 里读取 URL 参数初始化 <code>selectedTags</code>：</p>
+<pre><code class="language-ts">onMounted(() =&gt; {
+  const tagsQuery = route.query.tags
+  if (tagsQuery) {
+    if (typeof tagsQuery === 'string') {
+      selectedTags.value = tagsQuery.split(',').filter((tag) =&gt; tag.trim().length &gt; 0)
+    }
+  }
+})
+</code></pre>
+<p>这样从详情页点击标签跳转后，列表页自动展示筛选结果，流程很自然。</p>
+<h2>6. 主题色系统：provide / inject + CSS 变量</h2>
+<p>全局主题切换用 <code>provide/inject</code> 配合 CSS 变量实现，不依赖状态管理库。</p>
+<p><strong>主题常量定义</strong>：</p>
+<pre><code class="language-ts">export const THEMES = ['teal', 'pink', 'purple'] as const
+export type Theme = (typeof THEMES)[number]
+export const DEFAULT_THEME: Theme = THEMES[0]
+</code></pre>
+<p><strong>CSS 变量定义</strong>（<code>src/styles/global.css</code> 的 <code>:root</code> 中）：</p>
+<pre><code class="language-css">/* 主色 - OKLCH 感知均匀色彩 */
+--teal: oklch(75% 0.18 170);
+--pink: oklch(75% 0.17 20);
+--purple: oklch(70% 0.16 290);
+
+--teal-light: oklch(85% 0.12 170);
+--pink-light: oklch(85% 0.11 20);
+--purple-light: oklch(80% 0.10 290);
+
+--main: var(--teal);
+--main-light: var(--teal-light);
+</code></pre>
+<p>这里用了 OKLCH 色彩空间。相比 RGB 和 HSL，OKLCH 更接近人眼感知：同样 75% 亮度的颜色对人眼来说亮度基本一致，切换主题时不会出现亮暗跳跃。</p>
+<p><strong>App.vue 提供主题</strong>：</p>
+<pre><code class="language-vue">&lt;script lang=&quot;ts&quot; setup&gt;
+import { onMounted, provide, ref } from 'vue'
+import { DEFAULT_THEME, type Theme, THEMES } from '@/constants/theme.ts'
+
+const activeTheme = ref&lt;Theme&gt;(DEFAULT_THEME)
+
+const applyTheme = (theme: Theme) =&gt; {
+  const root = document.documentElement
+  root.style.setProperty('--main', `var(--${theme})`)
+  root.style.setProperty('--main-light', `var(--${theme}-light)`)
+  localStorage.setItem('theme', theme)
+  activeTheme.value = theme
+}
+
+provide('theme', { activeTheme, setTheme: applyTheme })
+
+onMounted(() =&gt; {
+  const saved = localStorage.getItem('theme') as Theme | null
+  if (saved &amp;&amp; THEMES.includes(saved)) {
+    applyTheme(saved)
+  } else {
+    applyTheme(DEFAULT_THEME)
+  }
+})
+&lt;/script&gt;
+</code></pre>
+<p><strong>子组件注入主题</strong>：</p>
+<pre><code class="language-ts">const { activeTheme, setTheme } = inject('theme') as {
+  activeTheme: Ref&lt;Theme&gt;
+  setTheme: (theme: Theme) =&gt; void
+}
+</code></pre>
+<p><strong>主题选择器渲染</strong>：</p>
+<pre><code class="language-vue">&lt;div class=&quot;theme-picker&quot;&gt;
+  &lt;span
+    v-for=&quot;theme in THEMES&quot;
+    :key=&quot;theme&quot;
+    :class=&quot;[theme, { active: activeTheme === theme }]&quot;
+    class=&quot;color-dot&quot;
+    @click=&quot;setTheme(theme)&quot;
+  /&gt;
+&lt;/div&gt;
+</code></pre>
+<p>选择器用三个圆点展示主题色，CSS 里每个点的背景色直接引用 <code>var(--teal)</code>、<code>var(--pink)</code>、<code>var(--purple)</code>。</p>
+<p>主题切换的流程是：点击圆点 → <code>setTheme</code> 更新 <code>--main</code> 和 <code>--main-light</code> → 所有引用这两个变量的元素自动更新 → <code>localStorage</code> 持久化 → 下次刷新 <code>onMounted</code> 恢复。</p>
+<h2>7. provide / inject 与 defineProps 的对比</h2>
+<p>很多人会问：这个场景为什么不用 Pinia？其实不是不能用，而是没必要。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>适用场景</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>defineProps</td>
+<td>父子组件直接传递</td>
+<td>显式、类型安全、适合少量层级</td>
+</tr>
+<tr>
+<td>provide/inject</td>
+<td>跨层级共享</td>
+<td>灵活、适合全局可选配置</td>
+</tr>
+<tr>
+<td>Pinia</td>
+<td>复杂状态管理</td>
+<td>完整状态管理方案，带 DevTools</td>
+</tr>
+</tbody>
+</table>
+<p>主题切换的逻辑很简单：一个响应式值加一个设置函数，不需要 action、getter、持久化中间件。<code>provide/inject</code> 正好够用，而且不用额外安装依赖。但是如果你的需求变复杂了（比如多主题叠加、动态编译主题、主题编辑器的撤销重做），那时候再上 Pinia 也不迟。</p>
+<h2>8. 总结</h2>
+<p>从这两个案例可以总结一些 Vue 3 的组件设计原则：</p>
+<ol>
+<li><strong>用模式而非复制</strong>：一个组件通过 flag 切换多个模式，比复制粘贴三个相似组件好维护得多。关键是区分哪些逻辑是共享的（渲染标签），哪些是变化的（点击行为）。</li>
+<li><strong>v-model 是双向通信的糖</strong>：用 <code>modelValue</code> + <code>update:modelValue</code> 实现 v-model，父子组件不需要手动监听事件和同步状态。</li>
+<li><strong>provide/inject 不是 Pinia 的对手</strong>：它们是不同层级的工具。全局配置类状态用 provide/inject 很轻量，状态管理复杂度上来了再考虑 Pinia。</li>
+<li><strong>CSS 变量 + OKLCH = 主题切换利器</strong>：改一个变量就换一个主题，而且 OKLCH 保证各主题亮度一致。</li>
+</ol>
+<p>项目中用 OKLCH 后切换主题不再有&quot;某个颜色特别亮或特别暗&quot;的问题，推荐一试。</p>
+
+</main>
+</body>
+</html>

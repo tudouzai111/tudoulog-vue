@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Flutter</title>
+<meta data-pagefind-meta="date:2026-04-14" name="date">
+<meta data-pagefind-meta="excerpt:Flutter环境的安装编译，Dart的基础语法，Flutter组件框架的学习，暂时只学了基础以后如果感兴趣有时间了可能会学的更深入" name="excerpt">
+</head>
+<body>
+<main data-pagefind-body>
+<h1>Flutter</h1>
+<h1>安装配置</h1>
+<h2>Windows</h2>
+<h3>Flutter SDK</h3>
+<h4>下载</h4>
+<p>镜像：<a href="https://mirrors.tuna.tsinghua.edu.cn/flutter/flutter_infra_release/releases/stable/">https://mirrors.tuna.tsinghua.edu.cn/flutter/flutter_infra_release/releases/stable/</a></p>
+<p>官方：<a href="https://docs.flutter.dev/install/archive">https://docs.flutter.dev/install/archive</a></p>
+<p>环境变量：配置下载解压的 sdk 的 bin 目录</p>
+<p>用户变量：编辑 <code>FLUTTER_STORAGE_BASE_URL</code> 变量值为：<a href="https://storage.flutter-io.cn">https://storage.flutter-io.cn</a></p>
+<p><code>PUB_HOSTED_URL</code> 变量值为：<a href="https://pub-web.flutter-io.cn/">https://pub-web.flutter-io.cn/</a>或<a href="https://mirrors.tuna.tsinghua.edu.cn/dart-pub/">https://mirrors.tuna.tsinghua.edu.cn/dart-pub/</a></p>
+<h4>验证</h4>
+<pre><code class="language-bash">flutter --version
+</code></pre>
+<h4>更新</h4>
+<pre><code class="language-bash">flutter upgrade
+</code></pre>
+<h3>Android SDK</h3>
+<p>下载命令行工具</p>
+<p><a href="https://developer.android.google.cn/studio?hl=zh-cn#command-tools">https://developer.android.google.cn/studio?hl=zh-cn#command-tools</a></p>
+<p>解压到文件夹，在 cmdline-tools 下新建 latest 文件夹并把 <font style="color:rgb(38, 38, 38);">cmdline-tools 内所有的文件都移动到 latest 下</font></p>
+<p><font style="color:rgb(38, 38, 38);">设置清华镜像源</font></p>
+<pre><code class="language-bash"># 设置国内镜像（当前会话）
+setx ANDROID_SDK_ROOT &quot;D:\Tools\SDK\AndroidSDK&quot;
+setx PUB_HOSTED_URL &quot;https://mirrors.tuna.tsinghua.edu.cn/dart-pub&quot;
+setx FLUTTER_STORAGE_BASE_URL &quot;https://mirrors.tuna.tsinghua.edu.cn/flutter&quot;
+</code></pre>
+<p>在 bin 目录下执行更新组件</p>
+<pre><code class="language-bash">./sdkmanager.bat --install &quot;platform-tools&quot; &quot;platforms;android-34&quot; &quot;build-tools;34.0.0&quot; ^ --sdk_root=D:\Tools\SDK\AndroidSDK
+</code></pre>
+<p>下载完后应该有</p>
+<pre><code class="language-bash">D:\Tools\SDK\AndroidSDK\cmdline-tools\latest\bin\sdkmanager.bat
+D:\Tools\SDK\AndroidSDK\platform-tools\adb.exe
+D:\Tools\SDK\AndroidSDK\build-tools\34.0.0\aapt.exe
+</code></pre>
+<p>添加环境变量</p>
+<pre><code class="language-bash">D:\Tools\SDK\AndroidSDK\cmdline-tools\latest\bin
+D:\Tools\SDK\AndroidSDK\platform-tools
+</code></pre>
+<p>设置 Flutter 的 Android SDK 目录</p>
+<pre><code class="language-bash">flutter config --android-sdk D:\Tools\SDK\AndroidSDK
+</code></pre>
+<p>接受许可</p>
+<pre><code class="language-bash">flutter doctor --android-licenses
+</code></pre>
+<h3><font style="color:rgb(25, 25, 25);">Visual Studio 2022 生成工具</font></h3>
+<p><a href="https://visualstudio.microsoft.com/zh-hans/downloads/">https://visualstudio.microsoft.com/zh-hans/downloads/</a></p>
+<p>勾选<strong>使用C++的桌面开发</strong>安装</p>
+<h3>浏览器</h3>
+<p>设置 chrome 环境变量</p>
+<pre><code class="language-bash">setx CHROME_EXECUTABLE &quot;C:\Program Files\Google\Chrome\Application\chrome.exe&quot;
+</code></pre>
+<p>设置 edge</p>
+<pre><code class="language-bash">setx CHROME_EXECUTABLE &quot;C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe&quot;
+</code></pre>
+<h2>验证环境</h2>
+<p>重开终端执行</p>
+<pre><code class="language-bash">flutter doctor
+</code></pre>
+<h2>VS Code</h2>
+<p>下载插件</p>
+<h1>开始</h1>
+<h2>新建项目</h2>
+<pre><code class="language-bash">flutter create my_app
+cd my_app
+</code></pre>
+<h2>运行</h2>
+<h3>windows</h3>
+<p>项目目录下</p>
+<pre><code class="language-bash">flutter run -d windows
+</code></pre>
+<h3>安卓</h3>
+<p>连接 MUMU 模拟器</p>
+<pre><code class="language-bash">adb connect 127.0.0.1:5555
+</code></pre>
+<p>运行</p>
+<pre><code class="language-bash">flutter run -d 127.0.0.1:5555
+</code></pre>
+<hr>
+<p>下载 gradle 失败手动配置</p>
+<p><a href="https://mirrors.aliyun.com/gradle/distributions/?spm=a2c6h.25603864.0.0.3c73133apbP5Z0">https://mirrors.aliyun.com/gradle/distributions/</a></p>
+<p>运行 <code>android\gradlew.bat</code></p>
+<p>查看 gradle 最低支持版本下载</p>
+<p>放到任意文件夹，修改 <code>android\gradle\wrapper\gradle-wrapper.properties</code> 配置</p>
+<pre><code class="language-bash">distributionUrl=file\:///D:/Project/code/gradle/gradle-9.0.0-bin.zip
+</code></pre>
+<h2>打包</h2>
+<h3>windows</h3>
+<pre><code class="language-bash">flutter build windows --release
+</code></pre>
+<p>如果报错打开设置中的开发者模式再尝试</p>
+<h3>安卓</h3>
+<pre><code class="language-dart"># 清理项目
+flutter clean
+flutter pub get
+
+# 构建优化的APK文件
+flutter build apk --split-per-abi --tree-shake-icons --obfuscate --split-debug-info=debug-info
+
+# 重命名APK文件为项目名
+$date = Get-Date -Format &quot;yyyyMMdd&quot;
+Get-ChildItem -Path build\app\outputs\flutter-apk\ -Filter &quot;app-*.apk&quot; | Where-Object { $_.LastWriteTime -gt (Get-Date).AddMinutes(-10) } | ForEach-Object {
+    $arch = $_.Name -replace 'app-', '' -replace '-release.apk', ''
+    $newName = &quot;relaunch-$arch-$date.apk&quot;
+    Copy-Item $_.FullName &quot;build\app\outputs\flutter-apk\$newName&quot;
+    Write-Output &quot;已创建: $newName ($([math]::Round($_.Length / 1MB, 2)) MB)&quot;
+}
+</code></pre>
+<h1>Dart</h1>
+<p><a href="https://dart.cn/language">https://dart.cn/language</a></p>
+<h2>变量</h2>
+<pre><code class="language-dart">var a = 1;
+</code></pre>
+<h2>常量</h2>
+<p><strong>const</strong></p>
+<p>编译时常量</p>
+<pre><code class="language-dart">const a = 1;
+</code></pre>
+<p><strong>final</strong></p>
+<p>运行时常量</p>
+<pre><code class="language-dart">final a = 1;
+</code></pre>
+<h2>常用类型</h2>
+<h3>String</h3>
+<ul>
+<li>模板字符串</li>
+</ul>
+<pre><code class="language-dart">String text = &quot;我要在${DateTime.now()}吃早饭&quot;;
+String name = &quot;食堂&quot;;
+String text = &quot;我要在$name吃早饭&quot;;
+</code></pre>
+<h3>数字类型</h3>
+<ul>
+<li>int</li>
+<li>num</li>
+<li>double</li>
+</ul>
+<h3>布尔类型</h3>
+<ul>
+<li>bool</li>
+</ul>
+<p>表示 true 或 false</p>
+<h3>列表类型</h3>
+<ul>
+<li>List</li>
+</ul>
+<pre><code class="language-dart">List list = [1, 2, 3];
+</code></pre>
+<ul>
+<li>常用方法和属性</li>
+</ul>
+<pre><code class="language-dart">list.add(4);
+list.addAll([5, 6, 7]);
+list.remove(4);
+list.removeLast();
+list.removeRange(0, 2);
+</code></pre>
+<pre><code class="language-dart">list.forEach((item) {
+  print(item);
+});
+// 是否都满足条件
+list.every((item) {
+  return item &lt; 5;
+});
+// 是否有满足条件的
+list.where((item) {
+  return item &lt; 5;
+});
+// 常用属性
+list.length;
+list.last;
+list.first;
+list.isEmpty;
+</code></pre>
+<h3>字典类型</h3>
+<ul>
+<li>Map</li>
+</ul>
+<pre><code class="language-dart">Map map = {&quot;name&quot;: &quot;张三&quot;, &quot;age&quot;: 18};
+map[&quot;name&quot;] = &quot;李四&quot;;
+print(map[&quot;name&quot;]);
+</code></pre>
+<ul>
+<li>常用方法</li>
+</ul>
+<pre><code class="language-dart">map.forEach((key, value) {
+  print(key + &quot;:&quot; + value);
+});
+map.addAll({&quot;sex&quot;: &quot;男&quot;});
+print(map.containsKey(&quot;name&quot;));
+print(map.containsValue(&quot;张三&quot;));
+map.remove(&quot;name&quot;);
+map.clear();
+</code></pre>
+<h3>动态类型</h3>
+<ul>
+<li>dynamic</li>
+</ul>
+<pre><code class="language-dart">dynamic a = 1;
+a = &quot;1&quot;;
+a = true;
+a = [1, 2, 3];
+a = {&quot;a&quot;: 1};
+</code></pre>
+<ul>
+<li>与 var 的区别
+<ol>
+<li>dynamic：无编译检查，所有方法和属性可以直接调用</li>
+<li>var：有编译检查，仅限调用推断的属性和方法</li>
+</ol>
+</li>
+</ul>
+<h2>空安全机制</h2>
+<ul>
+<li>通过编辑静态检查将运行时空指针提前暴露</li>
+<li>常见空安全操作符</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>符号</th>
+<th>作用</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>可空类型</td>
+<td>?</td>
+<td>声明可空变量</td>
+<td>String?<br/>允许 String 为 null</td>
+</tr>
+<tr>
+<td>安全访问</td>
+<td>?.</td>
+<td>对象为 null 跳过操作直接返回 null</td>
+<td>user?.name<br/>若 user 为 null 返回 null</td>
+</tr>
+<tr>
+<td>非空断言</td>
+<td>!.</td>
+<td>主观保证变量非空（否则崩溃）</td>
+<td>name!.length<br/>断言 name 非空</td>
+</tr>
+<tr>
+<td>空合并</td>
+<td>??</td>
+<td>左侧为 null 返回右侧默认值</td>
+<td>name ?? “无名氏”<br/>name 为 null 返回&quot;无名氏&quot;</td>
+</tr>
+</tbody>
+</table>
+<h2>算术运算符</h2>
+<ul>
+<li>~/：整除</li>
+</ul>
+<h2>函数</h2>
+<h3>可选位置参数</h3>
+<ul>
+<li>可选参数必须位于必传参数后面</li>
+<li>传递时按照顺序传递</li>
+<li>可以设置默认值</li>
+</ul>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  print(func(&quot;a&quot;));
+  print(func(&quot;a&quot;, &quot;b&quot;));
+  print(func(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;));
+}
+
+String func(String a, [String? b, String? c = &quot;c&quot;]) {
+  return a + (b ?? &quot;默认值b&quot;) + (c ?? &quot;默认值c&quot;);
+}
+
+// 输出：
+a默认值bc
+abc
+abc
+</code></pre>
+<h3>可选命名参数</h3>
+<ul>
+<li>可选参数必须位于必传参数后面</li>
+<li>按照 <code>参数名: 值</code>传递，无需关注顺序</li>
+<li>可以设置默认值</li>
+</ul>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  print(func(&quot;张三&quot;));
+  print(func(&quot;张三&quot;, age: 18));
+  print(func(&quot;张三&quot;, age: 18, sex: &quot;男&quot;));
+}
+
+String func(String name, {int? age = 10, String? sex = &quot;未知&quot;}) {
+  return &quot;name: $name, age: $age, sex: $sex&quot;;
+}
+
+// 输出
+name: 张三, age: 10, sex: 未知
+name: 张三, age: 18, sex: 未知
+name: 张三, age: 18, sex: 男
+</code></pre>
+<h3>匿名函数</h3>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  test2(test);
+}
+
+Function test = () {
+  print(&quot;test&quot;);
+};
+
+void test2(Function f) {
+  f();
+}
+</code></pre>
+<h3>箭头函数</h3>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  test2(test);
+}
+
+Function test = () {
+  print(&quot;test&quot;);
+};
+
+void test2(Function f) =&gt; f();
+</code></pre>
+<h2>类</h2>
+<h3>命名构造函数和构造函数语法糖</h3>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Person p = Person(&quot;张三&quot;, 18, &quot;男&quot;);
+  Person p1 = Person.create(&quot;张三&quot;, 18, &quot;男&quot;);
+  p.show();
+  p1.show();
+}
+
+class Person {
+  String? name;
+  int? age;
+  String? sex;
+  Person(this.name, this.age, this.sex);
+  Person.create(this.name, this.age, this.sex);
+  void show() {
+    print(&quot;姓名：$name&quot;);
+    print(&quot;年龄：$age&quot;);
+    print(&quot;性别：$sex&quot;);
+  }
+}
+</code></pre>
+<h3>公有属性和私有属性</h3>
+<ul>
+<li>私有属性用下划线 <code>_</code>区分</li>
+<li>私有属性不可用构造函数语法糖赋值</li>
+</ul>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Person p = Person.create(&quot;张三&quot;, age: 18, sex: &quot;男&quot;);
+  p.show();
+}
+
+class Person {
+  String? name;
+  int? _age;
+  String? _sex;
+  Person(this.name);
+  Person.create(this.name, {int? age, String? sex}) {
+    this._age = age;
+    this._sex = sex;
+  }
+  void show() {
+    print(&quot;姓名：$name&quot;);
+    print(&quot;年龄：$_age&quot;);
+    print(&quot;性别：$_sex&quot;);
+  }
+}
+</code></pre>
+<h3>继承和重写</h3>
+<ul>
+<li>dart 属于单继承，一个类只能拥有一个父类</li>
+<li>子类不会继承父类构造函数，必须通过 <code>super</code>调用父类构造函数确保父类正确初始化</li>
+</ul>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Child child = Child(&quot;张三&quot;, 18, &quot;男&quot;);
+  child.show();
+}
+
+class Person {
+  String? name;
+  int? age;
+  Person(this.name, this.age);
+  void show() {
+    print(&quot;姓名：$name&quot;);
+    print(&quot;年龄：$age&quot;);
+  }
+}
+
+class Child extends Person {
+  String? sex;
+  Child(String name, int age, this.sex) : super(name, age);
+  @override
+  void show() {
+    print(&quot;姓名：$name&quot;);
+    print(&quot;年龄：$age&quot;);
+    print(&quot;性别：$sex&quot;);
+  }
+}
+</code></pre>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Child child = Child(name: &quot;张三&quot;, age: 18, sex: &quot;男&quot;);
+  child.show();
+}
+
+class Person {
+  String? name;
+  int? age;
+  Person({this.name, this.age});
+  void show() {
+    print(&quot;姓名：$name&quot;);
+    print(&quot;年龄：$age&quot;);
+  }
+}
+
+class Child extends Person {
+  String? sex;
+  Child({String? name, int? age, this.sex}) : super(name: name, age: age);
+  @override
+  void show() {
+    print(&quot;姓名：$name&quot;);
+    print(&quot;年龄：$age&quot;);
+    print(&quot;性别：$sex&quot;);
+  }
+}
+</code></pre>
+<h3>抽象类和接口</h3>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  PayBase wxPay = WxPay();
+  wxPay.pay();
+  PayBase aliPay = AliPay();
+  aliPay.pay();
+}
+
+abstract class PayBase {
+  void pay();
+}
+
+class WxPay implements PayBase {
+  @override
+  void pay() {
+    print(&quot;微信支付&quot;);
+  }
+}
+
+class AliPay implements PayBase {
+  @override
+  void pay() {
+    print(&quot;支付宝支付&quot;);
+  }
+}
+</code></pre>
+<h3>类的混入</h3>
+<ul>
+<li>不用传统继承的情况下，向类中添加新的功能</li>
+<li>mixmin 定义一个对象</li>
+<li>with 将定义的对象混入当前对象</li>
+<li>一个类支持 with 多个 mixin，优先级遵循“后来居上”原则，即后混入的会覆盖先混入的同名方法</li>
+</ul>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Student student = Student(name: &quot;小明&quot;);
+  student.song(student.name!);
+  Teacher teacher = Teacher(name: &quot;老张&quot;);
+  teacher.song(teacher.name!);
+}
+
+mixin Base {
+  void song(String name) {
+    print(&quot;${name}会唱歌&quot;);
+  }
+}
+
+class Student with Base {
+  String? name;
+  int? age;
+  Student({this.name, this.age});
+}
+
+class Teacher with Base {
+  String? name;
+  int? age;
+  Teacher({this.name, this.age});
+}
+</code></pre>
+<h2>泛型</h2>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Teacher teacher1 = Teacher(students: [&quot;小王&quot;, &quot;小明&quot;], name: &quot;老张&quot;, age: 35);
+  Teacher teacher2 = Teacher(students: [&quot;小李&quot;, &quot;小丽&quot;], name: &quot;老赵&quot;, age: 43);
+  if (swapTeacher(teacher1, teacher2)) {
+    print(teacher1);
+    print(teacher2);
+  }
+}
+
+class Teacher&lt;T&gt; {
+  List&lt;String&gt;? students;
+  T? name;
+  int? age;
+  Teacher({this.students, this.name, this.age});
+
+  @override
+  String toString() =&gt; 'Teacher(students: $students, name: $name, age: $age)';
+}
+
+bool swapTeacher&lt;T&gt;(Teacher&lt;T&gt; teacher1, Teacher&lt;T&gt; teacher2) {
+  if (teacher1.students != null &amp;&amp; teacher2.students != null) {
+    List&lt;String&gt; students = teacher1.students!;
+    teacher1.students = teacher2.students;
+    teacher2.students = students;
+    return true;
+  }
+  return false;
+}
+</code></pre>
+<h2>异步编程</h2>
+<h3>事件循环</h3>
+<ul>
+<li>dart 是单线程语言</li>
+<li>dart 采用单线程+时间循环机制完成耗时任务的处理</li>
+<li>耗时任务：
+<ul>
+<li>执行同步代码 =&gt; 执行微任务队列 =&gt; 执行任务队列 =&gt; 结束</li>
+</ul>
+</li>
+<li>微任务队列：<code>Future.microtask()</code></li>
+<li>事件队列：<code>Future``Future.delayed()``I/O 操作（文件，网络）</code>等</li>
+</ul>
+<h3>Future-then/catchError</h3>
+<ul>
+<li>Future 代表一个异步操作的最终结果</li>
+<li>状态：Uncompleted（等待），Completed with a value（成功），Completed with a error（失败）</li>
+<li>创建：<code>Future(() {})</code></li>
+</ul>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Future&lt;String&gt; f = Future(() {
+    throw Exception(&quot;错误&quot;);
+  });
+  f.then((value) {
+    print(value);
+  });
+  f.catchError((error) {
+    print(error);
+  });
+}
+</code></pre>
+<p><strong>链式调用</strong></p>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  Future(() =&gt; &quot;Hello World&quot;)
+      .then((value) =&gt; Future(() =&gt; &quot;task1&quot;))
+      .then((value) =&gt; Future(() =&gt; &quot;task2&quot;))
+      .then((value) =&gt; Future(() =&gt; &quot;task3&quot;))
+      .then((value) {
+        print(value);
+        throw Exception(&quot;错误&quot;);
+      })
+      .catchError((error) =&gt; print(error.toString()));
+}
+
+// 输出：
+task3
+Exception: 错误
+</code></pre>
+<h3>Future-async/await</h3>
+<ul>
+<li>除了 then/catchError 还可以通过 async/await 实现异步编程</li>
+<li>await 总是等到 Future 执行成功才继续执行，async 和 await 是必须配套的</li>
+</ul>
+<pre><code class="language-dart">void main(List&lt;String&gt; args) {
+  func();
+}
+
+void func() async {
+  try {
+    await Future(() {
+      // Future 执行成功才执行
+      throw Exception();
+    });
+  } catch (e) {
+    print(&quot;执行失败逻辑&quot;);
+  }
+}
+</code></pre>
+<p><strong>推荐使用 async/await</strong></p>
+<h1>Flutter</h1>
+<p><a href="https://docs.flutter.cn/get-started/fundamentals/widgets">https://docs.flutter.cn/get-started/fundamentals/widgets</a></p>
+<h2>组件</h2>
+<h3>路由</h3>
+<pre><code class="language-dart">home: HomePage(),
+routes: {
+  '/homepage': (context) =&gt; HomePage(),
+  '/settingpage': (context) =&gt; SettingPage(),
+},
+</code></pre>
+<p>外部文件路由</p>
+<pre><code class="language-dart">
+</code></pre>
+<h3>侧边栏</h3>
+<pre><code class="language-dart">drawer: Drawer(
+  child: Column(
+    children: [
+      DrawerHeader(child: Icon(Icons.favorite, size: 48)),
+      ListTile(
+        leading: Icon(Icons.home),
+        title: Text('H O M E'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/homepage');
+        },
+      ),
+      ListTile(
+        leading: Icon(Icons.settings),
+        title: Text('S E T T I N G S'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/settingpage');
+        },
+      ),
+    ],
+  ),
+),
+</code></pre>
+<h3>底部导航栏</h3>
+<h3>侧边抽屉</h3>
+<h2>工具控件</h2>
+<h3>按钮</h3>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+
+class MyButton extends StatelessWidget {
+  final String buttonName;
+  VoidCallback onPressed;
+
+  MyButton({super.key, required this.buttonName, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+      onPressed: onPressed,
+      color: Theme.of(context).primaryColor,
+      child: Text(buttonName, style: TextStyle(color: Colors.white)),
+    );
+  }
+}
+</code></pre>
+<p>调用</p>
+<pre><code class="language-dart">MyButton(buttonName: &quot;Save&quot;, onPressed: onSave),
+</code></pre>
+<h3>弹窗</h3>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+import 'package:todo_app/core/utils/my_button.dart';
+
+class DialogBox extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onSave;
+  final VoidCallback onCancel;
+
+  DialogBox({
+    super.key,
+    required this.controller,
+    required this.onSave,
+    required this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Container(
+        height: 120,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: &quot;Add a new todo&quot;,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                MyButton(buttonName: &quot;Save&quot;, onPressed: onSave),
+                const SizedBox(width: 8),
+                MyButton(buttonName: &quot;Cancel&quot;, onPressed: onCancel),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+</code></pre>
+<p>调用</p>
+<pre><code class="language-dart">showDialog(
+  context: context,
+  builder: (context) {
+    return DialogBox(
+      controller: _controller,
+      onSave: saveNewTodo,
+      onCancel: () =&gt; Navigator.of(context).pop(),
+    );
+  },
+);
+</code></pre>
+<h2>Hive</h2>
+<h3>依赖</h3>
+<pre><code class="language-yaml">dependencies:
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+dev_dependencies:
+  hive_generator: ^2.0.0
+  build_runner: ^2.4.0
+</code></pre>
+<h1>常用依赖</h1>
+<h2>Hive</h2>
+<h2>Google 底部导航栏</h2>
+<pre><code class="language-yaml">google_nav_bar: ^5.0.7
+</code></pre>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+
+class BottomNavBar extends StatelessWidget {
+  void Function(int)? onTabChange;
+
+  BottomNavBar({super.key, required this.onTabChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: GNav(
+        color: Colors.grey[400],
+        activeColor: Colors.grey.shade700,
+        tabActiveBorder: Border.all(color: Colors.white),
+        tabBackgroundColor: Colors.grey.shade100,
+        mainAxisAlignment: MainAxisAlignment.center,
+        tabBorderRadius: 16,
+        onTabChange: (value) =&gt; onTabChange!(value),
+        tabs: const [
+          GButton(icon: Icons.home, text: 'Shop'),
+          GButton(icon: Icons.shopping_bag_rounded, text: 'Cart'),
+        ],
+      ),
+    );
+  }
+}
+
+</code></pre>
+<pre><code class="language-dart">import 'package:flutter/material.dart';
+import 'package:sneaker_shopping_cart/components/bottom_nav_bar.dart';
+import 'package:sneaker_shopping_cart/pages/cart_page.dart';
+import 'package:sneaker_shopping_cart/pages/shop_page.dart';
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State&lt;HomePage&gt; createState() =&gt; _HomePageState();
+}
+
+class _HomePageState extends State&lt;HomePage&gt; {
+  int _selectedIndex = 0;
+
+  void navigateBottomBar(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  final List&lt;Widget&gt; _pages = [const ShopPage(), const CartPage()];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[300],
+      bottomNavigationBar: BottomNavBar(
+        onTabChange: (index) =&gt; navigateBottomBar(index),
+      ),
+      body: _pages[_selectedIndex],
+    );
+  }
+}
+</code></pre>
+
+</main>
+</body>
+</html>
