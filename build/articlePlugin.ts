@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { escapeXml } from './xml'
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '../src/constants/site'
@@ -272,14 +272,8 @@ export function articlePlugin(root: string): Plugin {
         source: `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>${escapeXml(SITE_TITLE)}</title>\n    <link>${pageUrl('/')}</link>\n    <description>${escapeXml(SITE_DESCRIPTION)}</description>\n    <language>zh-CN</language>\n    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n    <atom:link href="${pageUrl('/rss.xml')}" rel="self" type="application/rss+xml" />\n${rssItems}\n  </channel>\n</rss>\n`,
       })
     },
-    closeBundle() {
-      // GitHub Pages 的 SPA 回退：404.html 与 index.html 完全一致，
-      // 由 vue-router 的通配路由在前端决定展示内容（Cloudflare Pages 同样生效）
-      const distDir = join(root, 'dist')
-      const indexHtml = join(distDir, 'index.html')
-      if (existsSync(indexHtml)) {
-        copyFileSync(indexHtml, join(distDir, '404.html'))
-      }
-    },
-  }
+    // 注意：这里不再生成 404.html——Cloudflare Pages 检测到 404.html 会把
+    // 深链接的状态码从 200（隐式 SPA 回退）变成 404，影响 SEO。
+    // GitHub Pages 的 404.html 由 .github/workflows/deploy.yml 在部署前复制。
+  },
 }
