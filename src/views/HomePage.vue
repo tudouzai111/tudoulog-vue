@@ -285,7 +285,7 @@ const goToListWithTag = (tag: string) => {
 
 .social-row {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-lg);
   justify-content: center;
   margin-top: 0.25rem;
 }
@@ -294,26 +294,19 @@ const goToListWithTag = (tag: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: var(--border);
-  background: var(--off-white);
+  padding: 2px;
   color: var(--mid-gray);
-  transition: var(--transition);
+  transition: var(--transition-fast);
 }
 
 .social-link:hover {
-  background: var(--main);
-  border-color: var(--main);
-  color: #fff;
+  color: var(--main);
   transform: translateY(-3px);
-  box-shadow: var(--shadow-main);
 }
 
 .social-link svg {
-  width: 19px;
-  height: 19px;
+  width: 22px;
+  height: 22px;
 }
 
 /* 最新文章 */
