@@ -12,7 +12,7 @@
 <blockquote>
 <p>文章使用AI润色</p>
 </blockquote>
-<h1>问题现象</h1>
+<h2>问题现象</h2>
 <ul>
 <li>
 <p>笔记本挂机黑屏唤醒后<strong>极度卡顿</strong></p>
@@ -28,7 +28,7 @@
 <p><img src="/img/win11bug1.png" alt="win11bug1.png"></p>
 </li>
 </ul>
-<h1>查找元凶</h1>
+<h2>查找元凶</h2>
 <h2>RAMMap</h2>
 <p>发现非分页池（Nonpaged Pool）高达 <strong>13GB</strong>（共16GB内存）可以知道是内核级内存泄漏问题</p>
 <p><img src="/img/win11bug2.png" alt="win11bug2.png"></p>
@@ -38,13 +38,13 @@
 按B键：这会让所有结果按 Bytes 从大到小排列，让内存最大的排在最顶部，可以多按几次</p>
 <p>然后发现 Tag <strong><code>RTLF</code></strong> 占用了约 <strong>10GB</strong>，元凶是 <strong>Realtek 音频驱动</strong></p>
 <p><img src="/img/win11bug3.png" alt="win11bug3.png"></p>
-<h1>根本原因</h1>
+<h2>根本原因</h2>
 <ul>
 <li>Windows 下载并尝试安装 <strong>KB5083769</strong>（安全更新），但<strong>安装失败</strong></li>
 <li>这次失败的更新过程，<strong>破坏了系统环境或触发了驱动冲突</strong>，导致这两个 Realtek 驱动疯狂泄漏内存</li>
 <li>注意：KB5083769 <strong>实际上并未成功安装</strong></li>
 </ul>
-<h1>解决过程</h1>
+<h2>解决过程</h2>
 <table>
 <thead>
 <tr>
@@ -75,12 +75,12 @@
 <p><strong>关键发现</strong>：问题不是驱动，而是<strong>更新过程中的某些临时状态或残留文件“污染”了系统</strong>
 当暂停更新并重启，那个冲突状态被清除了，驱动就能正常工作。</p>
 </blockquote>
-<h1>总结</h1>
+<h2>总结</h2>
 <ul>
 <li>使用 <strong>WUB（Windows Update Blocker）</strong> 工具<strong>永久暂停更新</strong></li>
 <li>停止更新的系统才是最好的系统</li>
 </ul>
-<h1>附录</h1>
+<h2>附录</h2>
 <p>RAMMap的下载链接：<a href="https://learn.microsoft.com/en-us/sysinternals/downloads/rammap">https://learn.microsoft.com/en-us/sysinternals/downloads/rammap</a><br/>
 PoolMon的下载安装以及使用方法（转自腾讯云开发者社区）：<a href="https://cloud.tencent.com/developer/article/1871416">https://cloud.tencent.com/developer/article/1871416</a><br/>
 WUB的下载链接：<a href="https://caiyun.139.com/w/i/2uETMPyeDHo6h">https://caiyun.139.com/w/i/2uETMPyeDHo6h</a> <code>提取码:s7fk</code></p>

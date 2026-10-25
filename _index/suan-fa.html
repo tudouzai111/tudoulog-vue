@@ -12,7 +12,7 @@
 <blockquote>
 <p>一些算法模板</p>
 </blockquote>
-<h1>数组</h1>
+<h2>数组</h2>
 <h2>二分法</h2>
 <blockquote>
 <p>在单调性范围中找出符合条件的数，如单调递增的数组中找到第一个大于等于目标值的下标</p>
@@ -243,7 +243,7 @@ void solve2() {
 <h2>离散化</h2>
 <p><a href="https://www.starrycoding.com/problem/63">我的很长，你算一下 | 星码StarryCoding</a>
 <a href="https://www.starrycoding.com/problem/31">求逆序对个数 | 星码StarryCoding</a></p>
-<h1>字符串</h1>
+<h2>字符串</h2>
 <h2>KMP</h2>
 <pre><code class="language-cpp">int *kmp_get_next(string &amp;str)
 {
@@ -297,7 +297,7 @@ int main()
     cout &lt;&lt; kmp_search(a, b, next);
 }
 </code></pre>
-<h1>二叉树</h1>
+<h2>二叉树</h2>
 <h2>递归遍历</h2>
 <pre><code class="language-cpp">void traversal(TreeNode* cur, vector&lt;int&gt;&amp; vec) {
     if (cur == NULL) return;
@@ -349,7 +349,7 @@ int main()
     return result;
 }
 </code></pre>
-<h1>动态规划</h1>
+<h2>动态规划</h2>
 <h2>背包问题</h2>
 <h3>01背包</h3>
 <blockquote>
@@ -443,7 +443,7 @@ return dp[bag_size];
 这个还没看</p>
 <h2>树状DP</h2>
 <p><a href="https://leetcode.cn/problems/house-robber-iii/">337. 打家劫舍 III - 力扣（LeetCode）</a></p>
-<h1>图论</h1>
+<h2>图论</h2>
 <h2>DFS</h2>
 <pre><code class="language-cpp">vector&lt;int&gt; g[N];
 
@@ -875,7 +875,7 @@ while (z--) {
 </tr>
 </tbody>
 </table>
-<h1>数论</h1>
+<h2>数论</h2>
 <h2>常用数学算法总结</h2>
 <pre><code class="language-cpp">bool isPrime(int n) {  // 判断质数
     if (n == 1) return false;
@@ -1042,7 +1042,7 @@ public:
     bool operator==(const hp&amp; x) { return cmp(x) == 0; }
 };
 </code></pre>
-<h1>一些例子</h1>
+<h2>一些例子</h2>
 <h3>最长递增子序列</h3>
 <p><strong>二分法(O(n log n))</strong></p>
 <pre><code class="language-cpp">int LIS(vector&lt;int&gt;&amp; nums) {

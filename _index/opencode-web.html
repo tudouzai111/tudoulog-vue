@@ -9,7 +9,7 @@
 <body>
 <main data-pagefind-body>
 <h1>配置OpenCodeWeb通过内网穿透实现远程控制OpenCode</h1>
-<h1>配置内网穿透</h1>
+<h2>配置内网穿透</h2>
 <h2>下载 Sakura Frp</h2>
 <p>先注册账号：<a href="https://www.natfrp.com/">https://www.natfrp.com/</a><br>
 然后下载软件并登录账号：<a href="https://www.natfrp.com/tunnel/download">https://www.natfrp.com/tunnel/download</a></p>
@@ -18,7 +18,7 @@
 节点随便选择一个通用节点，类型选择 TCP，隧道名随意，本地端口填 4096，然后创建完并开启<br>
 到日志页面看公网链接：</p>
 <p><img src="/img/opencode-web_1.png" alt="opencode-web_1.png"></p>
-<h1>启动 opencode web</h1>
+<h2>启动 opencode web</h2>
 <p>终端输入</p>
 <pre><code class="language-bash">$env:OPENCODE_SERVER_PASSWORD = &quot;密码&quot;
 opencode web --hostname 0.0.0.0 --port 4096
@@ -27,7 +27,7 @@ opencode web --hostname 0.0.0.0 --port 4096
 <p><img src="/img/opencode-web_2.png" alt="opencode-web_2.png"></p>
 <p>设置完后重开 PowerShell 并启动 opencode web，没有提示<code>! OPENCODE_SERVER_PASSWORD is not set</code>密码就是设置成功了</p>
 <p><img src="/img/opencode-web_3.png" alt="opencode-web_3.png"></p>
-<h1>访问 opencode web</h1>
+<h2>访问 opencode web</h2>
 <p>现在就是配置完了，可以尝试访问 Sakura Frp 中的外网链接，同时前缀加上<code>https://</code> ，例如：<code>https://frp-use.com:12345/</code> 此时浏览器会有网站证书危险提示直接无视继续访问即可，因为内网穿透没有域名和网站证书如果只是自己使用无视即可。</p>
 <p><img src="/img/opencode-web_5.png" alt="opencode-web_5.png"></p>
 <p>然后进入opencode web界面后提示输入用户名和密码，用户名：<code>opencode</code> ，密码就是刚刚自己在环境变量里设置的</p>
