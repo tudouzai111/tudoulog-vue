@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { inject, onMounted, ref, type Ref } from 'vue'
+import { inject, onMounted, onUnmounted, ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { type Theme, THEMES } from '@/constants/theme.ts'
 import { articles } from '@/utils/articleList'
@@ -7,6 +7,7 @@ import CardComponent from '@/components/CardComponent.vue'
 import TagComponent from '@/components/TagComponent.vue'
 import { TAG_MODE } from '@/constants/tagMode.ts'
 import { useArticleStats } from '@/composables/useArticleStats'
+import { SOCIAL_LINKS } from '@/constants/social.ts'
 
 const baseUrl = import.meta.env.BASE_URL
 const router = useRouter()
@@ -25,6 +26,51 @@ const latestArticles = ref(articles.slice(0, LATEST_COUNT))
 const { statsMap, loadStats } = useArticleStats()
 onMounted(() => void loadStats(latestArticles.value.map((a) => a.id)))
 
+// 打字机副标题：想换签名就改这个数组
+const PHRASES = ['爱折腾的前端小白', '工具软件收藏家', '踩坑记录员', 'Cloudflare 重度用户']
+const typedText = ref('')
+let typeTimer: ReturnType<typeof setTimeout> | null = null
+
+onMounted(() => {
+  // 用户偏好减弱动效时，静态显示第一句
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    typedText.value = PHRASES[0]!
+    return
+  }
+  let phraseIndex = 0
+  let charIndex = 0
+  let deleting = false
+
+  const tick = () => {
+    const phrase = PHRASES[phraseIndex]!
+    if (!deleting) {
+      charIndex++
+      typedText.value = phrase.slice(0, charIndex)
+      if (charIndex === phrase.length) {
+        deleting = true
+        typeTimer = setTimeout(tick, 1800) // 打完停留
+        return
+      }
+      typeTimer = setTimeout(tick, 110)
+    } else {
+      charIndex--
+      typedText.value = phrase.slice(0, charIndex)
+      if (charIndex === 0) {
+        deleting = false
+        phraseIndex = (phraseIndex + 1) % PHRASES.length
+        typeTimer = setTimeout(tick, 400) // 删完停顿
+        return
+      }
+      typeTimer = setTimeout(tick, 45)
+    }
+  }
+  typeTimer = setTimeout(tick, 500)
+})
+
+onUnmounted(() => {
+  if (typeTimer) clearTimeout(typeTimer)
+})
+
 const goToListWithTag = (tag: string) => {
   router.push({ path: '/article', query: { tags: tag } })
 }
@@ -35,7 +81,10 @@ const goToListWithTag = (tag: string) => {
     <section class="hero">
       <div class="hero-content">
         <h1 class="hero-title">土豆仔</h1>
-        <p class="hero-subtitle">这是一个纯静态个人博客</p>
+        <p class="hero-subtitle" aria-label="个人签名">
+          <span>{{ typedText }}</span>
+          <span aria-hidden="true" class="type-caret">|</span>
+        </p>
         <div class="hero-image-wrapper">
           <img
             :src="`${baseUrl}img/tudouzai.webp`"
@@ -55,6 +104,31 @@ const goToListWithTag = (tag: string) => {
             type="button"
             @click="setTheme(theme)"
           />
+        </div>
+
+        <div class="social-row">
+          <a
+            v-for="link in SOCIAL_LINKS"
+            :key="link.name"
+            :aria-label="link.name"
+            :href="link.url"
+            :rel="link.external ? 'noopener' : undefined"
+            :target="link.external ? '_blank' : undefined"
+            class="social-link"
+            :title="link.name"
+          >
+            <svg
+              aria-hidden="true"
+              :fill="link.filled ? 'currentColor' : 'none'"
+              :stroke="link.filled ? 'none' : 'currentColor'"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              :stroke-width="link.filled ? 0 : 2"
+              viewBox="0 0 24 24"
+            >
+              <path :d="link.icon" />
+            </svg>
+          </a>
         </div>
       </div>
     </section>
@@ -120,6 +194,23 @@ const goToListWithTag = (tag: string) => {
   font-size: 1.25rem;
   color: var(--mid-gray);
   margin: 0;
+  min-height: 1.7em; /* 打字机文字长短变化时防止布局跳动 */
+}
+
+.type-caret {
+  color: var(--main);
+  animation: caret-blink 1s step-end infinite;
+  margin-left: 1px;
+}
+
+@keyframes caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .hero-image-wrapper {
@@ -190,6 +281,39 @@ const goToListWithTag = (tag: string) => {
     width: 36px;
     height: 36px;
   }
+}
+
+.social-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: var(--border);
+  background: var(--off-white);
+  color: var(--mid-gray);
+  transition: var(--transition);
+}
+
+.social-link:hover {
+  background: var(--main);
+  border-color: var(--main);
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-main);
+}
+
+.social-link svg {
+  width: 19px;
+  height: 19px;
 }
 
 /* 最新文章 */
