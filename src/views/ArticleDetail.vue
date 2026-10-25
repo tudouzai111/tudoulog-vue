@@ -39,6 +39,18 @@ const olderArticle = computed(() =>
     : null,
 )
 
+// 相关文章：按标签重合度排序，取前 3 篇（没有重合就隐藏）
+const relatedArticles = computed(() => {
+  const tags = article.value?.tags ?? []
+  if (!tags.length) return []
+  return articles
+    .filter((a) => a.id !== articleId)
+    .map((a) => ({ article: a, overlap: (a.tags ?? []).filter((t) => tags.includes(t)).length }))
+    .filter((r) => r.overlap > 0)
+    .sort((a, b) => b.overlap - a.overlap || b.article.date.localeCompare(a.article.date))
+    .slice(0, 3)
+})
+
 // 复制正文：优先 Clipboard API，不可用时降级到 execCommand
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -310,6 +322,24 @@ watch(
         </router-link>
       </nav>
 
+      <!-- 相关文章 -->
+      <section v-if="relatedArticles.length" aria-label="相关文章" class="related">
+        <h3 class="related-title">相关文章</h3>
+        <div class="related-grid">
+          <router-link
+            v-for="rel in relatedArticles"
+            :key="rel.article.id"
+            :to="`/article/${rel.article.id}`"
+            class="related-item"
+          >
+            <span class="related-item-title">{{ rel.article.title }}</span>
+            <span class="related-item-meta">
+              {{ rel.article.date }} · {{ rel.article.readingMinutes }} 分钟
+            </span>
+          </router-link>
+        </div>
+      </section>
+
       <!-- 版权与分享 -->
       <footer class="article-license">
         <p class="license-text">
@@ -472,6 +502,68 @@ watch(
 .copy-link-btn:hover {
   border-color: var(--main);
   color: var(--main);
+}
+
+/* 相关文章 */
+.related {
+  padding: var(--spacing) var(--spacing-lg) var(--spacing-lg);
+  border-top: 1px solid var(--light-gray);
+}
+
+.related-title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: 1rem;
+  color: var(--dark-gray);
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.related-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border: var(--border);
+  border-radius: var(--border-radius-sm);
+  background: var(--off-white);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  min-width: 0;
+}
+
+.related-item:hover {
+  border-color: var(--main);
+  box-shadow: var(--shadow);
+}
+
+.related-item-title {
+  color: var(--dark-gray);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.related-item:hover .related-item-title {
+  color: var(--main);
+}
+
+.related-item-meta {
+  color: var(--mid-gray);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .related-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* 上一篇 / 下一篇 */

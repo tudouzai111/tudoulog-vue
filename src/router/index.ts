@@ -31,6 +31,12 @@ const router = createRouter({
           meta: { title: '废话-土豆博客' },
         },
         {
+          path: 'archive',
+          name: 'ArchivePage',
+          component: () => import('@/views/ArchivePage.vue'),
+          meta: { title: '归档-土豆博客' },
+        },
+        {
           path: 'article/:id',
           name: 'ArticleDetail',
           component: () => import('@/views/ArticleDetail.vue'),

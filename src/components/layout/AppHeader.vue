@@ -151,6 +151,23 @@ onUnmounted(() => {
               <span class="menu-item-label">{{ COLOR_MODE_LABELS[colorMode] }}</span>
             </button>
 
+            <!-- 归档 -->
+            <router-link class="menu-item" role="menuitem" to="/archive">
+              <svg
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <rect height="4" width="20" x="2" y="3" rx="1" />
+                <path d="M4 7v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M10 12h4" />
+              </svg>
+              <span class="menu-item-label">归档</span>
+            </router-link>
+
             <!-- 后台管理：新标签页打开 -->
             <a
               aria-label="后台管理（新标签页打开）"
