@@ -96,7 +96,7 @@ onUnmounted(() => {
                 <path d="m21 21-4.35-4.35" />
               </svg>
               <span class="menu-item-label">搜索</span>
-              <kbd class="menu-kbd">Ctrl K</kbd>
+              <span class="menu-value">Ctrl K</span>
             </button>
 
             <button
@@ -196,19 +196,7 @@ onUnmounted(() => {
                 />
               </svg>
               <span class="menu-item-label">后台管理</span>
-              <svg
-                aria-hidden="true"
-                class="menu-external"
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <path d="M15 3h6v6M10 14 21 3" />
-              </svg>
+              <span class="menu-value">↗</span>
             </a>
           </div>
         </Transition>
@@ -329,6 +317,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  /* 统一行高：button 默认 normal(≈1.2) 与 a 继承的 1.7 不一致，会导致行高不同 */
+  line-height: 1.5;
   padding: 0.5rem var(--spacing-sm);
   border: none;
   border-radius: var(--border-radius-sm);
@@ -362,26 +352,12 @@ onUnmounted(() => {
   flex: 1;
 }
 
-.menu-kbd {
-  font-size: 0.6875rem;
-  color: var(--mid-gray);
-  border: 1px solid var(--light-gray);
-  border-radius: 5px;
-  padding: 1px 5px;
-}
-
-/* 菜单行右侧的值（模式名/文章数/外链标记），让每行右端对齐 */
+/* 菜单行右侧的值（快捷键/模式名/文章数/外链标记）：统一样式让四行视觉一致 */
 .menu-value {
   margin-left: auto;
   font-size: 0.75rem;
   color: var(--mid-gray);
-}
-
-/* 外链标记 */
-.menu-external {
-  width: 12px !important;
-  height: 12px !important;
-  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
 }
 
 /* 菜单弹出动画 */
