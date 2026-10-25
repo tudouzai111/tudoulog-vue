@@ -9,16 +9,13 @@
 <body>
 <main data-pagefind-body>
 <h1>Vite + Vue 3 搭建 Markdown 博客文章系统：从配置到动态路由</h1>
-<blockquote>
-<p>文章使用AI润色</p>
-</blockquote>
 <h2>1. 引言</h2>
 <p>现在很多开发者选择用静态博客来记录技术积累。Markdown 写文章很顺手，但要把它集成到 Vue 3 项目里变成可访问的页面，中间有一层转换工作要做。这篇文章从零开始，拆解如何用 Vite 7 + Vue 3.5 + TypeScript 搭一套 Markdown 博客系统，重点讲 <code>vite-plugin-vue-markdown</code> 的配置、动态路由设计，以及文章列表的自动发现。</p>
 <p>项目的完整代码可以在 Gitee 上找到：<a href="https://gitee.com/tudouza1/tudoulog-vue">tudoulog-vue</a>。</p>
 <h2>2. 安装与配置 vite-plugin-vue-markdown</h2>
 <p>核心思路是用 <code>vite-plugin-vue-markdown</code> 这个插件，在构建时把 <code>.md</code> 文件转成 Vue 组件。这样我们就能像引用 <code>.vue</code> 文件一样引用 Markdown 文章。</p>
 <p>安装依赖（以下版本是项目当前使用的）：</p>
-<pre><code>pnpm add vite-plugin-vue-markdown markdown-it-shiki shiki
+<pre><code class="language-plain">pnpm add vite-plugin-vue-markdown markdown-it-shiki shiki
 </code></pre>
 <p><code>markdown-it-shiki</code> 负责用 Shiki 做代码高亮，<code>shiki</code> 是底层的语法高亮引擎。</p>
 <p>然后配置 <code>vite.config.ts</code>：</p>
@@ -163,8 +160,8 @@ export function getAllTags(): string[] {
 <ul>
 <li><code>import.meta.glob</code> 的 <code>eager: true</code>：在构建时立即执行导入，运行时不需要异步等待。匹配 <code>@/articles/*.md</code> 下的所有文件。</li>
 <li><code>.filter(([path]) =&gt; !path.includes('AGENTS.md'))</code>：排除 <code>AGENTS.md</code>，这个是项目的知识库文件，不是文章。</li>
-<li><code>coverImage</code> 处理：只存文件名，路径由 <code>baseUrl + 'img/cover/'</code> 拼接。这样封面图统一放在 <code>public/img/cover/</code> 下，部署到 Cloudflare Pages 时路径正确。</li>
-<li><code>.sort((a, b) =&gt; b.date.localeCompare(a.date))</code>：按日期降序排列，最新文章排最前面。</li>
+<li><code>coverImage</code> 处理：只存文件名，路径由 <code>baseUrl + 'img/cover/'</code> 拼接。这样封面图统一放在 <code>public/img/cover/</code> 下，部署到 Cloudflare Pages 时路径正确。`
+<code>- </code>.sort((a, b) =&gt; b.date.localeCompare(a.date))`：按日期降序排列，最新文章排最前面。</li>
 <li><code>getAllTags()</code> 工具函数：遍历所有文章收集标签，去重并排序，供标签页使用。</li>
 </ul>
 <h2>5. 配置路由</h2>
