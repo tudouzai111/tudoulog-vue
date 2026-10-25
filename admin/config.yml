@@ -75,6 +75,11 @@ collections:
         widget: boolean
         default: false
         required: false
+      - label: AI 辅助
+        name: ai
+        widget: boolean
+        default: false
+        required: false
       - label: 正文
         name: body
         widget: markdown
