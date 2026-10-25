@@ -81,7 +81,7 @@ const groups = computed(() => {
 
 .year-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 0 var(--spacing-sm); /* 竖线右移到年份文字正下方 */
   padding: 0 0 0 var(--spacing-sm);
   border-left: 2px solid var(--light-gray);
 }
