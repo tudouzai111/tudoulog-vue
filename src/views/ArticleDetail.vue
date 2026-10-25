@@ -66,6 +66,21 @@ const lightboxSrc = ref('')
 const handleContentClick = async (event: MouseEvent) => {
   const target = event.target as HTMLElement
 
+  // 标题锚点：拦截原生跳转，与目录行为保持一致
+  // （原生跳转会把百分号编码的中文哈希留在 URL，且滚动行为不受控）
+  const anchor = target.closest('a.heading-anchor')
+  if (anchor) {
+    event.preventDefault()
+    const id = anchor.getAttribute('href')?.slice(1) ?? ''
+    const heading = document.getElementById(id)
+    if (heading) {
+      heading.scrollIntoView({ behavior: 'smooth' })
+      // 静默更新地址栏，方便复制带锚点的链接，也不触发路由导航
+      history.replaceState(null, '', `#${id}`)
+    }
+    return
+  }
+
   // 图片放大
   const img = target.closest('img')
   if (img && img.closest('.markdown-body')) {
@@ -459,6 +474,8 @@ watch(
 /* 标题锚点：悬停标题时显现 */
 .markdown-body :is(h1, h2, h3, h4, h5, h6) {
   position: relative;
+  /* 锚点/目录跳转后标题不贴视口顶边 */
+  scroll-margin-top: 12px;
 }
 
 .heading-anchor {
