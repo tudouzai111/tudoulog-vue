@@ -272,8 +272,7 @@ export function articlePlugin(root: string): Plugin {
         source: `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>${escapeXml(SITE_TITLE)}</title>\n    <link>${pageUrl('/')}</link>\n    <description>${escapeXml(SITE_DESCRIPTION)}</description>\n    <language>zh-CN</language>\n    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n    <atom:link href="${pageUrl('/rss.xml')}" rel="self" type="application/rss+xml" />\n${rssItems}\n  </channel>\n</rss>\n`,
       })
     },
-    // 注意：这里不再生成 404.html——Cloudflare Pages 检测到 404.html 会把
-    // 深链接的状态码从 200（隐式 SPA 回退）变成 404，影响 SEO。
-    // GitHub Pages 的 404.html 由 .github/workflows/deploy.yml 在部署前复制。
-  },
+    // 404.html 由 .github/workflows/deploy.yml 在部署 gh-pages 前复制生成。
+
+  }
 }
