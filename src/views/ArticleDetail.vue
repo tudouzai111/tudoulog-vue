@@ -445,7 +445,7 @@ watch(
   color: var(--dark-gray);
   font-size: 1.75rem;
   font-weight: 700;
-  margin: 0 0 var(--spacing-xs);
+  margin: 0 0 var(--spacing-sm);
   line-height: 1.3;
 }
 
@@ -652,7 +652,7 @@ watch(
 }
 
 .tags-position {
-  padding-top: var(--spacing-sm);
+  padding-top: var(--spacing);
 }
 
 .article-excerpt {

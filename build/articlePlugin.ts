@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import MarkdownIt from 'markdown-it'
+import { parse as parseYaml } from 'yaml'
 import { escapeXml } from './xml'
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '../src/constants/site'
 import type { Plugin, ViteDevServer } from 'vite'
@@ -55,36 +56,35 @@ const WORDS_PER_MINUTE = 200
 function parseFrontmatter(raw: string): ParsedFrontmatter {
   const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(raw)
   if (!match) return {}
-  const result: ParsedFrontmatter = {}
-  for (const line of match[1]!.split(/\r?\n/)) {
-    const m = /^([A-Za-z_]+):\s*(.*)$/.exec(line)
-    if (!m) continue
-    const key = m[1]!
-    const value = m[2]!.trim()
-    switch (key) {
-      case 'tags':
-        result.tags = value
-          .replace(/^\[/, '')
-          .replace(/\]$/, '')
-          .split(',')
-          .map((t) => t.trim().replace(/^['"]|['"]$/g, ''))
-          .filter(Boolean)
-        break
-      case 'draft':
-        result.draft = value === 'true'
-        break
-      case 'ai':
-        result.ai = value === 'true'
-        break
-      case 'title':
-      case 'date':
-      case 'updated':
-      case 'excerpt':
-      case 'coverImage':
-        result[key] = value.replace(/^['"]|['"]$/g, '')
-        break
-    }
+
+  // 用标准 YAML 解析：Sveltia CMS 保存的是块列表/布尔原生语法，
+  // 手写的是内联数组/引号字符串，YAML 解析器两者通吃
+  let doc: Record<string, unknown>
+  try {
+    doc = parseYaml(match[1]!) as Record<string, unknown>
+  } catch {
+    return {}
   }
+  if (!doc || typeof doc !== 'object') return {}
+
+  const result: ParsedFrontmatter = {}
+  const tagsValue = doc.tags
+  if (Array.isArray(tagsValue)) {
+    result.tags = tagsValue.map(String).map((t) => t.trim()).filter(Boolean)
+  } else if (typeof tagsValue === 'string') {
+    result.tags = tagsValue
+      .replace(/^\[/, '')
+      .replace(/\]$/, '')
+      .split(',')
+      .map((t) => t.trim().replace(/^['"]|['"]$/g, ''))
+      .filter(Boolean)
+  }
+  for (const key of ['title', 'date', 'updated', 'excerpt', 'coverImage'] as const) {
+    const value = doc[key]
+    if (value !== undefined && value !== null) result[key] = String(value)
+  }
+  if (doc.draft !== undefined) result.draft = doc.draft === true || doc.draft === 'true'
+  if (doc.ai !== undefined) result.ai = doc.ai === true || doc.ai === 'true'
   return result
 }
 
