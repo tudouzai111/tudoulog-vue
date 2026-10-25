@@ -8,10 +8,11 @@
  */
 export const GISCUS = {
   repo: 'tudouzai111/tudoulog-vue',
-  repoId: '', // ← giscus.app 生成的 data-repo-id
+  repoId: 'R_kgDOT-J93A',
   category: 'Announcements',
-  categoryId: '', // ← giscus.app 生成的 data-category-id
+  categoryId: 'DIC_kwDOT-J93M4DJlK3',
   mapping: 'pathname',
+  inputPosition: 'bottom',
   lang: 'zh-CN',
 }
 

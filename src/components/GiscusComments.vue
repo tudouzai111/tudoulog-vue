@@ -28,7 +28,7 @@ function mountGiscus() {
   script.dataset.strict = '0'
   script.dataset.reactionsEnabled = '1'
   script.dataset.emitMetadata = '0'
-  script.dataset.inputPosition = 'top'
+  script.dataset.inputPosition = GISCUS.inputPosition
   script.dataset.theme = giscusTheme()
   script.dataset.lang = GISCUS.lang
   script.dataset.loading = 'lazy'
