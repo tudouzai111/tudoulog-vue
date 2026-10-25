@@ -95,3 +95,10 @@ pids
 *.tmp
 *.temp
 *~
+
+# Lighthouse / PSI 报告
+lh-*.json
+psi-*.json
+
+# pnpm 本地配置
+pnpm-workspace.yaml
