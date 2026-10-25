@@ -1,12 +1,17 @@
 ---
-title: 'Vue 3 组件设计：多功能标签组件与主题色切换系统'
-date: '2026-06-01'
-tags: ['Vue', '前端', 'CSS', '教程']
-excerpt: '通过一个真实博客项目中的实战案例，分享 Vue 3 组件设计思路——包括三模式标签组件的 v-model 设计和 provide/inject 全局主题切换方案'
+title: Vue 3 组件设计：多功能标签组件与主题色切换系统
+date: 2026-06-01
+tags:
+  - Vue
+  - 前端
+  - CSS
+  - 教程
+excerpt: 通过一个真实博客项目中的实战案例，分享 Vue 3 组件设计思路——包括三模式标签组件的 v-model 设计和 provide/inject 全局主题切换方案
 coverImage: ''
+updated: ''
+draft: false
+ai: true
 ---
-
-> 文章使用AI润色
 
 ## 1. 引言
 
@@ -99,6 +104,7 @@ const handleTagClick = (tag: string) => {
 **v-model 双向绑定**：select 模式下用 `modelValue` + `update:modelValue` 模式实现 v-model。标签被点击时切换选中状态，更新数组。
 
 **三种模式区分**：
+
 - select：点击切换选中 / 未选中，emit 整个数组
 - navigate：点击发出标签名，父组件处理跳转
 - readonly：点击直接 return，不做任何操作
@@ -272,7 +278,7 @@ const { activeTheme, setTheme } = inject('theme') as {
 很多人会问：这个场景为什么不用 Pinia？其实不是不能用，而是没必要。
 
 | 方案 | 适用场景 | 特点 |
-|------|---------|------|
+| --- | --- | --- |
 | defineProps | 父子组件直接传递 | 显式、类型安全、适合少量层级 |
 | provide/inject | 跨层级共享 | 灵活、适合全局可选配置 |
 | Pinia | 复杂状态管理 | 完整状态管理方案，带 DevTools |
