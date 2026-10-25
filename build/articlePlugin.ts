@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
+import MarkdownIt from 'markdown-it'
 import { escapeXml } from './xml'
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '../src/constants/site'
 import type { Plugin, ViteDevServer } from 'vite'
@@ -8,7 +9,9 @@ import type { Plugin, ViteDevServer } from 'vite'
  * 构建期文章元数据插件：
  * - 解析 src/articles/*.md 的 frontmatter，生成 virtual:article-meta（列表元数据）
  * - 生成 virtual:article-components（按文章 id 懒加载组件，draft 不进产物）
- * - 构建时附带产出 robots.txt / sitemap.xml / rss.xml / 404.html
+ * - 生成 virtual:words（废话列表）
+ * - 预渲染每篇文章的纯 HTML 索引页（dist/_index/，供 Pagefind 全文搜索索引）
+ * - 构建时附带产出 robots.txt / sitemap.xml / rss.xml
  *
  * 说明：frontmatter 解析为受支持字段的宽松解析（标量 + 行内数组），
  * 与项目文章书写约定（src/articles/AGENTS.md）保持一致。
@@ -170,6 +173,29 @@ function virtualWordsModule(words: WordEntry[]): string {
   return `export const words = ${JSON.stringify(words, null, 2)}\n`
 }
 
+// 全文搜索索引页渲染器：纯 markdown-it（不做代码高亮，索引只需要文本）
+const indexRenderer = new MarkdownIt({ html: true, linkify: true, typographer: true })
+
+function renderSearchPage(article: ArticleMetaEntry, body: string): string {
+  const rendered = indexRenderer.render(body)
+  return `<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>${escapeXml(article.title)}</title>
+<meta data-pagefind-meta="date:${escapeXml(article.date)}" name="date">
+<meta data-pagefind-meta="excerpt:${escapeXml(article.excerpt)}" name="excerpt">
+</head>
+<body>
+<main data-pagefind-body>
+<h1>${escapeXml(article.title)}</h1>
+${rendered}
+</main>
+</body>
+</html>
+`
+}
+
 export function articlePlugin(root: string): Plugin {
   let articles = readArticles(root)
   let words = readWords(root)
@@ -271,6 +297,24 @@ export function articlePlugin(root: string): Plugin {
         fileName: 'rss.xml',
         source: `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>${escapeXml(SITE_TITLE)}</title>\n    <link>${pageUrl('/')}</link>\n    <description>${escapeXml(SITE_DESCRIPTION)}</description>\n    <language>zh-CN</language>\n    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n    <atom:link href="${pageUrl('/rss.xml')}" rel="self" type="application/rss+xml" />\n${rssItems}\n  </channel>\n</rss>\n`,
       })
+
+      // 全文搜索索引页：预渲染纯 HTML 到 dist/_index/，
+      // Pagefind（package.json 的 build 脚本末尾）会索引这个目录，
+      // 搜索结果 URL 由前端映射回 /article/<id>
+      const articlesDir = join(root, 'src/articles')
+      for (const article of published) {
+        try {
+          const raw = readFileSync(join(articlesDir, `${article.id}.md`), 'utf8')
+          const body = raw.replace(/^---\r?\n[\s\S]*?\r?\n---/, '').trim()
+          this.emitFile({
+            type: 'asset',
+            fileName: `_index/${article.id}.html`,
+            source: renderSearchPage(article, body),
+          })
+        } catch {
+          // 单篇读取失败只跳过该篇的索引，不阻断构建
+        }
+      }
     },
     // 404.html 由 .github/workflows/deploy.yml 在部署 gh-pages 前复制生成。
 

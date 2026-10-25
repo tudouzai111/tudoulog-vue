@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useColorMode } from '@/composables/useColorMode'
+import { useSearchModal } from '@/composables/useSearchModal'
 import { COLOR_MODE_LABELS } from '@/constants/colorMode'
 
 const { colorMode, cycleMode } = useColorMode()
+const { open: openSearch } = useSearchModal()
 
 const toggleTitle = computed(() => {
   const current = COLOR_MODE_LABELS[colorMode.value]
@@ -30,9 +32,28 @@ const toggleTitle = computed(() => {
           关于
         </router-link>
         <button
+          aria-label="全文搜索（Ctrl + K）"
+          class="icon-btn"
+          title="全文搜索（Ctrl + K）"
+          type="button"
+          @click="openSearch"
+        >
+          <svg
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+        </button>
+        <button
           :aria-label="toggleTitle"
           :title="toggleTitle"
-          class="color-mode-toggle"
+          class="icon-btn"
           type="button"
           @click="cycleMode"
         >
@@ -144,7 +165,7 @@ const toggleTitle = computed(() => {
   font-weight: bold;
 }
 
-.color-mode-toggle {
+.icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,16 +180,16 @@ const toggleTitle = computed(() => {
   transition: var(--transition);
 }
 
-.color-mode-toggle:hover {
+.icon-btn:hover {
   background: var(--light-gray);
 }
 
-.color-mode-toggle:focus-visible {
+.icon-btn:focus-visible {
   outline: 2px solid var(--main);
   outline-offset: 2px;
 }
 
-.color-mode-toggle svg {
+.icon-btn svg {
   width: 18px;
   height: 18px;
 }
