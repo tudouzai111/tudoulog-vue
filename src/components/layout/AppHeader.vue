@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useColorMode } from '@/composables/useColorMode'
 import { useSearchModal } from '@/composables/useSearchModal'
 import { COLOR_MODE_LABELS } from '@/constants/colorMode'
+import { articles } from '@/utils/articleList'
 
 const { colorMode, cycleMode } = useColorMode()
 const { open: openSearch } = useSearchModal()
@@ -148,7 +149,8 @@ onUnmounted(() => {
                 <path d="M8 20h8m-4-4v4" />
                 <path d="M7 9.5 9 8l2 1.5L13 8l2 1.5" />
               </svg>
-              <span class="menu-item-label">{{ COLOR_MODE_LABELS[colorMode] }}</span>
+              <span class="menu-item-label">主题</span>
+              <span class="menu-value">{{ COLOR_MODE_LABELS[colorMode] }}</span>
             </button>
 
             <!-- 归档 -->
@@ -166,6 +168,7 @@ onUnmounted(() => {
                 <path d="M4 7v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M10 12h4" />
               </svg>
               <span class="menu-item-label">归档</span>
+              <span class="menu-value">{{ articles.length }} 篇</span>
             </router-link>
 
             <!-- 后台管理：新标签页打开 -->
@@ -365,6 +368,13 @@ onUnmounted(() => {
   border: 1px solid var(--light-gray);
   border-radius: 5px;
   padding: 1px 5px;
+}
+
+/* 菜单行右侧的值（模式名/文章数/外链标记），让每行右端对齐 */
+.menu-value {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--mid-gray);
 }
 
 /* 外链标记 */
