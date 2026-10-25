@@ -53,7 +53,7 @@ export async function onRequestGet(context: FunctionContext): Promise<Response> 
   try {
     return json(await readStats(context.env.DB, slug))
   } catch (error) {
-    return json({ error: 'database unavailable', detail: String(error) }, 500)
+    return json({ error: 'database unavailable' }, 500)
   }
 }
 
@@ -78,6 +78,6 @@ export async function onRequestPost(context: FunctionContext): Promise<Response>
       .run()
     return json(await readStats(context.env.DB, slug))
   } catch (error) {
-    return json({ error: 'database unavailable', detail: String(error) }, 500)
+    return json({ error: 'database unavailable' }, 500)
   }
 }
