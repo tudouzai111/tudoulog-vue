@@ -52,8 +52,8 @@ export async function onRequestGet(context: FunctionContext): Promise<Response> 
   if (!slug) return json({ error: 'slug is required' }, 400)
   try {
     return json(await readStats(context.env.DB, slug))
-  } catch {
-    return json({ error: 'database unavailable' }, 500)
+  } catch (error) {
+    return json({ error: 'database unavailable', detail: String(error) }, 500)
   }
 }
 
@@ -77,7 +77,7 @@ export async function onRequestPost(context: FunctionContext): Promise<Response>
       .bind(slug)
       .run()
     return json(await readStats(context.env.DB, slug))
-  } catch {
-    return json({ error: 'database unavailable' }, 500)
+  } catch (error) {
+    return json({ error: 'database unavailable', detail: String(error) }, 500)
   }
 }
