@@ -5,8 +5,15 @@
     <link>https://tudoulog.pages.dev/</link>
     <description>土豆仔的纯静态个人博客：前端技术、工具折腾与日常记录。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sun, 25 Oct 2026 12:37:11 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 25 Oct 2026 12:41:04 GMT</lastBuildDate>
     <atom:link href="https://tudoulog.pages.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>给纯静态博客接入免费网页编辑后台：Sveltia CMS + Cloudflare Workers 实战</title>
+      <link>https://tudoulog.pages.dev/article/blog-cms-admin</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/blog-cms-admin</guid>
+      <pubDate>Sun, 25 Oct 2026 00:00:00 GMT</pubDate>
+      <description>不买服务器、不写后端代码，给纯静态博客接一个网页版内容后台：Sveltia CMS + GitHub OAuth + Cloudflare Worker 三件套，包含每个字段的填写说明和踩坑记录</description>
+    </item>
     <item>
       <title>在CloudFlare上部署静态HTML文件</title>
       <link>https://tudoulog.pages.dev/article/cloudflare</link>
