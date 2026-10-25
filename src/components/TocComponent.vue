@@ -27,7 +27,8 @@ const updateOffsets = () => {
 
 // 页面滚动后计算激活的id值
 const handleScroll = () => {
-  const scrollY = window.scrollY + 80 // 偏移量 80px，让高亮提前一点
+  // 偏移量：吸顶导航高度 + 提前量，让高亮和视口内容对得上
+  const scrollY = window.scrollY + 110
   const offsets = headingOffsets.value
   if (!offsets.length) return
 
@@ -192,8 +193,9 @@ const toggleToc = () => {
 
 .toc {
   position: sticky;
-  top: 10px;
-  max-height: 100vh;
+  /* 76px = 吸顶导航条的高度，避免滑到顶栏底下 */
+  top: 76px;
+  max-height: calc(100vh - 90px);
   width: 280px;
   flex-shrink: 0;
   background: var(--md-background);

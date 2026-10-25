@@ -51,8 +51,8 @@
    不带组件 scoped 的 data-v 属性，相关样式必须写在这里（全局）才能命中 */
 
 .markdown-body :is(h1, h2, h3, h4, h5, h6) {
-  /* 锚点/目录跳转后标题不贴视口顶边 */
-  scroll-margin-top: 12px;
+  /* 锚点/目录跳转后标题落在吸顶导航下方，不贴视口顶边 */
+  scroll-margin-top: 84px;
 }
 
 .heading-anchor {

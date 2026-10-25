@@ -91,6 +91,9 @@ const toggleTitle = computed(() => {
   display: flex;
   justify-content: center;
   padding: var(--spacing-sm);
+  position: sticky;
+  top: 0;
+  z-index: 40;
 }
 
 .header {
@@ -145,9 +148,8 @@ const toggleTitle = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  margin-left: var(--spacing-xs);
+  width: 36px;
+  height: 36px;
   padding: 0;
   background: var(--white);
   color: var(--dark-gray);
