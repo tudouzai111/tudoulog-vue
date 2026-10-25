@@ -536,7 +536,7 @@ watch(
 }
 
 .related-item:hover {
-  box-shadow: var(--shadow-hover);
+  box-shadow: var(--shadow);
 }
 
 .related-item-title {
@@ -585,7 +585,6 @@ watch(
 
 .article-nav-link:hover {
   box-shadow: var(--shadow);
-  border-color: var(--main);
 }
 
 .article-nav-link.align-end {
