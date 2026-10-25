@@ -13,9 +13,8 @@ backend:
   name: github
   repo: tudouzai111/tudoulog-vue
   branch: master
-  # TODO: 部署 sveltia-cms-auth 后替换成你的 Worker 地址，例如
-  # base_url: https://sveltia-cms-auth.example.workers.dev
-  base_url: https://PLEASE-REPLACE-ME.workers.dev
+  # sveltia-cms-auth Worker 地址（注意：登录需要代理，workers.dev 在国内被墙）
+  base_url: https://sveltia-cms-auth.1715593110.workers.dev
 
 site_url: https://tudoulog.pages.dev
 logo_url: /img/tudou.png
