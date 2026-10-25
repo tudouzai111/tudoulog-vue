@@ -3,6 +3,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { articles } from '@/utils/articleList'
 import CardComponent from '@/components/CardComponent.vue'
 import TagComponent from '@/components/TagComponent.vue'
+import { useArticleStats } from '@/composables/useArticleStats'
 import '@/styles/article-common.css'
 import '@/styles/tag-common.css'
 import { useRoute, useRouter } from 'vue-router'
@@ -73,6 +74,14 @@ const showArticles = computed(() => {
   const endArticle = startArticle + pageSize.value
   return filteredArticles.value.slice(startArticle, endArticle)
 })
+
+// 列表卡片的浏览量/点赞（D1 未配置时自动隐藏）
+const { statsMap, loadStats } = useArticleStats()
+watch(
+  showArticles,
+  (list) => void loadStats(list.map((a) => a.id)),
+  { immediate: true },
+)
 // 当筛选或搜索导致过滤的文章列表变化时，重置当前页为第一页
 // 筛选标签后清除url的page参数
 watch(filteredArticles, () => {
@@ -192,7 +201,7 @@ watch(
       tag="div"
     >
       <router-link v-for="article in showArticles" :key="article.id" :to="`/article/${article.id}`">
-        <CardComponent :card="article">
+        <CardComponent :card="article" :stats="statsMap[article.id] ?? null">
           <template #tags>
             <TagComponent v-model="selectedTags" :tags="article.tags || []" />
           </template>

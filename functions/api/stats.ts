@@ -19,6 +19,7 @@ interface StatsRow {
 
 interface D1PreparedStatement {
   first<T = StatsRow>(): Promise<T | null>
+  all<T = StatsRow>(): Promise<{ results: T[] | null }>
   run(): Promise<unknown>
 }
 
@@ -48,11 +49,31 @@ async function readStats(db: D1DatabaseLike, slug: string): Promise<StatsRow> {
 }
 
 export async function onRequestGet(context: FunctionContext): Promise<Response> {
-  const slug = new URL(context.request.url).searchParams.get('slug')
-  if (!slug) return json({ error: 'slug is required' }, 400)
+  const url = new URL(context.request.url)
+  const slug = url.searchParams.get('slug')
+  const slugs = url.searchParams.get('slugs')
+  if (!slug && !slugs) return json({ error: 'slug or slugs is required' }, 400)
   try {
-    return json(await readStats(context.env.DB, slug))
-  } catch (error) {
+    // 批量模式：?slugs=a,b,c → { a: {views,likes}, ... }（列表卡片用）
+    if (!slug) {
+      const ids = slugs!
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 50)
+      if (!ids.length) return json({})
+      const placeholders = ids.map(() => '?').join(',')
+      const { results } = await context.env.DB.prepare(
+        `SELECT slug, views, likes FROM stats WHERE slug IN (${placeholders})`,
+      )
+        .bind(...ids)
+        .all<StatsRow & { slug: string }>()
+      const out: Record<string, StatsRow> = {}
+      for (const row of results ?? []) out[row.slug] = { views: row.views, likes: row.likes }
+      return json(out)
+    }
+    return json({ [slug]: await readStats(context.env.DB, slug) })
+  } catch {
     return json({ error: 'database unavailable' }, 500)
   }
 }

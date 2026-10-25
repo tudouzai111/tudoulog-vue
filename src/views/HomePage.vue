@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { inject, ref, type Ref } from 'vue'
+import { inject, onMounted, ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { type Theme, THEMES } from '@/constants/theme.ts'
 import { articles } from '@/utils/articleList'
 import CardComponent from '@/components/CardComponent.vue'
 import TagComponent from '@/components/TagComponent.vue'
 import { TAG_MODE } from '@/constants/tagMode.ts'
+import { useArticleStats } from '@/composables/useArticleStats'
 
 const baseUrl = import.meta.env.BASE_URL
 const router = useRouter()
@@ -19,6 +20,10 @@ const { activeTheme, setTheme } = inject('theme') as {
 // 首页展示最新的几篇文章
 const LATEST_COUNT = 4
 const latestArticles = ref(articles.slice(0, LATEST_COUNT))
+
+// 卡片浏览量/点赞
+const { statsMap, loadStats } = useArticleStats()
+onMounted(() => void loadStats(latestArticles.value.map((a) => a.id)))
 
 const goToListWithTag = (tag: string) => {
   router.push({ path: '/article', query: { tags: tag } })
@@ -65,7 +70,7 @@ const goToListWithTag = (tag: string) => {
           :key="article.id"
           :to="`/article/${article.id}`"
         >
-          <CardComponent :card="article">
+          <CardComponent :card="article" :stats="statsMap[article.id] ?? null">
             <template #tags>
               <TagComponent
                 :mode="TAG_MODE[1]"

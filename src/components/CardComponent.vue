@@ -1,19 +1,17 @@
 <script lang="ts" setup>
 import type { Card } from '@/types'
 
-const baseUrl = import.meta.env.BASE_URL
-
-defineProps<{ card: Card }>()
+defineProps<{
+  card: Card
+  stats?: { views: number; likes: number } | null
+}>()
 </script>
 
 <template>
-  <article class="article-card">
-    <!-- 左侧封面（无封面时用品牌占位块保持卡片几何统一） -->
+  <article class="article-card" :class="{ 'no-cover': !card.coverImage }">
+    <!-- 左侧封面：仅在有封面时显示 -->
     <div v-if="card.coverImage" class="cover-wrapper">
       <img :alt="card.title" :src="card.coverImage" class="article-cover" loading="lazy" />
-    </div>
-    <div v-else class="cover-wrapper cover-placeholder" aria-hidden="true">
-      <img :src="`${baseUrl}img/tudou.png`" alt="" class="placeholder-icon" loading="lazy" />
     </div>
 
     <!-- 右侧内容 -->
@@ -21,7 +19,26 @@ defineProps<{ card: Card }>()
       <h2 class="article-title">{{ card.title }}</h2>
       <p v-if="card.excerpt" class="article-excerpt">{{ card.excerpt }}</p>
       <footer class="card-footer">
-        <time v-if="card.date" :datetime="card.date" class="article-time">{{ card.date }}</time>
+        <div class="card-meta">
+          <time v-if="card.date" :datetime="card.date" class="article-time">{{ card.date }}</time>
+          <span v-if="stats" class="card-stats">
+            <span class="stat" title="浏览量">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {{ stats.views }}
+            </span>
+            <span class="stat" title="点赞">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                />
+              </svg>
+              {{ stats.likes }}
+            </span>
+          </span>
+        </div>
         <slot name="tags" />
       </footer>
     </div>
@@ -31,7 +48,7 @@ defineProps<{ card: Card }>()
 <style scoped>
 .article-card {
   display: flex;
-  flex-direction: row; /* 改为横向排列 */
+  flex-direction: row;
   text-decoration: none;
   border-radius: var(--border-radius);
   background-color: var(--off-white);
@@ -39,7 +56,12 @@ defineProps<{ card: Card }>()
   border: 1px solid var(--light-gray);
   overflow: hidden;
   transition: var(--transition);
-  height: 160px; /* 固定高度，可以根据需要调整 */
+  height: 160px; /* 有封面时固定高度 */
+}
+
+/* 无封面：纯文字卡片，高度自适应 */
+.article-card.no-cover {
+  height: auto;
 }
 
 .article-card:hover {
@@ -55,32 +77,6 @@ defineProps<{ card: Card }>()
   flex-shrink: 0; /* 防止被压缩 */
   overflow: hidden;
   background: var(--light-gray);
-}
-
-/* 无封面占位块：随主题色变化的柔和渐变 + 低透明度品牌图标
-   （用 srgb 混合：oklch 在近无色端的色相插值不稳定，会把青绿混成桃粉） */
-.cover-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--main) 16%, var(--white)),
-    var(--white)
-  );
-}
-
-.placeholder-icon {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  opacity: 0.45;
-  transition: var(--transition-slow);
-}
-
-.article-card:hover .placeholder-icon {
-  opacity: 0.7;
-  transform: scale(1.08);
 }
 
 .article-cover {
@@ -140,6 +136,33 @@ defineProps<{ card: Card }>()
   border-top: 1px solid var(--light-gray);
 }
 
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.card-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--mid-gray);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.card-stats .stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.card-stats .stat svg {
+  width: 13px;
+  height: 13px;
+}
+
 .article-time {
   color: var(--mid-gray);
   font-size: 0.75rem;
@@ -157,15 +180,6 @@ defineProps<{ card: Card }>()
   .cover-wrapper {
     width: 100%;
     height: 180px;
-  }
-
-  .cover-placeholder {
-    height: 96px;
-  }
-
-  .placeholder-icon {
-    width: 40px;
-    height: 40px;
   }
 
   .article-title {
