@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta
+      content="土豆仔的纯静态个人博客：前端技术、工具折腾与日常记录。"
+      name="description"
+    />
+    <meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color" />
+    <meta content="#15171c" media="(prefers-color-scheme: dark)" name="theme-color" />
+    <meta content="土豆博客" property="og:site_name" />
+    <meta content="土豆博客 - 土豆仔的个人博客" property="og:title" />
+    <meta content="土豆仔的纯静态个人博客：前端技术、工具折腾与日常记录。" property="og:description" />
+    <meta content="website" property="og:type" />
+    <meta content="https://tudoulog.pages.dev/" property="og:url" />
+    <meta content="https://tudoulog.pages.dev/img/tudou.png" property="og:image" />
+    <meta content="zh_CN" property="og:locale" />
+    <meta content="summary" name="twitter:card" />
+    <link href="https://tudoulog.pages.dev/" rel="canonical" />
+    <title>TuDouLog</title>
+    <link href="/img/tudou.png" rel="icon" type="image/png" />
+    <script>
+      // 首屏渲染前确定色彩模式，避免深色用户看到白屏闪烁
+      ;(function () {
+        var mode = 'auto'
+        try {
+          mode = localStorage.getItem('colorMode') || 'auto'
+        } catch (e) {}
+        var dark =
+          mode === 'dark' ||
+          (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.setAttribute('data-color-scheme', dark ? 'dark' : 'light')
+      })()
+    </script>
+    <script type="module" crossorigin src="/assets/index-CsM9_Na-.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-wZ-k5lKb.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-Ddk4ZMHq.css">
+    <link rel="alternate" type="application/rss+xml" title="土豆博客" href="/rss.xml">
+    <meta name="author" content="土豆仔">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>

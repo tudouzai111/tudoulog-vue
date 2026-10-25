@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>土豆博客</title>
+    <link>https://tudoulog.pages.dev/</link>
+    <description>土豆仔的纯静态个人博客：前端技术、工具折腾与日常记录。</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Sun, 25 Oct 2026 11:22:41 GMT</lastBuildDate>
+    <atom:link href="https://tudoulog.pages.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在CloudFlare上部署静态HTML文件</title>
+      <link>https://tudoulog.pages.dev/article/cloudflare</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/cloudflare</guid>
+      <pubDate>Fri, 10 Jul 2026 00:00:00 GMT</pubDate>
+      <description>在CloudFlare上免费部署静态HTML文件</description>
+    </item>
+    <item>
+      <title>配置OpenCodeWeb通过内网穿透实现远程控制OpenCode</title>
+      <link>https://tudoulog.pages.dev/article/opencode-web</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/opencode-web</guid>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 GMT</pubDate>
+      <description>配置OpenCodeWeb和内网穿透，实现其他设备远程控制本地OpenCode</description>
+    </item>
+    <item>
+      <title>Windows下安装Clash并配置节点代理</title>
+      <link>https://tudoulog.pages.dev/article/clash</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/clash</guid>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 GMT</pubDate>
+      <description>翻墙</description>
+    </item>
+    <item>
+      <title>Vite + Vue 3 搭建 Markdown 博客文章系统：从配置到动态路由</title>
+      <link>https://tudoulog.pages.dev/article/blog-markdown-system</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/blog-markdown-system</guid>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <description>拆解如何用 Vite 7 + Vue 3.5 + TypeScript 搭建一套 Markdown 博客系统，重点讲 vite-plugin-vue-markdown 的配置、动态路由设计以及文章列表的自动发现</description>
+    </item>
+    <item>
+      <title>Vue 3 组件设计：多功能标签组件与主题色切换系统</title>
+      <link>https://tudoulog.pages.dev/article/tag-component-theme</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/tag-component-theme</guid>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <description>通过一个真实博客项目中的实战案例，分享 Vue 3 组件设计思路——包括三模式标签组件的 v-model 设计和 provide/inject 全局主题切换方案</description>
+    </item>
+    <item>
+      <title>Vue 3 实战：手写通用文章目录导航组件（栈算法 + 滚动高亮 + 响应式）</title>
+      <link>https://tudoulog.pages.dev/article/toc-component</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/toc-component</guid>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <description>从零实现一个通用的文章目录导航组件，涵盖栈算法构建目录树、递归组件渲染、滚动高亮和响应式布局</description>
+    </item>
+    <item>
+      <title>Vue 3 过渡动画实战指南：从 Transition 到 TransitionGroup</title>
+      <link>https://tudoulog.pages.dev/article/vue-transitions</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/vue-transitions</guid>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
+      <description>用博客项目中的真实代码讲解 Vue 3 的 Transition 和 TransitionGroup，包括类名体系、路由过渡、列表 stagger 错峰动画等</description>
+    </item>
+    <item>
+      <title>Windows下安装OpenCode并配置oh-my-openagent和superpowers</title>
+      <link>https://tudoulog.pages.dev/article/opencode-windows-install</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/opencode-windows-install</guid>
+      <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
+      <description>从零开始在Windows上安装OpenCode终端AI编码助手，并配置oh-my-openagent和superpowers插件</description>
+    </item>
+    <item>
+      <title>一次内核级内存泄漏排查实录：16GB内存被吃掉13GB，元凶竟是Realtek音频驱动</title>
+      <link>https://tudoulog.pages.dev/article/win11bug</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/win11bug</guid>
+      <pubDate>Sun, 26 Apr 2026 00:00:00 GMT</pubDate>
+      <description>具体情况是突然电脑卡顿，内存占用99%，系统磁盘100%，CPU正常，任务管理器进程列表看不出谁占内存，重启无效</description>
+    </item>
+    <item>
+      <title>Flutter</title>
+      <link>https://tudoulog.pages.dev/article/flutter</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/flutter</guid>
+      <pubDate>Tue, 14 Apr 2026 00:00:00 GMT</pubDate>
+      <description>Flutter环境的安装编译，Dart的基础语法，Flutter组件框架的学习，暂时只学了基础以后如果感兴趣有时间了可能会学的更深入</description>
+    </item>
+    <item>
+      <title>Spring Boot 配置类的学习</title>
+      <link>https://tudoulog.pages.dev/article/springboot-config</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/springboot-config</guid>
+      <pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+      <description>记录springboot中各种的配置类，由于这些配置类不常写，但是也是很重要的，避免遗忘所以记录</description>
+    </item>
+    <item>
+      <title>乐理</title>
+      <link>https://tudoulog.pages.dev/article/music-study</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/music-study</guid>
+      <pubDate>Wed, 04 Mar 2026 00:00:00 GMT</pubDate>
+      <description>记录一下学习的乐理基础的知识</description>
+    </item>
+    <item>
+      <title>为什么要写纯静态土豆博客</title>
+      <link>https://tudoulog.pages.dev/article/hello</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/hello</guid>
+      <pubDate>Tue, 03 Mar 2026 00:00:00 GMT</pubDate>
+      <description>记录一下写博客的过程</description>
+    </item>
+    <item>
+      <title>分享一些好用的软件</title>
+      <link>https://tudoulog.pages.dev/article/ruanjian-list</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/ruanjian-list</guid>
+      <pubDate>Tue, 03 Mar 2026 00:00:00 GMT</pubDate>
+      <description>备份记录一些好用的软件</description>
+    </item>
+    <item>
+      <title>OKLCH色彩</title>
+      <link>https://tudoulog.pages.dev/article/oklch</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/oklch</guid>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+      <description>oklch() 基于 Oklab 色彩空间，是 CSS 颜色表示的重大进步，它让颜色的亮度、色度、色相在感知上解耦，极大简化了动态配色、渐变生成和暗色主题的实现。</description>
+    </item>
+    <item>
+      <title>算法笔记</title>
+      <link>https://tudoulog.pages.dev/article/suan-fa</link>
+      <guid isPermaLink="true">https://tudoulog.pages.dev/article/suan-fa</guid>
+      <pubDate>Mon, 21 Jul 2025 00:00:00 GMT</pubDate>
+      <description>以前打算法竞赛学习记录的笔记</description>
+    </item>
+  </channel>
+</rss>

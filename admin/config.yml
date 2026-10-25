@@ -1,0 +1,105 @@
+# 土豆博客内容管理后台（Sveltia CMS）配置
+# 访问入口：https://tudoulog.pages.dev/admin/
+#
+# 首次使用前需要完成 GitHub OAuth 接入（见 README「内容管理后台」一节）：
+# 1. 在 GitHub 创建 OAuth App（callback 填 Worker 的 /callback）
+# 2. 部署 sveltia-cms-auth Worker 并配置客户端 ID/密钥
+# 3. 把下面 base_url 改成你的 Worker 地址
+#
+# 本地调试：pnpm exec @sveltia/cms-proxy-server 然后访问
+# http://localhost:5173/admin/index.html
+
+backend:
+  name: github
+  repo: tudouzai111/tudoulog-vue
+  branch: master
+  # TODO: 部署 sveltia-cms-auth 后替换成你的 Worker 地址，例如
+  # base_url: https://sveltia-cms-auth.example.workers.dev
+  base_url: https://PLEASE-REPLACE-ME.workers.dev
+
+site_url: https://tudoulog.pages.dev
+logo_url: /img/tudou.png
+
+media_folder: public/img
+public_path: /img
+
+local_backend: true
+
+collections:
+  # 博客文章：与 src/articles/ 的书写约定一致，文件名即文章 ID
+  - name: articles
+    label: 文章
+    label_singular: 文章
+    folder: src/articles
+    create: true
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    extension: md
+    format: frontmatter
+    editor:
+      preview: false
+    sortable_fields: [date, title]
+    summary: '{{title}} - {{date}}'
+    fields:
+      - label: 标题
+        name: title
+        widget: string
+      - label: 发布日期
+        name: date
+        widget: datetime
+        format: YYYY-MM-DD
+        date_format: YYYY-MM-DD
+        time_format: false
+      - label: 标签
+        name: tags
+        widget: list
+        required: false
+        default: []
+      - label: 摘要
+        name: excerpt
+        widget: text
+        required: false
+      - label: 封面图
+        name: coverImage
+        widget: image
+        required: false
+        media_folder: public/img/cover
+        public_path: /img/cover
+      - label: 更新日期
+        name: updated
+        widget: datetime
+        required: false
+        format: YYYY-MM-DD
+        date_format: YYYY-MM-DD
+        time_format: false
+      - label: 草稿（开启后不发布）
+        name: draft
+        widget: boolean
+        default: false
+        required: false
+      - label: 正文
+        name: body
+        widget: markdown
+
+  # 废话（微型博客）：每条一个 md 文件，存放在 src/words/
+  - name: words
+    label: 废话
+    label_singular: 废话
+    folder: src/words
+    create: true
+    slug: '{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}'
+    extension: md
+    format: frontmatter
+    editor:
+      preview: false
+    sortable_fields: [date]
+    summary: '{{date}}'
+    fields:
+      - label: 日期
+        name: date
+        widget: datetime
+        format: YYYY-MM-DD
+        date_format: YYYY-MM-DD
+        time_format: false
+      - label: 内容
+        name: body
+        widget: text
