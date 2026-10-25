@@ -1,12 +1,16 @@
 ---
-title: 'Vite + Vue 3 搭建 Markdown 博客文章系统：从配置到动态路由'
-date: '2026-06-01'
-tags: ['Vue', '前端', '教程']
-excerpt: '拆解如何用 Vite 7 + Vue 3.5 + TypeScript 搭建一套 Markdown 博客系统，重点讲 vite-plugin-vue-markdown 的配置、动态路由设计以及文章列表的自动发现'
+title: Vite + Vue 3 搭建 Markdown 博客文章系统：从配置到动态路由
+date: 2026-06-01
+tags:
+  - Vue
+  - 前端
+  - 教程
+excerpt: 拆解如何用 Vite 7 + Vue 3.5 + TypeScript 搭建一套 Markdown 博客系统，重点讲 vite-plugin-vue-markdown 的配置、动态路由设计以及文章列表的自动发现
 coverImage: ''
+updated: ''
+draft: false
+ai: true
 ---
-
-> 文章使用AI润色
 
 ## 1. 引言
 
@@ -20,7 +24,7 @@ coverImage: ''
 
 安装依赖（以下版本是项目当前使用的）：
 
-```
+```plain
 pnpm add vite-plugin-vue-markdown markdown-it-shiki shiki
 ```
 
@@ -180,8 +184,8 @@ export function getAllTags(): string[] {
 
 - `import.meta.glob` 的 `eager: true`：在构建时立即执行导入，运行时不需要异步等待。匹配 `@/articles/*.md` 下的所有文件。
 - `.filter(([path]) => !path.includes('AGENTS.md'))`：排除 `AGENTS.md`，这个是项目的知识库文件，不是文章。
-- `coverImage` 处理：只存文件名，路径由 `baseUrl + 'img/cover/'` 拼接。这样封面图统一放在 `public/img/cover/` 下，部署到 Cloudflare Pages 时路径正确。
-- `.sort((a, b) => b.date.localeCompare(a.date))`：按日期降序排列，最新文章排最前面。
+- `coverImage` 处理：只存文件名，路径由 `baseUrl + 'img/cover/'` 拼接。这样封面图统一放在 `public/img/cover/` 下，部署到 Cloudflare Pages 时路径正确。\`
+`- `.sort((a, b) => b.date.localeCompare(a.date))\`：按日期降序排列，最新文章排最前面。
 - `getAllTags()` 工具函数：遍历所有文章收集标签，去重并排序，供标签页使用。
 
 ## 5. 配置路由
