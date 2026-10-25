@@ -47,6 +47,33 @@
 
 /* ===== 代码块：Shiki 双主题切换与复制按钮 ===== */
 
+/* 注意：markdown 内容里的元素（标题/图片/锚点/代码块按钮）是构建期注入的，
+   不带组件 scoped 的 data-v 属性，相关样式必须写在这里（全局）才能命中 */
+
+.markdown-body :is(h1, h2, h3, h4, h5, h6) {
+  /* 锚点/目录跳转后标题不贴视口顶边 */
+  scroll-margin-top: 12px;
+}
+
+.heading-anchor {
+  margin-left: 6px;
+  opacity: 0;
+  font-weight: 400;
+  transition: var(--transition-fast);
+}
+
+.markdown-body :is(h1, h2, h3, h4):hover .heading-anchor {
+  opacity: 0.6;
+}
+
+.heading-anchor:hover {
+  opacity: 1;
+}
+
+.markdown-body img {
+  cursor: zoom-in;
+}
+
 .markdown-body pre {
   position: relative;
 }

@@ -99,7 +99,7 @@ function headingAnchorPlugin(md: any) {
     const open = tokens[idx - 2]
     const id = open?.attrGet?.('id')
     const tag = tokens[idx].tag
-    if (id && ['h2', 'h3', 'h4'].includes(tag)) {
+    if (id && ['h1', 'h2', 'h3', 'h4'].includes(tag)) {
       return `<a class="heading-anchor" href="#${id}" aria-label="跳转到此标题">#</a>${self.renderToken(tokens, idx, options)}`
     }
     return self.renderToken(tokens, idx, options)

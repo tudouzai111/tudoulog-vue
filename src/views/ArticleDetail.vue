@@ -466,33 +466,6 @@ watch(
   flex-shrink: 1;
 }
 
-/* 文章内图片可点击放大 */
-.markdown-body img {
-  cursor: zoom-in;
-}
-
-/* 标题锚点：悬停标题时显现 */
-.markdown-body :is(h1, h2, h3, h4, h5, h6) {
-  position: relative;
-  /* 锚点/目录跳转后标题不贴视口顶边 */
-  scroll-margin-top: 12px;
-}
-
-.heading-anchor {
-  margin-left: 6px;
-  opacity: 0;
-  font-weight: 400;
-  transition: var(--transition-fast);
-}
-
-.markdown-body :is(h2, h3, h4):hover .heading-anchor {
-  opacity: 0.6;
-}
-
-.heading-anchor:hover {
-  opacity: 1 !important;
-}
-
 /* lightbox
    不用 backdrop-filter：它叠在持续动画的渐变背景上会造成每帧全屏模糊重算，
    低端设备会明显卡顿 */
