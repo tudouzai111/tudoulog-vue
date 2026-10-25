@@ -13,6 +13,7 @@ import {
   type Highlighter,
   type ShikiTransformer,
 } from 'shiki'
+import { articlePlugin } from './build/articlePlugin'
 
 // 给代码块注入复制按钮（点击行为由文章详情页统一代理）
 function copyButtonTransformer(): ShikiTransformer {
@@ -48,6 +49,64 @@ function collectArticleLangs(): BuiltinLanguage[] {
   return [...langSet].filter((lang): lang is BuiltinLanguage => lang in bundledLanguages)
 }
 
+// 标题 slug 生成，必须与 src/views/ArticleDetail.vue 里目录的 slugify 保持一致
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u4e00-\u9fa5-]/g, '')
+}
+
+// 构建期为标题生成 id 和悬停锚点，运行时目录直接复用
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function headingAnchorPlugin(md: any) {
+  const slugs = new Map<string, number>()
+  const defaultOpen =
+    md.renderer.rules.heading_open ||
+    ((tokens: any, idx: any, options: any, env: any, self: any) =>
+      self.renderToken(tokens, idx, options))
+
+  md.renderer.rules.heading_open = (
+    tokens: any,
+    idx: any,
+    options: any,
+    env: any,
+    self: any,
+  ) => {
+    const token = tokens[idx]
+    if (!token.attrGet('id')) {
+      const inline = tokens[idx + 1]
+      const text = (inline?.children ?? [])
+        .filter((c: any) => c.type === 'text' || c.type === 'code_inline')
+        .map((c: any) => c.content)
+        .join('')
+      const base = slugify(text) || 'heading'
+      const count = slugs.get(base) ?? 0
+      slugs.set(base, count + 1)
+      token.attrSet('id', count === 0 ? base : `${base}-${count}`)
+    }
+    return defaultOpen(tokens, idx, options, env, self)
+  }
+
+  md.renderer.rules.heading_close = (
+    tokens: any,
+    idx: any,
+    options: any,
+    env: any,
+    self: any,
+  ) => {
+    // heading_close 的 token 流为 [heading_open, inline, heading_close]，open 在 idx-2
+    const open = tokens[idx - 2]
+    const id = open?.attrGet?.('id')
+    const tag = tokens[idx].tag
+    if (id && ['h2', 'h3', 'h4'].includes(tag)) {
+      return `<a class="heading-anchor" href="#${id}" aria-label="跳转到此标题">#</a>${self.renderToken(tokens, idx, options)}`
+    }
+    return self.renderToken(tokens, idx, options)
+  }
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export default defineConfig(async () => {
   const highlighter: Highlighter = await createHighlighter({
     themes: ['github-light', 'one-dark-pro'],
@@ -57,6 +116,7 @@ export default defineConfig(async () => {
   return {
     base: '/',
     plugins: [
+      articlePlugin(fileURLToPath(new URL('.', import.meta.url))),
       vue({
         include: [/\.vue$/, /\.md$/], // 让 Vue 处理 .md 文件
       }),
@@ -82,6 +142,7 @@ export default defineConfig(async () => {
           },
         },
         markdownItUses: [
+          headingAnchorPlugin,
           // 自定义链接渲染器，使外部链接在新标签页中打开
           /* eslint-disable @typescript-eslint/no-explicit-any */
           (md: any) => {

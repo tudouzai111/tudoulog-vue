@@ -10,7 +10,7 @@ CloudFlare：https://www.cloudflare-cn.com/
 
 注册个账号跟着图片走就行
 
-![cloudflare_1.png](../../public/img/cloudflare_1.png)
-![cloudflare_2.png](../../public/img/cloudflare_2.png)
-![cloudflare_3.png](../../public/img/cloudflare_3.png)
-![cloudflare_4.png](../../public/img/cloudflare_4.png)
+![cloudflare_1.png](/img/cloudflare_1.png)
+![cloudflare_2.png](/img/cloudflare_2.png)
+![cloudflare_3.png](/img/cloudflare_3.png)
+![cloudflare_4.png](/img/cloudflare_4.png)

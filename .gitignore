@@ -88,6 +88,9 @@ pids
 .opencode/
 .sisyphus/
 
+# ZCode assistant
+.zcode/
+
 # Temporary files
 *.tmp
 *.temp

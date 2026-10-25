@@ -15,7 +15,7 @@ coverImage: 'win11bug.png'
 - CPU占用极低
 - 重启后问题依旧
 
-  ![win11bug1.png](../../public/img/win11bug1.png)
+  ![win11bug1.png](/img/win11bug1.png)
 
 # 查找元凶
 
@@ -23,7 +23,7 @@ coverImage: 'win11bug.png'
 
 发现非分页池（Nonpaged Pool）高达 **13GB**（共16GB内存）可以知道是内核级内存泄漏问题
 
-![win11bug2.png](../../public/img/win11bug2.png)
+![win11bug2.png](/img/win11bug2.png)
 
 ## PoolMon
 
@@ -33,7 +33,7 @@ coverImage: 'win11bug.png'
 
 然后发现 Tag **`RTLF`** 占用了约 **10GB**，元凶是 **Realtek 音频驱动**
 
-![win11bug3.png](../../public/img/win11bug3.png)
+![win11bug3.png](/img/win11bug3.png)
 
 # 根本原因
 

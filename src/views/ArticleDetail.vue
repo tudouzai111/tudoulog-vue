@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import type { Component } from 'vue'
 import { articles, loadArticleComponent } from '@/utils/articleList'
 import type { Heading } from '@/types'
@@ -60,8 +60,21 @@ async function copyText(text: string): Promise<boolean> {
 }
 
 // 代码块复制按钮（构建期由 Shiki transformer 注入），在正文容器上统一代理点击
+// 同时代理图片点击放大（lightbox）
+const lightboxSrc = ref('')
+
 const handleContentClick = async (event: MouseEvent) => {
-  const btn = (event.target as HTMLElement).closest('.shiki-copy-btn')
+  const target = event.target as HTMLElement
+
+  // 图片放大
+  const img = target.closest('img')
+  if (img && img.closest('.markdown-body')) {
+    lightboxSrc.value = img.getAttribute('src') ?? ''
+    return
+  }
+
+  // 复制代码
+  const btn = target.closest('.shiki-copy-btn')
   if (!btn) return
   const code = btn.closest('pre')?.querySelector('code')
   if (!code) return
@@ -72,6 +85,19 @@ const handleContentClick = async (event: MouseEvent) => {
     btn.classList.remove('copied', 'copy-failed')
     btn.textContent = '复制'
   }, 1500)
+}
+
+// lightbox 打开时锁定背景滚动，Esc 关闭
+watch(lightboxSrc, (src) => {
+  document.body.style.overflow = src ? 'hidden' : ''
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+})
+
+const handleLightboxKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') lightboxSrc.value = ''
 }
 
 const contentRef = ref<HTMLElement | null>(null)
@@ -103,7 +129,10 @@ function generateTocTree(contentRef: HTMLElement): Heading[] {
 
   elements.forEach((el) => {
     const level = parseInt(el.tagName.slice(1)) // H2 -> 2
-    const title = el.textContent || ''
+    // 标题文本排除构建期注入的锚点符号
+    const clone = el.cloneNode(true) as HTMLElement
+    clone.querySelector('.heading-anchor')?.remove()
+    const title = clone.textContent?.trim() || ''
 
     // 生成/复用 id
     let id = el.id
@@ -227,6 +256,23 @@ watch(
       </nav>
     </div>
     <BackToTop />
+
+    <!-- 图片放大层 -->
+    <Teleport to="body">
+      <Transition name="lightbox">
+        <div
+          v-if="lightboxSrc"
+          aria-label="关闭图片预览"
+          class="lightbox-overlay"
+          role="button"
+          tabindex="-1"
+          @click="lightboxSrc = ''"
+          @keydown="handleLightboxKeydown"
+        >
+          <img :alt="article?.title ?? ''" :src="lightboxSrc" class="lightbox-image" />
+        </div>
+      </Transition>
+    </Teleport>
   </article>
 </template>
 
@@ -403,5 +449,63 @@ watch(
   width: 100%;
   min-width: 0;
   flex-shrink: 1;
+}
+
+/* 文章内图片可点击放大 */
+.markdown-body img {
+  cursor: zoom-in;
+}
+
+/* 标题锚点：悬停标题时显现 */
+.markdown-body :is(h1, h2, h3, h4, h5, h6) {
+  position: relative;
+}
+
+.heading-anchor {
+  margin-left: 6px;
+  opacity: 0;
+  font-weight: 400;
+  transition: var(--transition-fast);
+}
+
+.markdown-body :is(h2, h3, h4):hover .heading-anchor {
+  opacity: 0.6;
+}
+
+.heading-anchor:hover {
+  opacity: 1 !important;
+}
+
+/* lightbox
+   不用 backdrop-filter：它叠在持续动画的渐变背景上会造成每帧全屏模糊重算，
+   低端设备会明显卡顿 */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background: rgba(10, 12, 16, 0.85);
+  cursor: zoom-out;
+}
+
+.lightbox-image {
+  max-width: 92vw;
+  max-height: 92vh;
+  object-fit: contain;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.lightbox-enter-active,
+.lightbox-leave-active {
+  transition: var(--transition-fast);
+}
+
+.lightbox-enter-from,
+.lightbox-leave-to {
+  opacity: 0;
 }
 </style>

@@ -20,13 +20,13 @@ https://clashofficial.com/zh-CN/index.html
 
 安装完跟着图片配置就行了
 
-![clash_1.png](../../public/img/clash_1.png)
-![clash_2.png](../../public/img/clash_2.png)
+![clash_1.png](/img/clash_1.png)
+![clash_2.png](/img/clash_2.png)
 
 在URL里填入免费节点链接就行
 
-![clash_3.png](../../public/img/clash_3.png)
-![clash_4.png](../../public/img/clash_4.png)
+![clash_3.png](/img/clash_3.png)
+![clash_4.png](/img/clash_4.png)
 
 选择一个延迟低的节点然后再托盘图标处设置一下就行了
 

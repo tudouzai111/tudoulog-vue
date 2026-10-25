@@ -15,13 +15,13 @@ coverImage: ''
 
 [第一代博客的项目地址](https://gitee.com/tudouza1/tudou-blog)
 
-![首页](../../public/img/UserHomePage.png)
-![管理员登录](../../public/img/LoginPage.png)
-![管理员首页](../../public/img/AdminHomePage.png)
-![文章编辑](../../public/img/ArticleEdit.png)
+![首页](/img/UserHomePage.png)
+![管理员登录](/img/LoginPage.png)
+![管理员首页](/img/AdminHomePage.png)
+![文章编辑](/img/ArticleEdit.png)
 
 ### 第二代博客
 
 [第二代博客的项目地址](https://github.com/TuDouZa1/TuDouLog)
 
-![第二代博客首页](../../public/img/tudoulogHome.png)
+![第二代博客首页](/img/tudoulogHome.png)
