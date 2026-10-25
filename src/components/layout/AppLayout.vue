@@ -1,13 +1,7 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
-import { computed } from 'vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import LoadingBar from '@/components/LoadingBar.vue'
-
-const route = useRoute()
-// 首页不显示底部
-const isHome = computed(() => route.path === '/')
 </script>
 
 <template>
@@ -21,7 +15,7 @@ const isHome = computed(() => route.path === '/')
         </transition>
       </router-view>
     </main>
-    <AppFooter v-if="!isHome" />
+    <AppFooter />
   </div>
 </template>
 

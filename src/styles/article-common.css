@@ -44,3 +44,60 @@
     font-size: 2rem;
   }
 }
+
+/* ===== 代码块：Shiki 双主题切换与复制按钮 ===== */
+
+.markdown-body pre {
+  position: relative;
+}
+
+/* Shiki 以亮色为默认行内颜色，暗色时切换到 --shiki-dark 变量（构建期由双主题渲染写入） */
+[data-color-scheme='dark'] .markdown-body .shiki,
+[data-color-scheme='dark'] .markdown-body .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* 复制按钮：构建期由 Shiki transformer 注入到 pre 内 */
+.shiki-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: inherit;
+  border-radius: 6px;
+  border: 1px solid var(--light-gray);
+  background: var(--off-white);
+  color: var(--mid-gray);
+  cursor: pointer;
+  opacity: 0;
+  transition: var(--transition-fast);
+  z-index: 1;
+}
+
+.markdown-body pre:hover .shiki-copy-btn,
+.shiki-copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.shiki-copy-btn:hover {
+  color: var(--dark-gray);
+  border-color: var(--mid-gray);
+}
+
+.shiki-copy-btn.copied {
+  color: var(--main);
+  border-color: var(--main);
+}
+
+/* 触屏设备没有 hover，常显复制按钮 */
+@media (hover: none) {
+  .shiki-copy-btn {
+    opacity: 1;
+  }
+}

@@ -85,45 +85,25 @@ watch(filteredArticles, () => {
 })
 // 页面输入跳转
 const inputPageNum = ref('')
-// 分页按钮显示逻辑
-const showPageBtn = computed<number[]>(() => {
+// 分页按钮显示逻辑：始终包含首末页和当前页，间隔用省略号占位
+type PageItem = number | '...'
+const showPageBtn = computed<PageItem[]>(() => {
   const total = totalPages.value
   const current = currentPage.value
-  const range = [] // 符合条件的页码
-  // // 包括省略号在内最多8个元素：1，最后一页，index，index+1，index-1，两个省略号，输入框
-  // for (let index = 1; index <= total; index++) {
-  //   if (
-  //     index === 1 ||
-  //     index === total ||
-  //     // index和index左右两边的数字
-  //     (index - current < 2 && index + 1 >= current) ||
-  //     // 最后几位页码特殊处理
-  //     (total - current < 4 && total - index < 2)
-  //   ) {
-  //     range.push(index)
-  //   }
-  // }
-  // const result: (number | string)[] = [] // 结果
-  // let pre = 0
-  // for (const i of range) {
-  //   // 判断省略号位置
-  //   if (i - pre > 1) {
-  //     result.push('...')
-  //   }
-  //   result.push(i)
-  //   pre = i
-  // }
-  // console.log('result:', result)
-  // return result
+  // 页数不多时全部展示
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
 
-  // 再次精简
-  // 为了不让页码按钮过多，包括省略号在内最多4个元素：1，最后一页，index，输入框
-  for (let index = 1; index <= total; index++) {
-    if (index === 1 || index === total || index === current) {
-      range.push(index)
-    }
+  const wanted = new Set([1, total, current - 1, current, current + 1])
+  const pages = [...wanted].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b)
+
+  const result: PageItem[] = []
+  let prev = 0
+  for (const p of pages) {
+    if (p - prev > 1) result.push('...')
+    result.push(p)
+    prev = p
   }
-  return range
+  return result
 })
 // 切换页面
 const goToPage = (n: number) => {
@@ -211,12 +191,7 @@ watch(
       name="list"
       tag="div"
     >
-      <router-link
-        v-for="(article, index) in showArticles"
-        :key="article.id"
-        :style="{ '--delay': index * 0.1 + 's' }"
-        :to="`/article/${article.id}`"
-      >
+      <router-link v-for="article in showArticles" :key="article.id" :to="`/article/${article.id}`">
         <CardComponent :card="article">
           <template #tags>
             <TagComponent v-model="selectedTags" :tags="article.tags || []" />
@@ -238,16 +213,18 @@ watch(
       >
         上一页
       </button>
-      <button
-        v-for="(item, index) in showPageBtn"
-        :key="index"
-        :class="item === currentPage ? 'page-btn-active' : 'page-btn'"
-        class="page-btn"
-        type="button"
-        @click="goToPage(item)"
-      >
-        {{ item }}
-      </button>
+      <template v-for="(item, index) in showPageBtn" :key="index">
+        <span v-if="item === '...'" aria-hidden="true" class="page-ellipsis">…</span>
+        <button
+          v-else
+          :class="item === currentPage ? 'page-btn-active' : 'page-btn'"
+          class="page-btn"
+          type="button"
+          @click="goToPage(item)"
+        >
+          {{ item }}
+        </button>
+      </template>
       <button
         :class="currentPage === totalPages ? 'page-btn-disabled' : 'page-btn'"
         :disabled="currentPage === totalPages"
@@ -446,6 +423,12 @@ watch(
   padding: 0.5rem;
   width: 40px;
   text-align: center;
+}
+
+.page-ellipsis {
+  color: var(--mid-gray);
+  padding: 0 2px;
+  user-select: none;
 }
 
 /* 结果统计 */

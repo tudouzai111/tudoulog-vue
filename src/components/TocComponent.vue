@@ -22,7 +22,6 @@ const updateOffsets = () => {
   })
   // 按 top 值排序（确保顺序正确）
   offsets.sort((a, b) => a.top - b.top)
-  console.log('offsets', offsets)
   headingOffsets.value = offsets
 }
 

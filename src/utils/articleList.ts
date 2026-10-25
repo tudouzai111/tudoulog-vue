@@ -2,8 +2,7 @@ import type { Component } from 'vue'
 
 const baseUrl = import.meta.env.BASE_URL
 
-// 定义对应插件生成类，包含default组件用来显示markdown正文内容
-// 文章内容
+// 文章 frontmatter 元数据
 interface ArticleMeta {
   title?: string
   date?: string
@@ -11,21 +10,21 @@ interface ArticleMeta {
   excerpt?: string
   coverImage?: string
 }
-interface MarkdownModule {
-  default: Component
-  title?: string
-  date?: string
-  tags?: string[]
-  excerpt?: string
-  coverImage?: string
+
+export interface Article extends ArticleMeta {
+  id: string
+  title: string
+  date: string
+  tags: string[]
+  excerpt: string
+  coverImage: string
+  /** 正文字数（含中文按字、英文按词） */
+  wordCount: number
+  /** 预估阅读分钟数（最少 1 分钟） */
+  readingMinutes: number
 }
 
-
-// 通过import.meta.glob一次性导入所有md文件
-// 每个导入的模块会包含所有frontmatter字段和默认导出的default组件
-// 使用 eager 会在构建时立即执行
-const modules: Record<string, MarkdownModule> = import.meta.glob('@/articles/*.md', { eager: true })
-
+// 通过 import.meta.glob 导入文章原始文本（用于解析 frontmatter 与统计字数）
 const rawModules = import.meta.glob<string>(['@/articles/*.md', '!**/AGENTS.md'], {
   eager: true,
   query: '?raw',
@@ -63,16 +62,39 @@ function parseFrontmatter(raw: string): ArticleMeta {
   return result
 }
 
+// 阅读时长估算：中文按 400 字/分钟，英文按 200 词/分钟
+// 代码块不计入（扫代码的速度和读正文差别很大）
+const CJK_PER_MINUTE = 400
+const WORDS_PER_MINUTE = 200
+
+function estimateReading(raw: string): { wordCount: number; readingMinutes: number } {
+  const body = raw.replace(/^---\r?\n[\s\S]*?\r?\n---/, '')
+  const prose = body
+    .replace(/```[\s\S]*?```/g, '') // 围栏代码块
+    .replace(/~~~[\s\S]*?~~~/g, '')
+    .replace(/`[^`]*`/g, '') // 行内代码
+    .replace(/<[^>]+>/g, '') // 内嵌 HTML 标签
+  const cjkCount = (prose.match(/[\u4e00-\u9fa5\u3040-\u30ff]/g) ?? []).length
+  const latinWords = prose
+    .replace(/[\u4e00-\u9fa5\u3040-\u30ff]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean).length
+  const wordCount = cjkCount + latinWords
+  const minutes = Math.ceil(cjkCount / CJK_PER_MINUTE + latinWords / WORDS_PER_MINUTE)
+  return { wordCount, readingMinutes: Math.max(1, minutes) }
+}
+
 // id → 懒加载器映射
 const componentMap: Record<string, () => Promise<Component>> = {}
 for (const [path, loader] of Object.entries(componentLoaders)) {
   componentMap[idFromPath(path)] = loader
 }
 
-export const articles = Object.entries(rawModules)
+export const articles: Article[] = Object.entries(rawModules)
   .map(([path, raw]) => {
     const fm = parseFrontmatter(raw)
     const id = idFromPath(path)
+    const { wordCount, readingMinutes } = estimateReading(raw)
     return {
       id,
       title: fm.title || id,
@@ -80,6 +102,8 @@ export const articles = Object.entries(rawModules)
       tags: fm.tags || [],
       excerpt: fm.excerpt || '',
       coverImage: fm.coverImage ? baseUrl + 'img/cover/' + fm.coverImage : '',
+      wordCount,
+      readingMinutes,
     }
   })
   .sort((a, b) => b.date.localeCompare(a.date))
@@ -88,4 +112,3 @@ export const articles = Object.entries(rawModules)
 export function loadArticleComponent(id: string): Promise<Component> | undefined {
   return componentMap[id]?.()
 }
-

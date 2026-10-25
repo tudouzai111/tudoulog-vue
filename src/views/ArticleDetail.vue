@@ -6,6 +6,7 @@ import { articles, loadArticleComponent } from '@/utils/articleList'
 import type { Heading } from '@/types'
 
 import 'github-markdown-css'
+import '@/styles/markdown-scheme.css'
 import '@/styles/article-common.css'
 import TocComponent from '@/components/TocComponent.vue'
 import BackToTop from '@/components/BackToTop.vue'
@@ -23,6 +24,55 @@ const goToListWithTag = (tags: string) => {
 
 const articleId = route.params.id as string
 const article = computed(() => articles.find((a) => a.id === articleId))
+
+// 按日期降序的列表里，当前文章的前一篇更新、后一篇更早
+const currentIndex = computed(() => articles.findIndex((a) => a.id === articleId))
+const newerArticle = computed(() =>
+  currentIndex.value > 0 ? articles[currentIndex.value - 1]! : null,
+)
+const olderArticle = computed(() =>
+  currentIndex.value >= 0 && currentIndex.value < articles.length - 1
+    ? articles[currentIndex.value + 1]!
+    : null,
+)
+
+// 复制正文：优先 Clipboard API，不可用时降级到 execCommand
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    let ok = false
+    try {
+      ok = document.execCommand('copy')
+    } catch {
+      ok = false
+    }
+    textarea.remove()
+    return ok
+  }
+}
+
+// 代码块复制按钮（构建期由 Shiki transformer 注入），在正文容器上统一代理点击
+const handleContentClick = async (event: MouseEvent) => {
+  const btn = (event.target as HTMLElement).closest('.shiki-copy-btn')
+  if (!btn) return
+  const code = btn.closest('pre')?.querySelector('code')
+  if (!code) return
+  const ok = await copyText(code.textContent ?? '')
+  btn.classList.add(ok ? 'copied' : 'copy-failed')
+  btn.textContent = ok ? '已复制' : '复制失败'
+  setTimeout(() => {
+    btn.classList.remove('copied', 'copy-failed')
+    btn.textContent = '复制'
+  }, 1500)
+}
 
 const contentRef = ref<HTMLElement | null>(null)
 const headings = ref<Heading[]>([])
@@ -129,7 +179,12 @@ watch(
       <div class="article-info">
         <div class="article-meta">
           <h1 class="article-title">{{ article.title }}</h1>
-          <time :datetime="article.date" class="article-time">{{ article.date }}</time>
+          <div class="article-meta-line">
+            <time :datetime="article.date" class="article-time">{{ article.date }}</time>
+            <span class="article-stats"
+              >约 {{ article.readingMinutes }} 分钟 · {{ article.wordCount }} 字</span
+            >
+          </div>
         </div>
         <div class="tags-position">
           <TagComponent
@@ -143,12 +198,33 @@ watch(
       <div v-if="article.excerpt" class="article-excerpt">{{ article.excerpt }}</div>
 
       <!-- 文章内容 -->
-      <section class="article-content">
+      <section class="article-content" @click="handleContentClick">
         <div ref="contentRef" class="markdown-body">
           <component :is="articleComp" v-if="articleComp" />
         </div>
         <TocComponent :headings="headings" />
       </section>
+
+      <!-- 上一篇 / 下一篇 -->
+      <nav v-if="newerArticle || olderArticle" aria-label="相邻文章" class="article-nav">
+        <router-link
+          v-if="newerArticle"
+          :to="`/article/${newerArticle.id}`"
+          class="article-nav-link"
+        >
+          <span class="nav-direction">← 较新一篇</span>
+          <span class="nav-title">{{ newerArticle.title }}</span>
+        </router-link>
+        <span v-else class="article-nav-spacer" aria-hidden="true"></span>
+        <router-link
+          v-if="olderArticle"
+          :to="`/article/${olderArticle.id}`"
+          class="article-nav-link align-end"
+        >
+          <span class="nav-direction">较早一篇 →</span>
+          <span class="nav-title">{{ olderArticle.title }}</span>
+        </router-link>
+      </nav>
     </div>
     <BackToTop />
   </article>
@@ -213,6 +289,70 @@ watch(
   font-size: 0.875rem;
 }
 
+.article-meta-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+}
+
+.article-stats {
+  color: var(--mid-gray);
+  font-size: 0.8125rem;
+}
+
+/* 上一篇 / 下一篇 */
+.article-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing);
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--light-gray);
+}
+
+.article-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  max-width: 48%;
+  padding: var(--spacing-sm) var(--spacing);
+  border-radius: var(--border-radius-sm);
+  background: var(--off-white);
+  border: var(--border);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.article-nav-link:hover {
+  box-shadow: var(--shadow);
+  border-color: var(--main);
+}
+
+.article-nav-link.align-end {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.article-nav-spacer {
+  flex: 1;
+}
+
+.nav-direction {
+  color: var(--mid-gray);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.nav-title {
+  color: var(--dark-gray);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .tags-position {
   padding-top: var(--spacing-sm);
 }
@@ -244,6 +384,17 @@ watch(
   }
   .article-title {
     font-size: 1.25rem;
+  }
+  .article-nav {
+    flex-direction: column;
+    padding: var(--spacing);
+  }
+  .article-nav-link {
+    max-width: 100%;
+  }
+  .article-nav-link.align-end {
+    align-items: flex-start;
+    text-align: left;
   }
 }
 

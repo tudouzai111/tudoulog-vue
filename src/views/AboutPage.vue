@@ -222,16 +222,4 @@ const socialLinks = [
     padding: var(--spacing);
   }
 }
-
-.list-enter-active:nth-child(1) {
-  transition-delay: 0s;
-}
-
-.list-enter-active:nth-child(2) {
-  transition-delay: 0.1s;
-}
-
-.list-enter-active:nth-child(3) {
-  transition-delay: 0.2s;
-}
 </style>

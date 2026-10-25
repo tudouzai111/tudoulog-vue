@@ -1,14 +1,19 @@
 <script lang="ts" setup>
 import type { Card } from '@/types'
 
+const baseUrl = import.meta.env.BASE_URL
+
 defineProps<{ card: Card }>()
 </script>
 
 <template>
   <article class="article-card">
-    <!-- 左侧封面 -->
+    <!-- 左侧封面（无封面时用品牌占位块保持卡片几何统一） -->
     <div v-if="card.coverImage" class="cover-wrapper">
       <img :alt="card.title" :src="card.coverImage" class="article-cover" loading="lazy" />
+    </div>
+    <div v-else class="cover-wrapper cover-placeholder" aria-hidden="true">
+      <img :src="`${baseUrl}img/tudou.png`" alt="" class="placeholder-icon" loading="lazy" />
     </div>
 
     <!-- 右侧内容 -->
@@ -50,6 +55,32 @@ defineProps<{ card: Card }>()
   flex-shrink: 0; /* 防止被压缩 */
   overflow: hidden;
   background: var(--light-gray);
+}
+
+/* 无封面占位块：随主题色变化的柔和渐变 + 低透明度品牌图标
+   （用 srgb 混合：oklch 在近无色端的色相插值不稳定，会把青绿混成桃粉） */
+.cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--main) 16%, var(--white)),
+    var(--white)
+  );
+}
+
+.placeholder-icon {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  opacity: 0.45;
+  transition: var(--transition-slow);
+}
+
+.article-card:hover .placeholder-icon {
+  opacity: 0.7;
+  transform: scale(1.08);
 }
 
 .article-cover {
@@ -126,6 +157,15 @@ defineProps<{ card: Card }>()
   .cover-wrapper {
     width: 100%;
     height: 180px;
+  }
+
+  .cover-placeholder {
+    height: 96px;
+  }
+
+  .placeholder-icon {
+    width: 40px;
+    height: 40px;
   }
 
   .article-title {

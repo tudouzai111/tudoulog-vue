@@ -28,7 +28,9 @@ const { isLoading, isDone } = useLoadingBar()
   width: 100%;
   animation: none;
   /* 完成态：宽度平滑过渡到 100%，随后复位淡出 */
-  transition: width 0.3s ease, opacity 0.3s ease;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease;
 }
 @keyframes loading {
   0% {

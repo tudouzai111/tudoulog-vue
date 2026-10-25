@@ -1,26 +1,23 @@
 <script lang="ts" setup>
-const words = [
-  {
-    word: '创了个GitHub新号😋',
-    data: '2026-8-20',
-  },
-  {
-    word: '牛魔的Github给我号标记了😡，搞得我只能push，提交工单国内还搞不了😡',
-    data: '2026-4-27',
-  },
-]
+import { computed } from 'vue'
+import wordsData from '@/data/words.json'
+
+interface WordItem {
+  word: string
+  date: string
+}
+
+// 按日期降序，最新的在最上面
+const words = computed(() =>
+  [...(wordsData as WordItem[])].sort((a, b) => b.date.localeCompare(a.date)),
+)
 </script>
 
 <template>
   <TransitionGroup appear class="word-page" name="list" tag="div">
-    <section
-      v-for="(word, index) in words"
-      :key="index"
-      :style="{ '--delay': index * 0.1 + 's' }"
-      class="word-card"
-    >
+    <section v-for="(word, index) in words" :key="word.date + index" class="word-card">
       <p class="word-content">{{ word.word }}</p>
-      <time class="word-time">{{ word.data }}</time>
+      <time class="word-time" :datetime="word.date">{{ word.date }}</time>
     </section>
   </TransitionGroup>
 </template>
