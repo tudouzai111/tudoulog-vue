@@ -1,12 +1,16 @@
 ---
-title: 'Windows下安装OpenCode并配置oh-my-openagent和superpowers'
-date: '2026-05-20'
-tags: ['AI工具', 'OpenCode', '教程']
-excerpt: '从零开始在Windows上安装OpenCode终端AI编码助手，并配置oh-my-openagent和superpowers插件'
-coverImage: 'opencode-install.webp'
+title: Windows下安装OpenCode并配置oh-my-openagent和superpowers
+date: 2026-05-20
+tags:
+  - AI工具
+  - OpenCode
+  - 教程
+excerpt: 从零开始在Windows上安装OpenCode终端AI编码助手，并配置oh-my-openagent和superpowers插件
+coverImage: opencode-install.webp
+updated: ''
+draft: false
+ai: true
 ---
-
-> 文章使用AI润色
 
 ## 前言
 
@@ -68,7 +72,7 @@ opencode --version
 
 OpenCode生成的指令默认使用bash语法（如`&&`、`set VAR=value`等），但Windows自带的PowerShell 5.1并不支持`&&`操作符，直接执行会报错：
 
-```
+```plain
 && 运算符在此版本的 PowerShell 中无效
 ```
 
@@ -142,6 +146,7 @@ bunx oh-my-openagent install
 ```
 
 安装过程会自动完成以下操作：
+
 1. 安装插件到OpenCode
 2. 配置默认模型和代理
 3. 生成项目配置文件（`.opencode/oh-my-openagent.jsonc`）
@@ -170,40 +175,39 @@ superpowers插件提供了丰富的开发技能，包括Playwright浏览器自�
 
    在`plugins`数组中添加`"superpowers@git+https://github.com/obra/superpowers.git"`：
 
-   ```json
-   {
-     "plugins": [
-       "superpowers@git+https://github.com/obra/superpowers.git"
-     ]
-   }
-   ```
+```json
+{
+  "plugins": [
+    "superpowers@git+https://github.com/obra/superpowers.git"
+  ]
+}
+```
 
    如果已有其他插件，追加到数组末尾即可：
 
-   ```json
-   {
-     "plugins": [
-       "oh-my-openagent",
-       "superpowers@git+https://github.com/obra/superpowers.git"
-     ]
-   }
-   ```
+```json
+{
+  "plugins": [
+    "oh-my-openagent",
+    "superpowers@git+https://github.com/obra/superpowers.git"
+  ]
+}
+```
 
 3. **保存文件**
-
 4. **重启OpenCode**
 
    完全退出当前OpenCode会话，然后重新启动：
 
-   ```bash
-   opencode
-   ```
+```bash
+opencode
+```
 
 ### 验证superpowers
 
 在OpenCode中发送：
 
-```
+```plain
 do you have superpowers?
 ```
 
@@ -278,7 +282,7 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 #### Agent 分工与推荐模型
 
 | Agent | 职责 | 推荐模型 |
-|-------|------|---------|
+| --- | --- | --- |
 | `hephaestus` | 执行代理，处理具体编码任务 | `minimax-m2.5-free` |
 | `oracle` | 高IQ顾问，架构/调试难题 | `big-pickle`（强模型） |
 | `librarian` | 搜索外部文档和代码示例 | `qwen3.6-plus-free` |
@@ -291,7 +295,7 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 #### Category 分工与推荐模型
 
 | Category | 适用场景 | 推荐模型 |
-|----------|---------|---------|
+| --- | --- | --- |
 | `visual-engineering` | 前端UI/UX、样式、动画 | `qwen3.6-plus-free` |
 | `ultrabrain` | 复杂逻辑、架构决策 | `big-pickle`（强模型） |
 | `deep` | 深度研究 + 端到端实现 | `big-pickle`（强模型） |
@@ -313,7 +317,7 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 模型选择遵循以下优先级（从上到下递减）：
 
 | 优先级 | 配置方式 | 说明 |
-|--------|---------|------|
+| --- | --- | --- |
 | 1 | `opencode -m provider/model` | 命令行参数，临时切换 |
 | 2 | 项目根目录的 `opencode.json` | 项目级配置，覆盖全局 |
 | 3 | `~/.config/opencode/opencode.json` | 全局配置，用户偏好 |
@@ -331,7 +335,7 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 进入OpenCode的TUI后，直接输入斜杠命令即可调用：
 
 | 命令 | 说明 |
-|------|------|
+| --- | --- |
 | `/init` | 初始化项目或配置文件 |
 | `/connect` | 连接或切换LLM提供商 |
 | `/models` | 查看和选择可用模型 |
@@ -356,7 +360,7 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 ### oh-my-openagent 核心功能
 
 | 功能 | 说明 |
-|------|------|
+| --- | --- |
 | `ulw` / `ultrawork` | 一键激活所有代理，不完成不罢休 |
 | `/start-work` | Prometheus规划器，先访谈再执行 |
 | `/init-deep` | 自动生成项目层级AGENTS.md文件 |
@@ -365,7 +369,7 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 ### superpowers 内置技能
 
 | 技能 | 用途 |
-|------|------|
+| --- | --- |
 | `brainstorming` | 创意工作前的需求探索和设计 |
 | `systematic-debugging` | 系统化的bug调试流程 |
 | `test-driven-development` | TDD测试驱动开发 |
@@ -380,7 +384,7 @@ oh-my-openagent 编排了多个专用子代理，每个代理可以根据任务�
 
 整个安装配置流程：
 
-```
+```plain
 安装OpenCode → 配置Shell为Git Bash
 安装Bun → 安装oh-my-openagent → 添加superpowers插件 → 配置默认模型与多Agent模型
 ```
