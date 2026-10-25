@@ -150,6 +150,46 @@ onUnmounted(() => {
               </svg>
               <span class="menu-item-label">{{ COLOR_MODE_LABELS[colorMode] }}</span>
             </button>
+
+            <!-- 后台管理：新标签页打开 -->
+            <a
+              aria-label="后台管理（新标签页打开）"
+              class="menu-item"
+              href="/admin/"
+              rel="noopener"
+              role="menuitem"
+              target="_blank"
+              @click="menuOpen = false"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                />
+              </svg>
+              <span class="menu-item-label">后台管理</span>
+              <svg
+                aria-hidden="true"
+                class="menu-external"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <path d="M15 3h6v6M10 14 21 3" />
+              </svg>
+            </a>
           </div>
         </Transition>
       </nav>
@@ -307,6 +347,13 @@ onUnmounted(() => {
   border: 1px solid var(--light-gray);
   border-radius: 5px;
   padding: 1px 5px;
+}
+
+/* 外链标记 */
+.menu-external {
+  width: 12px !important;
+  height: 12px !important;
+  opacity: 0.7;
 }
 
 /* 菜单弹出动画 */
