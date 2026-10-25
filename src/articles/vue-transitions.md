@@ -1,12 +1,17 @@
 ---
-title: 'Vue 3 过渡动画实战指南：从 Transition 到 TransitionGroup'
-date: '2026-06-01'
-tags: ['Vue', '前端', 'CSS', '教程']
-excerpt: '用博客项目中的真实代码讲解 Vue 3 的 Transition 和 TransitionGroup，包括类名体系、路由过渡、列表 stagger 错峰动画等'
+title: Vue 3 过渡动画实战指南：从 Transition 到 TransitionGroup
+date: 2026-06-01
+tags:
+  - Vue
+  - 前端
+  - CSS
+  - 教程
+excerpt: 用博客项目中的真实代码讲解 Vue 3 的 Transition 和 TransitionGroup，包括类名体系、路由过渡、列表 stagger 错峰动画等
 coverImage: ''
+updated: ''
+draft: false
+ai: true
 ---
-
-> 文章使用AI润色
 
 ## 引言
 
@@ -21,7 +26,7 @@ coverImage: ''
 Vue 的过渡基于 6 个 CSS 类名，分别在元素进入和离开的不同阶段生效。理解这几个类名的触发时机，基本就掌握了 Transition 的核心。
 
 | 类名 | 触发时机 | 作用 |
-|------|---------|------|
+| --- | --- | --- |
 | `xx-enter-from` | 元素插入前添加，下一帧移除 | 定义进入的起始状态 |
 | `xx-enter-active` | 元素插入前添加，过渡结束后移除 | 定义进入过渡的持续过程 |
 | `xx-enter-to` | 元素插入后下一帧添加，过渡结束后移除 | 定义进入的结束状态 |
