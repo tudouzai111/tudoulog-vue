@@ -42,11 +42,19 @@ coverImage: 'coverImage.webp'  # filename only — code prepends baseUrl + 'img/
 ---
 ```
 
+## OPTIONAL FRONTMATTER
+| Field | Type | Description |
+|-------|------|-------------|
+| `updated` | date `YYYY-MM-DD` | 最后更新日期（详情页与 sitemap lastmod 展示） |
+| `draft` | boolean | `true` 时不发布（不进列表、不进构建产物） |
+| `ai` | boolean | `true` 时文章页显示「AI 辅助」徽章（AI 辅助撰写的文章应标注） |
+
 ## CONVENTIONS
 - Filename = article ID (e.g., `hello.md` → id `hello`)
 - Date format: `YYYY-MM-DD`
 - Tags: string array
 - Articles sorted by date descending (newest first)
+- AI 辅助撰写的文章必须标注 `ai: true`
 
 ## ANTI-PATTERNS
 - Do NOT omit frontmatter (title, date required)

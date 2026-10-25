@@ -26,6 +26,8 @@ export interface ArticleMetaEntry {
   excerpt: string
   coverImageFile: string
   draft: boolean
+  /** AI 辅助撰写标识 */
+  ai: boolean
   wordCount: number
   readingMinutes: number
 }
@@ -43,6 +45,7 @@ interface ParsedFrontmatter {
   excerpt?: string
   coverImage?: string
   draft?: boolean
+  ai?: boolean
 }
 
 // 阅读时长估算：中文 400 字/分钟，英文 200 词/分钟，代码块不计入
@@ -69,6 +72,9 @@ function parseFrontmatter(raw: string): ParsedFrontmatter {
         break
       case 'draft':
         result.draft = value === 'true'
+        break
+      case 'ai':
+        result.ai = value === 'true'
         break
       case 'title':
       case 'date':
@@ -117,6 +123,7 @@ export function readArticles(root: string): ArticleMetaEntry[] {
       // 只取文件名：兼容手写的裸文件名和 CMS 写入的完整路径（如 /img/cover/x.png）
       coverImageFile: fm.coverImage ? fm.coverImage.split('/').pop() ?? '' : '',
       draft: fm.draft ?? false,
+      ai: fm.ai ?? false,
       wordCount,
       readingMinutes,
     })

@@ -272,6 +272,26 @@ watch(
         <div class="article-meta">
           <h1 class="article-title">{{ article.title }}</h1>
           <div class="article-meta-line">
+            <span
+              v-if="article.ai"
+              class="ai-badge"
+              title="本文由 AI 辅助撰写，内容基于实际操作过程整理"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"
+                />
+              </svg>
+              AI 辅助
+            </span>
             <time :datetime="article.date" class="article-time">{{ article.date }}</time>
             <span v-if="article.updated" class="article-updated">
               更新于 {{ article.updated }}
@@ -449,6 +469,25 @@ watch(
 .article-updated {
   color: var(--mid-gray);
   font-size: 0.8125rem;
+}
+
+/* AI 辅助徽章 */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--purple);
+  background: color-mix(in srgb, var(--purple) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--purple) 35%, transparent);
+}
+
+.ai-badge svg {
+  width: 13px;
+  height: 13px;
 }
 
 /* 阅读进度条：固定在视口最顶端（高于吸顶导航） */

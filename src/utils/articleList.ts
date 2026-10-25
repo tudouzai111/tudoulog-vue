@@ -14,6 +14,8 @@ export interface Article {
   tags: string[]
   excerpt: string
   coverImage: string
+  /** AI 辅助撰写标识 */
+  ai: boolean
   /** 正文字数（含中文按字、英文按词） */
   wordCount: number
   /** 预估阅读分钟数（最少 1 分钟） */
@@ -30,6 +32,7 @@ export const articles: Article[] = articleMeta
     tags: meta.tags,
     excerpt: meta.excerpt,
     coverImage: meta.coverImageFile ? baseUrl + 'img/cover/' + meta.coverImageFile : '',
+    ai: meta.ai,
     wordCount: meta.wordCount,
     readingMinutes: meta.readingMinutes,
   }))

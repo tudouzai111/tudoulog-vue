@@ -2,6 +2,7 @@
 title: '给纯静态博客接入免费网页编辑后台：Sveltia CMS + Cloudflare Workers 实战'
 date: '2026-10-25'
 tags: ['CloudFlare', 'GitHub', 'CMS', '教程']
+ai: true
 excerpt: '不买服务器、不写后端代码，给纯静态博客接一个网页版内容后台：Sveltia CMS + GitHub OAuth + Cloudflare Worker 三件套，包含每个字段的填写说明和踩坑记录'
 ---
 

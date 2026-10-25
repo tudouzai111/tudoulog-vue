@@ -2,6 +2,7 @@
 title: '给博客加上评论和浏览量：giscus + Cloudflare D1，依然零成本'
 date: '2026-10-25'
 tags: ['CloudFlare', 'GitHub', 'D1', '教程']
+ai: true
 excerpt: '纯静态博客的第二步进化：接入 giscus 评论系统，并用 Cloudflare Pages Functions + D1 数据库做浏览量和点赞，全程免费额度内搞定，附绑定踩坑记录'
 ---
 

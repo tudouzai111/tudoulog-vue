@@ -10,6 +10,7 @@ declare module 'virtual:article-meta' {
     excerpt: string
     coverImageFile: string
     draft: boolean
+    ai: boolean
     wordCount: number
     readingMinutes: number
   }
