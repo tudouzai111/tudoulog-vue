@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
-import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { Component } from 'vue'
 import { articles, loadArticleComponent } from '@/utils/articleList'
 import type { Heading } from '@/types'
+import { SITE_URL } from '@/constants/site'
 
 import 'github-markdown-css'
 import '@/styles/markdown-scheme.css'
@@ -11,6 +12,8 @@ import '@/styles/article-common.css'
 import TocComponent from '@/components/TocComponent.vue'
 import BackToTop from '@/components/BackToTop.vue'
 import TagComponent from '@/components/TagComponent.vue'
+import ArticleStats from '@/components/ArticleStats.vue'
+import GiscusComments from '@/components/GiscusComments.vue'
 import { TAG_MODE } from '@/constants/tagMode.ts'
 
 const route = useRoute()
@@ -115,6 +118,37 @@ const handleLightboxKeydown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') lightboxSrc.value = ''
 }
 
+// 阅读进度条
+const readingProgress = ref(0)
+
+const updateReadingProgress = () => {
+  const doc = document.documentElement
+  const max = doc.scrollHeight - window.innerHeight
+  readingProgress.value = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', updateReadingProgress, { passive: true })
+  window.addEventListener('resize', updateReadingProgress)
+  updateReadingProgress()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateReadingProgress)
+  window.removeEventListener('resize', updateReadingProgress)
+})
+
+// 文末原文链接（复制分享用）
+const articleLink = computed(() => SITE_URL + route.path)
+
+const copyArticleLink = async () => {
+  const ok = await copyText(`${article.value?.title ?? ''}\n${articleLink.value}`)
+  linkCopied.value = ok
+  setTimeout(() => (linkCopied.value = false), 1500)
+}
+
+const linkCopied = ref(false)
+
 const contentRef = ref<HTMLElement | null>(null)
 const headings = ref<Heading[]>([])
 
@@ -210,6 +244,8 @@ watch(
 
 <template>
   <article class="article-page">
+    <!-- 阅读进度条 -->
+    <div aria-hidden="true" class="reading-progress" :style="{ width: readingProgress + '%' }" />
     <div v-if="article" class="article-card">
       <!-- 封面区域 -->
       <header
@@ -225,9 +261,13 @@ watch(
           <h1 class="article-title">{{ article.title }}</h1>
           <div class="article-meta-line">
             <time :datetime="article.date" class="article-time">{{ article.date }}</time>
+            <span v-if="article.updated" class="article-updated">
+              更新于 {{ article.updated }}
+            </span>
             <span class="article-stats"
               >约 {{ article.readingMinutes }} 分钟 · {{ article.wordCount }} 字</span
             >
+            <ArticleStats v-if="articleId" :slug="articleId" />
           </div>
         </div>
         <div class="tags-position">
@@ -269,6 +309,20 @@ watch(
           <span class="nav-title">{{ olderArticle.title }}</span>
         </router-link>
       </nav>
+
+      <!-- 版权与分享 -->
+      <footer class="article-license">
+        <p class="license-text">
+          本文作者：土豆仔 ·
+          <a :href="articleLink" rel="noopener">原文链接</a> · 转载请注明出处（CC BY-NC 4.0）
+        </p>
+        <button class="copy-link-btn" type="button" @click="copyArticleLink">
+          {{ linkCopied ? '已复制 ✓' : '复制链接' }}
+        </button>
+      </footer>
+
+      <!-- 评论区（giscus，配置见 src/constants/giscus.ts） -->
+      <GiscusComments />
     </div>
     <BackToTop />
 
@@ -360,6 +414,64 @@ watch(
 .article-stats {
   color: var(--mid-gray);
   font-size: 0.8125rem;
+}
+
+.article-updated {
+  color: var(--mid-gray);
+  font-size: 0.8125rem;
+}
+
+/* 阅读进度条：固定在视口最顶端（高于吸顶导航） */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--main);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* 版权与分享 */
+.article-license {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+  padding: var(--spacing) var(--spacing-lg);
+  border-top: 1px solid var(--light-gray);
+  background: var(--off-white);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.license-text {
+  margin: 0;
+  color: var(--mid-gray);
+  font-size: 0.8125rem;
+}
+
+.license-text a {
+  color: var(--main);
+}
+
+.copy-link-btn {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--light-gray);
+  border-radius: var(--border-radius-sm);
+  background: var(--white);
+  color: var(--dark-gray);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.copy-link-btn:hover {
+  border-color: var(--main);
+  color: var(--main);
 }
 
 /* 上一篇 / 下一篇 */

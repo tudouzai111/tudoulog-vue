@@ -3,6 +3,7 @@
   "include": [
     "vite.config.*",
     "build/**/*",
+    "functions/**/*",
     "vitest.config.*",
     "cypress.config.*",
     "nightwatch.conf.*",
