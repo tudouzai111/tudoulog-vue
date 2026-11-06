@@ -14,6 +14,7 @@ import {
   type ShikiTransformer,
 } from 'shiki'
 import { articlePlugin } from './build/articlePlugin'
+import { devStatsApiPlugin } from './build/devStats'
 
 // 给代码块注入复制按钮（点击行为由文章详情页统一代理）
 function copyButtonTransformer(): ShikiTransformer {
@@ -117,6 +118,8 @@ export default defineConfig(async () => {
     base: '/',
     plugins: [
       articlePlugin(fileURLToPath(new URL('.', import.meta.url))),
+      // dev 环境的 /api/stats 内存实现（preview/线上仍走 functions/api/stats.ts）
+      devStatsApiPlugin(),
       vue({
         include: [/\.vue$/, /\.md$/], // 让 Vue 处理 .md 文件
       }),
