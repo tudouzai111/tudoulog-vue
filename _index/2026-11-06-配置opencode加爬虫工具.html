@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>opencode 配置爬虫插件</title>
+<meta data-pagefind-meta="date:2026-11-07" name="date">
+<meta data-pagefind-meta="excerpt:opencode 配置缓存命中查看插件和爬虫 MCP" name="excerpt">
+</head>
+<body>
+<main data-pagefind-body>
+<h1>opencode 配置爬虫插件</h1>
+<h2>前置依赖</h2>
+<ol>
+<li>nodejs</li>
+</ol>
+<h2>安装 opencode</h2>
+<ol>
+<li>访问opencode官网：<a href="https://opencode.ai/">https://opencode.ai/</a>，复制npm安装命令
+<img src="/public/img/20261106-205641.png" alt=""></li>
+<li>在管理员权限的终端中输入命令
+<img src="/public/img/20261106-205857.png" alt="">
+<img src="/public/img/20261106-210128.png" alt="">
+如上安装成功，如果有<code>error</code>等可能是没有用管理员终端导致</li>
+</ol>
+<h2>配置缓存命中查看插件（可选）</h2>
+<ol>
+<li>在文件资源管理器打开：<code>C:\Users\用户名\.config\opencode</code></li>
+<li>新建文件 <code>cli.json</code> 并输入：</li>
+</ol>
+<pre><code class="language-json">{
+  &quot;plugins&quot;: [
+    {
+      &quot;package&quot;: &quot;opencode-visual-cache@latest&quot;,
+      &quot;options&quot;: {
+        &quot;enabled&quot;: true
+      }
+    }
+  ],
+  &quot;theme&quot;: {
+    &quot;mode&quot;: &quot;system&quot;,
+    &quot;name&quot;: &quot;opencode&quot;
+  },
+  &quot;animations&quot;: true,
+  &quot;debug&quot;: {
+    &quot;devtools&quot;: false
+  },
+  &quot;session&quot;: {
+    &quot;scrollbar&quot;: true,
+    &quot;markdown&quot;: &quot;rendered&quot;
+  },
+  &quot;prompt&quot;: {
+    &quot;image_preview&quot;: false
+  },
+  &quot;attention&quot;: {
+    &quot;notifications&quot;: true
+  }
+}
+</code></pre>
+<ol start="3">
+<li>安装后的效果
+<img src="/public/img/20261106-235830.png" alt=""></li>
+</ol>
+<h2>配置爬虫 MCP</h2>
+<p>一共安装三个MCP：js-reverse-mcp（js逆向）+Stealth Browser MCP（浏览器操控）+Ddddocr Captcha MCP（图像滑块识别）</p>
+<ol>
+<li>在终端中输入 <code>opencode</code> 运行 opencode，如果要在某个项目中打开 opencode 写项目，直接在终端的相应项目位置下启动：
+<img src="/public/img/20261107-000604.png" alt=""></li>
+<li>选择免费模型(输入 <code>/models</code> 随便选一个)或付费模型(输入 <code>/connect</code> 输入 <code>api ley</code> )</li>
+<li>让ai帮你装mcp，对话框输入提示词：<code>给 opencode 安装：js-reverse-mcp（js逆向）+Stealth Browser MCP（模拟浏览器）+Ddddocr Captcha MCP（图像滑块识别）这三个 mcp 服务，装在d盘并测试</code> ，中间可能会询问安装问题，允许即可</li>
+<li>终端窗口最大化在右侧的mcp显示安装的三个mcp就算安装成功：
+<img src="/public/img/20261107-003317.png" alt=""></li>
+</ol>
+
+</main>
+</body>
+</html>
