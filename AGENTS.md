@@ -1,72 +1,53 @@
-# PROJECT KNOWLEDGE BASE
+# AGENTS.md
 
-**Generated:** 2026-07-12
-**Commit:** 875d64f8
-**Branch:** master
-**Stack:** Vue 3.5 + TypeScript 5.9 + Vite 7 + Vue Router 5
+个人博客「土豆博客」（tudoulog）：Vue 3.5 + TypeScript 5.9 + Vite 7 + Vue Router 5。站点与代码注释均为中文，遵循该风格。
 
-## OVERVIEW
-Markdown blog system ("土豆博客"). Articles written as `.md` files in `src/articles/`; `vite-plugin-vue-markdown` transforms them into Vue components at build time. Deployed on GitHub Pages (CI) + Cloudflare Pages (auto-deploy).
+## Commands
 
-## STRUCTURE
-```
-tudoulog-vue/
-├── src/
-│   ├── articles/         # Markdown articles (frontmatter: title, date, tags, excerpt, coverImage)
-│   ├── components/       # Reusable UI components
-│   │   └── layout/       # App shell: AppLayout, AppHeader, AppFooter
-│   ├── constants/        # Theme config, tag display modes
-│   ├── router/           # Vue Router config (dynamic article routes)
-│   ├── styles/           # Global + article/tag scoped CSS
-│   ├── types/            # Shared TypeScript interfaces
-│   ├── utils/            # articleList.ts (glob-based article discovery)
-│   └── views/            # Page components (Home, ArticleList, Detail, About, Word, 404)
-├── vite.config.ts        # Markdown plugin, Shiki, external link handling
-├── .oxlintrc.json        # Oxlint: correctness=error
-├── .prettierrc.json      # Prettier config
-└── .github/workflows/deploy.yml  # CI/CD
-```
-
-## WHERE TO LOOK
-| Task | Location | Notes |
-|------|----------|-------|
-| Add blog article | `src/articles/*.md` | Frontmatter required: title, date, tags |
-| Change routing | `src/router/index.ts` | Dynamic `beforeEnter` for article validation |
-| Add UI component | `src/components/` | PascalCase `.vue` files |
-| Add page | `src/views/` | Register in router |
-| Modify markdown rendering | `vite.config.ts` | Shiki theme, link renderer |
-| Change theme/colors | `src/constants/theme.ts` | Shared across components |
-| Global styles | `src/styles/global.css` | Imported in `main.ts` |
-
-## CONVENTIONS
-- PascalCase `.vue` filenames
-- `@/` alias maps to `src/`
-- Router uses `createWebHistory` with `import.meta.env.BASE_URL`
-- Articles discovered via `import.meta.glob('@/articles/*.md', { eager: true })`
-- External links auto-get `target="_blank" rel="noopener noreferrer"` (vite.config.ts custom renderer)
-
-## ANTI-PATTERNS (THIS PROJECT)
-- Do NOT add articles without frontmatter (title, date)
-- Do NOT modify `articleList.ts` glob pattern without updating router validation
-- Do NOT bypass `@/` alias for internal imports
-- Dual license: code = MIT, articles = CC BY-NC 4.0
-
-## COMMANDS
 ```bash
-pnpm install          # Install dependencies
-pnpm dev              # Dev server (localhost:5173)
-pnpm build            # Type-check + production build
-pnpm build-only       # Build without type-check
-pnpm type-check       # vue-tsc --build
-pnpm lint             # oxlint + eslint (both --fix)
-pnpm lint:oxlint      # Oxlint only
-pnpm lint:eslint      # ESLint only
-pnpm format           # Prettier on src/
-pnpm preview          # Preview production build
+pnpm build       # 并行 type-check + vite build，末尾 pagefind --site dist 生成搜索索引
+pnpm type-check  # vue-tsc --build
+pnpm lint        # run-s lint:*：oxlint --fix → eslint --fix --cache
+pnpm dev         # localhost:5173
+pnpm format      # prettier --write src/（--experimental-cli）
 ```
 
-## NOTES
-- Node ^20.19.0 or >=22.12.0 required (pnpm package manager)
-- `DemoPreview` component registered globally in `main.ts`
-- Article IDs derived from filename (e.g., `hello.md` → id `hello`)
-- Cover images served from `baseUrl + 'img/cover/'`
+- **没有测试套件**：验证靠 `pnpm lint && pnpm type-check && pnpm build`，别浪费时间找测试框架。
+- Node `^20.19.0 || >=22.12.0` + pnpm；CI（`.github/workflows/deploy.yml`）用 Node 22、pnpm 9、`pnpm install --frozen-lockfile`。
+
+## 内容流水线（最容易搞错的部分）
+
+新增文章：往 `src/articles/` 放一个 `.md`，文件名即文章 ID（`foo.md` → `/article/foo`），**无需手动注册**。frontmatter 规范见 `src/articles/AGENTS.md`（title/date 必填；`draft: true` 全链路隐藏——不进列表、不进打包产物、不进 sitemap/RSS/搜索索引，路由守卫兜底 404；AI 辅助撰写的文章必须标 `ai: true`）。
+
+Markdown → Vue 组件分两层，改行为时别找错地方：
+
+- `vite.config.ts`（inline markdown-it 插件）：Shiki 双主题（github-light + one-dark-pro）、代码复制按钮、标题锚点、外链自动 `target="_blank" rel="noopener noreferrer"`。
+- `build/articlePlugin.ts`（自建 Vite 插件）：扫描 `src/articles/*.md` + `src/words/*.md`，产出虚拟模块 `virtual:article-meta` / `virtual:article-components` / `virtual:words`（`src/utils/articleList.ts` 消费），并附带生成 robots.txt / sitemap.xml / rss.xml 和 `dist/_index/` 预渲染 HTML。构建最后一步的 Pagefind **只索引 `dist/_index/`**，前端再把命中映射回 `/article/<id>`——改搜索行为要动这里，不是引入 `import.meta.glob`。
+
+坑：
+
+- Shiki 高亮语言集在 dev server 启动时从现有代码围栏收集一次；dev 期间新文章用新语言会静默降级为无高亮 `<pre>`，重启 dev server 才生效。
+- `slugify` 有两份必须保持一致：`vite.config.ts`（构建期生成 heading id）+ `src/views/ArticleDetail.vue`（运行时目录锚点）。
+
+## 其他目录归属
+
+| Use | Location | Notes |
+|-----|----------|-------|
+| 废话（微博客） | `src/words/*.md` | 每条一个文件，frontmatter 只有 `date` |
+| 浏览量/点赞 API | `functions/api/stats.ts` | Cloudflare Pages Function，GET/POST `/api/stats`，依赖 D1 绑定 `DB`（无 wrangler 配置） |
+| CMS 后台 | `public/admin/` | Sveltia CMS 纯静态；本地调试流程见 README「内容管理后台」 |
+| 站点元数据 | `src/constants/site.ts` | `SITE_URL` 供 RSS / sitemap / canonical 使用，换域名改这里 |
+| 主题/颜色 | `src/constants/theme.ts` + `src/styles/` | 深浅色模式共用 |
+
+## 部署
+
+- push 到 master 触发 CI 部署 GitHub Pages；CI 会 `cp dist/index.html dist/404.html`（**仅 GH Pages 需要**这个 SPA fallback）。Cloudflare Pages（tudoulog.pages.dev，主站）**不能带 404.html**，否则深链接返回 404 状态码——不要把 404.html 放进 `public/` 或提交到 dist。
+- `/api/stats`：线上由 Cloudflare Pages Function 提供（需要 D1 绑定 `DB`）；本地 dev 由 `build/devStats.ts` 提供内存实现（进程内存，重启清零）；`vite preview` 无接口，组件会自动隐藏，属预期行为。
+
+## Conventions
+
+- `@/` → `src/`；PascalCase `.vue`；views 以 `*Page.vue` 命名并在 `src/router/index.ts` 注册，meta title 格式 `页面名-土豆博客`。
+- `DemoPreview` 在 `main.ts` 全局注册，是唯一全局组件。
+- 正文图片放 `public/img/`，用根路径 `/img/xxx.webp`；封面图 frontmatter 只填**文件名**（渲染时拼 `img/cover/` 前缀，兼容 CMS 写入的完整路径）。
+- License 拆分：代码 MIT，`src/articles/` 内容 CC BY-NC 4.0（`LICENSE-CC-BY-NC.md`）。
+- 各子目录有嵌套 KB：`src/AGENTS.md`、`src/articles/AGENTS.md`（frontmatter 权威规范）、`src/views/AGENTS.md`、`src/components/AGENTS.md`。
