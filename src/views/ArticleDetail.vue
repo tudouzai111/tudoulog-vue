@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import type { Component } from 'vue'
 import { articles, loadArticleComponent } from '@/utils/articleList'
 import type { Heading } from '@/types'
@@ -91,7 +91,9 @@ const handleContentClick = async (event: MouseEvent) => {
     if (heading) {
       heading.scrollIntoView({ behavior: 'smooth' })
       // 静默更新地址栏，方便复制带锚点的链接，也不触发路由导航
-      history.replaceState(null, '', `#${id}`)
+      // 注意必须保留 history.state：router 依赖其中的 position 等字段，
+      // 传 null 会破坏 router 的历史追踪（console 会报 history.state 被手动替换）
+      history.replaceState(history.state, '', `#${id}`)
     }
     return
   }
@@ -224,8 +226,8 @@ function generateTocTree(contentRef: HTMLElement): Heading[] {
   return root
 }
 
-// 懒加载的文章正文组件实例
-const articleComp = ref<Component | null>(null)
+// 懒加载的文章正文组件实例（shallowRef：组件对象不应被深度 reactive 包裹）
+const articleComp = shallowRef<Component | null>(null)
 
 // 文章组件为异步加载，需等待其渲染完成后才能提取标题生成目录
 watch(
