@@ -7,66 +7,29 @@ tags:
   - 教程
 excerpt: 从零开始在Windows上安装OpenCode终端AI编码助手，并配置oh-my-openagent和superpowers插件
 coverImage: opencode-install.webp
-updated: ''
+updated: 2026-11-07
 draft: false
 ai: true
 ---
+
+> opencode v2更新后本文的配置教程可能已经无法使用，建议安装完opencode后让ai来配置插件，而不是手动配置
 
 ## 前言
 
 OpenCode是一个开源的终端AI编码助手，支持多种LLM提供商。搭配oh-my-openagent（OmO）和superpowers插件后，可以获得强大的AI开发团队编排能力。本篇记录在Windows下的完整安装配置过程。
 
-官网：https://opencode.ai/zh
+官网：[https://opencode.ai/zh](https://opencode.ai/)
 
-官方文档：https://opencode.ai/docs/zh-cn
+官方文档：[https://opencode.ai/docs/zh-cn](https://opencode.ai/v2/docs)
 
 ## 环境要求
 
-- **操作系统**：Windows 10/11
 - **Node.js**：>= 20.19.0
-- **包管理器**：bun（推荐）/ npm / pnpm
-- **终端**：Windows Terminal（推荐）
+- **包管理器**：bun/ npm / pnpm
 
 ## 一、安装OpenCode
 
-Windows下有几种安装方式，任选其一：
-
-### 方式一：使用Scoop（推荐）
-
-```bash
-scoop install opencode
-```
-
-### 方式二：使用Chocolatey
-
-以管理员身份打开PowerShell：
-
-```bash
-choco install opencode
-```
-
-### 方式三：使用npm
-
-```bash
-npm install -g opencode-ai
-```
-
-### 方式四：使用WSL（体验最佳）
-
-Windows下使用WSL（Windows Subsystem for Linux）能获得最完整的体验：
-
-```bash
-# 在WSL终端中执行
-curl -fsSL https://opencode.ai/install | bash
-```
-
-### 验证安装
-
-```bash
-opencode --version
-```
-
-看到版本号即表示安装成功。
+终端管理员输入：`npm install -g @opencode/cli`
 
 ## 二、配置Shell（解决PowerShell下bash命令不兼容问题）
 
