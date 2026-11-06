@@ -84,8 +84,23 @@ router.beforeEach(() => {
 router.afterEach(() => {
   finishLoading()
 })
-router.onError(() => {
+// 懒加载 chunk 失败兜底：
+// 线上部署更新后，缓存的旧 index.html 引用的 content-hash chunk（视图组件）
+// 在新部署里已不存在，动态 import 直接失败且 SPA 内无法自愈——
+// 整页跳转目标地址，让服务器重新返回与当前部署一致的入口文件
+const redirectingForChunkError = 'tudou:redirected-chunk-error'
+router.onError((error, to) => {
   finishLoading()
+  const message = error instanceof Error ? error.message : String(error)
+  if (
+    !message.includes('dynamically imported module') ||
+    sessionStorage.getItem(redirectingForChunkError)
+  ) {
+    return
+  }
+  // 本会话只整页跳一次，防止服务器持续返回过期入口时无限循环
+  sessionStorage.setItem(redirectingForChunkError, '1')
+  window.location.assign(to?.fullPath ?? window.location.pathname)
 })
 
 export default router
