@@ -13,9 +13,13 @@ const LIKE_KEY = `liked:${props.slug}`
 const VIEW_KEY = `viewed:${props.slug}`
 
 async function fetchStats() {
+  // GET 返回 { [slug]: { views, likes } }（functions/api/stats.ts 的键控格式），
+  // POST 才直接返回 { views, likes }；之前把 GET 响应当裸对象解析，
+  // 取到 undefined，导致浏览量/点赞在二次访问时一直显示不出来
   const res = await fetch(`/api/stats?slug=${encodeURIComponent(props.slug)}`)
   if (!res.ok) throw new Error(String(res.status))
-  return (await res.json()) as { views: number; likes: number }
+  const json = (await res.json()) as Record<string, { views: number; likes: number }>
+  return json[props.slug] ?? { views: 0, likes: 0 }
 }
 
 async function sendAction(action: 'view' | 'like') {
