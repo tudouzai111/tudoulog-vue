@@ -17,7 +17,7 @@ pnpm format      # prettier --write src/（--experimental-cli）
 
 ## 内容流水线（最容易搞错的部分）
 
-新增文章：往 `src/articles/` 放一个 `.md`，文件名即文章 ID（`foo.md` → `/article/foo`），**无需手动注册**。frontmatter 规范见 `src/articles/AGENTS.md`（title/date 必填；`draft: true` 全链路隐藏——不进列表、不进打包产物、不进 sitemap/RSS/搜索索引，路由守卫兜底 404；AI 辅助撰写的文章必须标 `ai: true`）。
+新增文章：往 `src/articles/` 放一个 `.md`，文件名即文章 ID（`foo.md` → `/article/foo`），**无需手动注册**；此目录只放文章，文件名避免空格和特殊字符。frontmatter 规范：`title` / `date`（`YYYY-MM-DD`，文章按日期倒序）必填；可选字段：`tags`（字符串数组）、`excerpt`、`coverImage`（只填**文件名**）、`updated`（`YYYY-MM-DD`，详情页与 sitemap lastmod 展示）、`draft`、`ai`。`draft: true` 全链路隐藏——不进列表、不进打包产物、不进 sitemap/RSS/搜索索引，路由守卫兜底 404；AI 辅助撰写的文章必须标 `ai: true`。
 
 Markdown → Vue 组件分两层，改行为时别找错地方：
 
@@ -50,4 +50,3 @@ Markdown → Vue 组件分两层，改行为时别找错地方：
 - `DemoPreview` 在 `main.ts` 全局注册，是唯一全局组件。
 - 正文图片放 `public/img/`，用根路径 `/img/xxx.webp`；封面图 frontmatter 只填**文件名**（渲染时拼 `img/cover/` 前缀，兼容 CMS 写入的完整路径）。
 - License 拆分：代码 MIT，`src/articles/` 内容 CC BY-NC 4.0（`LICENSE-CC-BY-NC.md`）。
-- 各子目录有嵌套 KB：`src/AGENTS.md`、`src/articles/AGENTS.md`（frontmatter 权威规范）、`src/views/AGENTS.md`、`src/components/AGENTS.md`。

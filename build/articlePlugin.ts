@@ -15,7 +15,7 @@ import type { Plugin, ViteDevServer } from 'vite'
  * - 构建时附带产出 robots.txt / sitemap.xml / rss.xml
  *
  * 说明：frontmatter 解析为受支持字段的宽松解析（标量 + 行内数组），
- * 与项目文章书写约定（src/articles/AGENTS.md）保持一致。
+ * 与项目文章书写约定（根目录 AGENTS.md）保持一致。
  */
 
 export interface ArticleMetaEntry {
