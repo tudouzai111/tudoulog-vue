@@ -667,8 +667,14 @@ watch(
   gap: var(--spacing-lg);
 }
 
+/* 与 article-common.css 的 .markdown-body img 同一套约束（scoped 层作双保险）：
+   小图不拉伸、长图压到一屏内，可点开放大 */
 .article-content img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 72vh;
+  cursor: zoom-in;
 }
 
 @media (max-width: 768px) {

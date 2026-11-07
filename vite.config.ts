@@ -15,6 +15,7 @@ import {
 } from 'shiki'
 import { articlePlugin } from './build/articlePlugin'
 import { devStatsApiPlugin } from './build/devStats'
+import { readImageSize } from './build/imageSize'
 import { slugify } from './src/utils/slugify'
 import { SITE_URL } from './src/constants/site'
 
@@ -115,7 +116,45 @@ function headingAnchorPlugin(md: any) {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+// 构建期读取本地图片的实际尺寸，给正文 <img> 注入 width/height（浏览器下载图片
+// 前就能锁定占位，消除多图文章的版面跳动），并统一挂 lazy/async。只处理根路径
+// /img/**（对应 public/img/ 下的真实文件）；外链图没有本地文件可查，原样输出。
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function imageSizePlugin(rootDir: string) {
+  return (md: any) => {
+    const defaultRender =
+      md.renderer.rules.image ||
+      ((tokens: any, idx: any, options: any, env: any, self: any) =>
+        self.renderToken(tokens, idx, options))
+
+    md.renderer.rules.image = (
+      tokens: any,
+      idx: any,
+      options: any,
+      env: any,
+      self: any,
+    ) => {
+      const token = tokens[idx]
+      const src = token.attrGet('src') ?? ''
+      if (src.startsWith('/img/')) {
+        const size = readImageSize(join(rootDir, 'public', src))
+        if (size) {
+          token.attrSet('width', String(size.width))
+          token.attrSet('height', String(size.height))
+        }
+        // 文章图片几乎都在首屏之下：懒加载 + 异步解码，正文先渲染不等图
+        token.attrSet('loading', 'lazy')
+        token.attrSet('decoding', 'async')
+      }
+      return defaultRender(tokens, idx, options, env, self)
+    }
+  }
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export default defineConfig(async () => {
+  // 项目根目录：articlePlugin 扫描 src/articles、图片尺寸插件映射 public/img 共用
+  const rootDir = fileURLToPath(new URL('.', import.meta.url))
   const highlighter: Highlighter = await createHighlighter({
     themes: ['github-light', 'one-dark-pro'],
     langs: collectArticleLangs(),
@@ -124,7 +163,7 @@ export default defineConfig(async () => {
   return {
     base: '/',
     plugins: [
-      articlePlugin(fileURLToPath(new URL('.', import.meta.url))),
+      articlePlugin(rootDir),
       // dev 环境的 /api/stats 内存实现（preview/线上仍走 functions/api/stats.ts）
       devStatsApiPlugin(),
       siteMetaHtmlPlugin(),
@@ -154,6 +193,8 @@ export default defineConfig(async () => {
         },
         markdownItUses: [
           headingAnchorPlugin,
+          // 本地图片注入真实宽高 + 懒加载（外链图没有文件可查，自动跳过）
+          imageSizePlugin(rootDir),
           // 自定义链接渲染器，使外部链接在新标签页中打开
           /* eslint-disable @typescript-eslint/no-explicit-any */
           (md: any) => {

@@ -70,10 +70,6 @@
   opacity: 1;
 }
 
-.markdown-body img {
-  cursor: zoom-in;
-}
-
 .markdown-body pre {
   position: relative;
 }
@@ -127,4 +123,17 @@
   .shiki-copy-btn {
     opacity: 1;
   }
+}
+
+/* ---- 正文图片排版 ----
+   等比约束替代"一律拉伸到容器宽"：小图不再被放大到发虚，超高长图（竖屏截图）
+   压到一屏内不再霸屏；width/height 属性由构建期 imageSizePlugin 注入，天然带
+   aspect-ratio，图片下载前后占位不跳。cursor 提示可点（lightbox 点击代理在
+   ArticleDetail 里，配合"点开看细节"）。 */
+.markdown-body img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 72vh;
+  cursor: zoom-in;
 }

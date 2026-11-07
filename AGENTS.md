@@ -21,7 +21,7 @@ pnpm format      # prettier --write src/（--experimental-cli）
 
 Markdown → Vue 组件分两层，改行为时别找错地方：
 
-- `vite.config.ts`（inline markdown-it 插件）：Shiki 双主题（github-light + one-dark-pro）、代码复制按钮、标题锚点、外链自动 `target="_blank" rel="noopener noreferrer"`。
+- `vite.config.ts`（inline markdown-it 插件）：Shiki 双主题（github-light + one-dark-pro）、代码复制按钮、标题锚点、外链自动 `target="_blank" rel="noopener noreferrer"`、本地 `/img/**` 图片构建期注入真实 `width/height`（零依赖读图片头，见 `build/imageSize.ts`）+ `loading="lazy" decoding="async"`（外链图无文件可查自动跳过）。
 - `build/articlePlugin.ts`（自建 Vite 插件）：扫描 `src/articles/*.md` + `src/words/*.md`，产出虚拟模块 `virtual:article-meta` / `virtual:article-components` / `virtual:words`（`src/utils/articleList.ts` 消费），并附带生成 robots.txt / sitemap.xml / rss.xml 和 `dist/_index/` 预渲染 HTML。构建最后一步的 Pagefind **只索引 `dist/_index/`**，前端再把命中映射回 `/article/<id>`——改搜索行为要动这里，不是引入 `import.meta.glob`。
 
 坑：
@@ -48,5 +48,5 @@ Markdown → Vue 组件分两层，改行为时别找错地方：
 
 - `@/` → `src/`；PascalCase `.vue`；views 以 `*Page.vue` 命名并在 `src/router/index.ts` 注册，meta title 格式 `页面名-土豆博客`。
 - `DemoPreview` 在 `main.ts` 全局注册，是唯一全局组件。
-- 正文图片放 `public/img/`，用根路径 `/img/xxx.webp`；CMS 直传的 PNG/JPEG 记得跑 `node scripts/convert-images.mjs <文件名>`（不带参数则转整个目录），原图会被删掉（git 历史里留档）。CMS 编辑删掉正文图片后资产不会自动清理，跑 `pnpm images:check` 找孤儿图再删（判定按文件名全仓搜索，宁可漏报不误报）。封面图 frontmatter 只填**文件名**（渲染时拼 `img/cover/` 前缀，兼容 CMS 写入的完整路径）。
+- 正文图片放 `public/img/`，用根路径 `/img/xxx.webp`；正文图片的宽度/高度约束由 `src/styles/article-common.css` 的 `.markdown-body img` 统一管（等比 ≤ 容器、`max-height: 72vh` 压住长图，ArticleDetail scoped 同步了一份双保险）。CMS 直传的 PNG/JPEG 记得跑 `node scripts/convert-images.mjs <文件名>`（不带参数则转整个目录），原图会被删掉（git 历史里留档）。CMS 编辑删掉正文图片后资产不会自动清理，跑 `pnpm images:check` 找孤儿图再删（判定按文件名全仓搜索，宁可漏报不误报）。封面图 frontmatter 只填**文件名**（渲染时拼 `img/cover/` 前缀，兼容 CMS 写入的完整路径）。
 - License 拆分：代码 MIT，`src/articles/` 内容 CC BY-NC 4.0（`LICENSE-CC-BY-NC.md`）。
