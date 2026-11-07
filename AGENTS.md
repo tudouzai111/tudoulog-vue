@@ -41,7 +41,7 @@ Markdown → Vue 组件分两层，改行为时别找错地方：
 
 ## 部署
 
-- push 到 master 触发 CI 部署 GitHub Pages；CI 会 `cp dist/index.html dist/404.html`（**仅 GH Pages 需要**这个 SPA fallback）。Cloudflare Pages（tudoulog.pages.dev，主站）**不能带 404.html**，否则深链接返回 404 状态码——不要把 404.html 放进 `public/` 或提交到 dist。
+- push 到 master 触发 CI 部署 GitHub Pages；CI 会 `cp dist/index.html dist/404.html`（**仅 GH Pages 需要**这个 SPA fallback）。Cloudflare Pages（tudoulog.pages.dev，主站）**不能带 404.html**，否则深链接返回 404 状态码——不要把 404.html 放进 `public/` 或提交到 dist。`public/_headers` 只对 CF Pages 生效（缓存策略：`/assets/` immutable、`/img/` 7 天），GH Pages 上它只是无害的静态文本。
 - `/api/stats`：线上由 Cloudflare Pages Function 提供（需要 D1 绑定 `DB`）；本地 dev 由 `build/devStats.ts` 提供内存实现（进程内存，重启清零）；`vite preview` 无接口，组件会自动隐藏，属预期行为。
 
 ## Conventions

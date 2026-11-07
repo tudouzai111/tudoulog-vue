@@ -1,0 +1,11 @@
+# Cloudflare Pages 的自定义 HTTP 头（仅 CF Pages 读取；GH Pages 上只是个可公开访问的静态文本，无害）
+# 语法：<URL 匹配串> 下一行缩进一个 <header>。详见 CF Pages docs 的 _headers。
+
+# 文件名带 content-hash，内容变了名字必变，可放心一年期 immutable
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 图片是**无 hash 的稳定文件名**（CMS 可同名覆盖），只给中期缓存 + SWR：
+# 七天内回访不回源；万一部署时 CDN 清理不及时，最差也就旧的到期回原
+/img/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
