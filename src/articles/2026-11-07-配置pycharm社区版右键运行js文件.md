@@ -13,6 +13,6 @@ ai: false
 
 看截图
 
-![](/public/img/image.png)
+![](/img/image.webp)
 
-![](/public/img/20261107-004023.png)
+![](/img/20261107-004023.webp)

@@ -144,13 +144,32 @@ export function readWords(root: string): WordEntry[] {
     if (!file.endsWith('.md') || file === 'AGENTS.md') continue
     const raw = readFileSync(join(dir, file), 'utf8')
     const fm = parseFrontmatter(raw)
-    const body = raw
-      .replace(/^---\r?\n[\s\S]*?\r?\n---/, '')
-      .trim()
+    const body = normalizePublicImg(
+      raw.replace(/^---\r?\n[\s\S]*?\r?\n---/, '').trim(),
+      `src/words/${file}`,
+    )
     if (!body) continue
     entries.push({ date: fm.date || '未知日期', body })
   }
   return entries.sort((a, b) => b.date.localeCompare(a.date))
+}
+
+// CMS 偶尔会把正文图片写成 /public/img/...，但 public 目录的文件在站点上就是根路径
+// /img/...；带 /public/ 前缀会让 Vite 把 public 下的同一文件再复制一份进 dist/assets
+// （体积翻倍）。这里统一改写为根路径并告警，源头 md 仍应直接写 /img/。
+const PUBLIC_IMG_RE = /([^a-zA-Z0-9]|^)\/public\/img\//g
+const publicPathWarned = new Set<string>()
+
+export function normalizePublicImg(raw: string, label: string): string {
+  if (!raw.includes('/public/img/')) return raw
+  const fixed = raw.replace(PUBLIC_IMG_RE, '$1/img/')
+  if (!publicPathWarned.has(label)) {
+    publicPathWarned.add(label)
+    console.warn(
+      `[tudou-article] ${label}：正文图片使用了 /public/img/ 前缀，已自动改写为 /img/，请直接修正源文件。`,
+    )
+  }
+  return fixed
 }
 
 const VIRTUAL_META = 'virtual:article-meta'
@@ -233,6 +252,15 @@ export function articlePlugin(root: string): Plugin {
       if (id === '\0' + VIRTUAL_COMPONENTS) return virtualComponentsModule(articles)
       if (id === '\0' + VIRTUAL_WORDS) return virtualWordsModule(words)
     },
+    transform(code, id) {
+      // 文章/废话的 md 进组件编译前先归一化图片路径（本插件顺序在 vue 插件之前）
+      if (
+        id.endsWith('.md') &&
+        ((id.includes('/articles/') && !id.includes('AGENTS.md')) || id.includes('/words/'))
+      ) {
+        return normalizePublicImg(code, id.split(/[\\/]/).pop() ?? id)
+      }
+    },
     configureServer(server) {
       const onChange = (file: string) => {
         const normalized = file.replaceAll('\\', '/')
@@ -312,7 +340,10 @@ export function articlePlugin(root: string): Plugin {
       for (const article of published) {
         try {
           const raw = readFileSync(join(articlesDir, `${article.id}.md`), 'utf8')
-          const body = raw.replace(/^---\r?\n[\s\S]*?\r?\n---/, '').trim()
+          const body = normalizePublicImg(
+            raw.replace(/^---\r?\n[\s\S]*?\r?\n---/, '').trim(),
+            article.id,
+          )
           this.emitFile({
             type: 'asset',
             fileName: `_index/${article.id}.html`,
