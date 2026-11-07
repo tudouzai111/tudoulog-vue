@@ -9,6 +9,11 @@ on:
 permissions:
   contents: write
 
+# 连续 push 时取消排队中的旧构建（内容必然被新提交覆盖）
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -40,7 +45,7 @@ jobs:
         run: cp dist/index.html dist/404.html
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist

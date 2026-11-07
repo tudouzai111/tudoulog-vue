@@ -34,12 +34,16 @@ interface FunctionContext {
   env: { DB: D1DatabaseLike }
 }
 
-function json(data: object, status = 200): Response {
+function json(data: object, status = 200, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...headers },
   })
 }
+
+// GET 允许边缘缓存一分钟：列表页卡片会批量拉一遍，rating 变化容忍 60s 延迟，
+// 换来把高频查询挡在 D1 之外（POST 不带缓存头，保证写入结果实时可见）
+const CACHEABLE = { 'cache-control': 'public, max-age=60' }
 
 async function readStats(db: D1DatabaseLike, slug: string): Promise<StatsRow> {
   const row = await db.prepare('SELECT views, likes FROM stats WHERE slug = ?')
@@ -70,9 +74,9 @@ export async function onRequestGet(context: FunctionContext): Promise<Response> 
         .all<StatsRow & { slug: string }>()
       const out: Record<string, StatsRow> = {}
       for (const row of results ?? []) out[row.slug] = { views: row.views, likes: row.likes }
-      return json(out)
+      return json(out, 200, CACHEABLE)
     }
-    return json({ [slug]: await readStats(context.env.DB, slug) })
+    return json({ [slug]: await readStats(context.env.DB, slug) }, 200, CACHEABLE)
   } catch {
     return json({ error: 'database unavailable' }, 500)
   }
@@ -97,8 +101,8 @@ export async function onRequestPost(context: FunctionContext): Promise<Response>
     )
       .bind(slug)
       .run()
-    return json(await readStats(context.env.DB, slug))
-  } catch (error) {
+    return json(await readStats(context.env.DB, slug), 200, CACHEABLE)
+  } catch {
     return json({ error: 'database unavailable' }, 500)
   }
 }
