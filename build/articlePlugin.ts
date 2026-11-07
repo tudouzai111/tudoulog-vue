@@ -303,7 +303,7 @@ export function articlePlugin(root: string): Plugin {
       })
 
       // sitemap.xml
-      const staticPages = ['/', '/article', '/word', '/about']
+      const staticPages = ['/', '/article', '/archive', '/word', '/about']
       const sitemapUrls = [
         ...staticPages.map(
           (p) =>
