@@ -35,6 +35,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile  # 相当于 npm ci，严格按照 pnpm-lock.yaml 安装
 
+      # CMS 后台直发的内容绕过了本地工作流，靠这一步兜底防 lint 回归
+      # （脚本自带 --fix：CI 里修了也不回传，只是让"可自动修复"不挡部署）
+      - name: Lint
+        run: pnpm lint
+
       - name: Build
         run: pnpm run build   # 构建命令
 
