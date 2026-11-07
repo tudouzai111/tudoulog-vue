@@ -68,7 +68,8 @@ const router = createRouter({
     if (to.hash) {
       return { el: to.hash, behavior: 'smooth' }
     }
-    return { top: 0, behavior: 'smooth' }
+    // 页面级跳转直接归位（不写 behavior 即默认 auto），smooth 只留给锚点
+    return { top: 0 }
   },
 })
 
