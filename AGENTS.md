@@ -48,5 +48,5 @@ Markdown → Vue 组件分两层，改行为时别找错地方：
 
 - `@/` → `src/`；PascalCase `.vue`；views 以 `*Page.vue` 命名并在 `src/router/index.ts` 注册，meta title 格式 `页面名-土豆博客`。
 - `DemoPreview` 在 `main.ts` 全局注册，是唯一全局组件。
-- 正文图片放 `public/img/`，用根路径 `/img/xxx.webp`；CMS 直传的 PNG/JPEG 记得跑 `node scripts/convert-images.mjs <文件名>`（不带参数则转整个目录），原图会被删掉（git 历史里留档）。封面图 frontmatter 只填**文件名**（渲染时拼 `img/cover/` 前缀，兼容 CMS 写入的完整路径）。
+- 正文图片放 `public/img/`，用根路径 `/img/xxx.webp`；CMS 直传的 PNG/JPEG 记得跑 `node scripts/convert-images.mjs <文件名>`（不带参数则转整个目录），原图会被删掉（git 历史里留档）。CMS 编辑删掉正文图片后资产不会自动清理，跑 `pnpm images:check` 找孤儿图再删（判定按文件名全仓搜索，宁可漏报不误报）。封面图 frontmatter 只填**文件名**（渲染时拼 `img/cover/` 前缀，兼容 CMS 写入的完整路径）。
 - License 拆分：代码 MIT，`src/articles/` 内容 CC BY-NC 4.0（`LICENSE-CC-BY-NC.md`）。
