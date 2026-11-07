@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import Markdown from 'vite-plugin-vue-markdown'
@@ -15,6 +15,19 @@ import {
 } from 'shiki'
 import { articlePlugin } from './build/articlePlugin'
 import { devStatsApiPlugin } from './build/devStats'
+import { slugify } from './src/utils/slugify'
+import { SITE_URL } from './src/constants/site'
+
+// index.html 里的 og:url / canonical / og:image 与 src/constants/site.ts 保持单一来源，
+// 换域名只改 site.ts，模板里的默认值构建期会被整体替换（未匹配到则原样保留）
+function siteMetaHtmlPlugin(): Plugin {
+  return {
+    name: 'tudou-site-meta-html',
+    transformIndexHtml(html) {
+      return html.replaceAll('https://tudoulog.pages.dev', SITE_URL)
+    },
+  }
+}
 
 // 给代码块注入复制按钮（点击行为由文章详情页统一代理）
 function copyButtonTransformer(): ShikiTransformer {
@@ -50,13 +63,7 @@ function collectArticleLangs(): BuiltinLanguage[] {
   return [...langSet].filter((lang): lang is BuiltinLanguage => lang in bundledLanguages)
 }
 
-// 标题 slug 生成，必须与 src/views/ArticleDetail.vue 里目录的 slugify 保持一致
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\u4e00-\u9fa5-]/g, '')
-}
+// 构建期为标题生成 id 和悬停锚点，运行时目录直接复用同一 slugify（src/utils/slugify.ts）
 
 // 构建期为标题生成 id 和悬停锚点，运行时目录直接复用
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -120,6 +127,7 @@ export default defineConfig(async () => {
       articlePlugin(fileURLToPath(new URL('.', import.meta.url))),
       // dev 环境的 /api/stats 内存实现（preview/线上仍走 functions/api/stats.ts）
       devStatsApiPlugin(),
+      siteMetaHtmlPlugin(),
       vue({
         include: [/\.vue$/, /\.md$/], // 让 Vue 处理 .md 文件
       }),

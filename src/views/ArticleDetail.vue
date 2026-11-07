@@ -5,6 +5,7 @@ import type { Component } from 'vue'
 import { articles, loadArticleComponent } from '@/utils/articleList'
 import type { Heading } from '@/types'
 import { SITE_URL } from '@/constants/site'
+import { slugify } from '@/utils/slugify'
 
 import 'github-markdown-css'
 import '@/styles/markdown-scheme.css'
@@ -165,13 +166,6 @@ const linkCopied = ref(false)
 
 const contentRef = ref<HTMLElement | null>(null)
 const headings = ref<Heading[]>([])
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, '-') // 空格替换为'-'
-    .replace(/[^\w\u4e00-\u9fa5-]/g, '') // 保留中文，字母，数字，连字符
-}
 
 function generateTocTree(contentRef: HTMLElement): Heading[] {
   const elements = contentRef.querySelectorAll('h1, h2, h3, h4, h5, h6')
