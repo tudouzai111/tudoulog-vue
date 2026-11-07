@@ -11,7 +11,7 @@ const { activeTheme, setTheme } = inject('theme') as {
 }
 
 // 打字机签名：想换就改这个数组
-const PHRASES = ['这里是土豆博客', '一个纯静态个人博客', '这是一段文字', '这是一个打字机效果']
+const PHRASES = ['这里是土豆博客', '一个纯静态个人博客', '存放一些记录']
 const typedText = ref('')
 let typeTimer: ReturnType<typeof setTimeout> | null = null
 
