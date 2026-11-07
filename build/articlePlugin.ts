@@ -88,13 +88,22 @@ function parseFrontmatter(raw: string): ParsedFrontmatter {
   return result
 }
 
-function estimateReading(raw: string): { wordCount: number; readingMinutes: number } {
+function extractProse(raw: string): string {
   const body = raw.replace(/^---\r?\n[\s\S]*?\r?\n---/, '')
-  const prose = body
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/~~~[\s\S]*?~~~/g, '')
-    .replace(/`[^`]*`/g, '')
-    .replace(/<[^>]+>/g, '')
+  return body
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/~~~[\s\S]*?~~~/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    // markdown 语法同样不算内容：图片是纯 URL、链接只保留文字、标题标记剥离。
+    // 不剥的话 wordCount 会把 /img/xxx.webp 这类地址按"词"数进去
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/<[^>]+>/g, ' ')
+}
+
+function estimateReading(raw: string): { wordCount: number; readingMinutes: number } {
+  const prose = extractProse(raw)
   const cjkCount = (prose.match(/[\u4e00-\u9fa5\u3040-\u30ff]/g) ?? []).length
   const latinWords = prose
     .replace(/[\u4e00-\u9fa5\u3040-\u30ff]/g, ' ')
@@ -102,6 +111,14 @@ function estimateReading(raw: string): { wordCount: number; readingMinutes: numb
     .filter(Boolean).length
   const minutes = Math.ceil(cjkCount / CJK_PER_MINUTE + latinWords / WORDS_PER_MINUTE)
   return { wordCount: cjkCount + latinWords, readingMinutes: Math.max(1, minutes) }
+}
+
+// excerpt 缺省时自动截正文开头，列表卡片才不会空着摘要
+// （Sveltia/CMS 手写时经常不填；正文短的文章也会因此获得摘要）
+function deriveExcerpt(raw: string, limit = 64): string {
+  const prose = extractProse(raw).replace(/\s+/g, ' ').trim()
+  if (!prose) return ''
+  return prose.length <= limit ? prose : `${prose.slice(0, limit)}…`
 }
 
 export function readArticles(root: string): ArticleMetaEntry[] {
@@ -117,9 +134,9 @@ export function readArticles(root: string): ArticleMetaEntry[] {
       id,
       title: fm.title || id,
       date: fm.date || '未知日期',
-      updated: fm.updated,
+      updated: fm.updated || undefined,
       tags: fm.tags ?? [],
-      excerpt: fm.excerpt ?? '',
+      excerpt: fm.excerpt && fm.excerpt.trim() ? fm.excerpt.trim() : deriveExcerpt(raw),
       // 只取文件名：兼容手写的裸文件名和 CMS 写入的完整路径（如 /img/cover/x.png）
       coverImageFile: fm.coverImage ? fm.coverImage.split('/').pop() ?? '' : '',
       draft: fm.draft ?? false,
