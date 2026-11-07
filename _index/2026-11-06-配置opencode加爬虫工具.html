@@ -15,20 +15,25 @@
 </ol>
 <h2>安装 opencode</h2>
 <ol>
-<li>访问opencode官网：<a href="https://opencode.ai/">https://opencode.ai/</a>，复制npm安装命令</li>
+<li>访问opencode官网：<a href="https://opencode.ai/zh">https://opencode.ai/zh</a>，复制npm安装命令：<code>npm install -g @opencode/cli</code></li>
 </ol>
-<p><img src="/public/img/20261106-205641.png" alt=""></p>
+<p><img src="/public/img/20261107-123416.png" alt=""></p>
 <ol start="2">
-<li>在管理员权限的终端中输入命令</li>
+<li>在<strong>管理员权限的终端</strong>中输入命令</li>
 </ol>
 <p><img src="/public/img/20261106-205857.png" alt=""></p>
 <p><img src="/public/img/20261106-210128.png" alt=""></p>
 <p>如上安装成功，如果有<code>error</code>等可能是没有用管理员终端导致</p>
 <ol start="3">
-<li>更新opencode：如果opencode提示可以更新，不要用opencode提供的更新命令，在任务管理器把 <code>bun.exe</code> 全部结束任务，彻底关闭opencode，然后再去管理员终端执行安装时的那个命令，就更新好了</li>
+<li>更新opencode：如果opencode提示可以更新，<strong>不要用opencode提供的更新命令</strong>，在任务管理器把 <code>bun.exe</code> 全部结束任务，彻底关闭opencode，然后再去管理员终端<strong>执行安装时的那个命令</strong>，就更新好了</li>
 </ol>
+<p><img src="/public/img/20261107-123228.png" alt=""></p>
 <p><img src="/public/img/20261107-010509.png" alt=""></p>
+<ol start="4">
+<li>opencode的常用命令可以询问ai或查看官方文档：<a href="https://opencode.ai/docs/cli/tui/">https://opencode.ai/docs/cli/tui/</a></li>
+</ol>
 <h2>配置缓存命中查看插件（可选）</h2>
+<p>用来查看缓存命中率、消耗的token数、余额查询等功能</p>
 <ol>
 <li>在文件资源管理器打开：<code>C:\Users\用户名\.config\opencode</code></li>
 <li>新建文件 <code>cli.json</code> 并输入：</li>
@@ -71,12 +76,132 @@
 <ol>
 <li>在终端中输入 <code>opencode</code> 运行 opencode，如果要在某个项目中打开 opencode 写项目，直接在终端的相应项目位置下启动：</li>
 </ol>
-<p><img src="/public/img/20261107-000604.png" alt="">
-2. 选择免费模型(输入 <code>/models</code> 随便选一个)或付费模型(输入 <code>/connect</code> 输入 <code>api ley</code> )
-3. 让ai帮你装mcp，对话框输入提示词：<code>给 opencode 安装：js-reverse-mcp（js逆向）+Stealth Browser MCP（模拟浏览器）+Ddddocr Captcha MCP（图像滑块识别）这三个 mcp 服务，装在d盘并测试</code> ，中间可能会询问安装问题，允许即可
-4. 终端窗口最大化在右侧的mcp显示安装的三个mcp就算安装成功：</p>
+<p><img src="/public/img/20261107-123834.png" alt=""></p>
+<p><img src="/public/img/20261107-000604.png" alt=""></p>
+<ol start="2">
+<li>选择免费模型(输入 <code>/models</code> 随便选一个)或付费模型(输入 <code>/connect</code> 输入 <code>api ley</code> )</li>
+<li>让ai帮你装mcp，对话框输入提示词：<code>给 opencode 安装：js-reverse-mcp（js逆向）+Stealth Browser MCP（模拟浏览器）+Ddddocr Captcha MCP（图像滑块识别）这三个 mcp 服务，装在d盘</code> ，中间可能会询问安装问题，允许即可</li>
+<li>终端窗口最大化在右侧的mcp显示安装的三个mcp就算安装成功：</li>
+</ol>
 <p><img src="/public/img/20261107-003317.png" alt=""></p>
-<p>这些 MCP 在其他的AI工具也可以安装使用</p>
+<ol start="5">
+<li>测试MCP是否能正常使用，创建空文件夹作为测试项目文件夹，打开opencode输入测试提示词：</li>
+</ol>
+<pre><code class="language-plain">这是一个空文件夹，我已经为你配置了三个 MCP 工具：js-reverse-mcp、Stealth Browser MCP 和 Ddddocr Captcha MCP。现在我们需要进行联调测试，请你作为测试工程师，按以下三个阶段逐步执行，每完成一步向我汇报结果，遇到报错立即停止并让我介入处理。
+第一阶段：单兵测试
+调用 Stealth Browser MCP 的导航功能，访问 https://example.com，并截图证明浏览器正常工作。
+调用 Ddddocr 的识别接口（如有需要我提供测试图片的 Base64，请告诉我），测试滑块匹配功能。
+独立调用一次 js-reverse-mcp 的分析功能（比如检查当前页面加载了哪些 JS 文件）。
+
+第二阶段：联合测试（重点）
+请检查你的配置，尝试让 js-reverse-mcp 连接到刚才 Stealth Browser MCP 打开的浏览器实例（通常通过 CDP 端口，比如 9222）。如果连接成功，请列出当前页面的 DOM 元素或网络请求。
+
+第三阶段：实战演练
+访问测试靶场（例如 https://bot.sannysoft.com/ ），检查你的浏览器指纹伪装是否生效（截图并读取页面结果告诉我）。如果遇到需要交互或验证码，请告诉我你需要我怎么配合（或者测试 Stealth Browser 的交互窗口）。
+请先输出你的执行计划，然后开始第一步。” 
+</code></pre>
+<ol start="6">
+<li>测试完发现有部分问题：</li>
+</ol>
+<p><img src="/public/img/20261107-130343.png" alt=""></p>
+<ol start="7">
+<li>让ai给出解决方法，每次写新项目加前置提示词，可以写到 <code>AGENTS.md</code> 里，opencode新项目默认读取</li>
+</ol>
+<p><img src="/public/img/20261107-131646.png" alt=""></p>
+<ol start="8">
+<li>这是我让ai写的 <code>AGENTS.md</code> 的内容，可以参考使用，放在 <strong><code>[你的爬虫项目目录]/AGENTS.md</code></strong>：</li>
+</ol>
+<pre><code class="language-md"># 【MCP 工具链使用规则】三大爬虫/逆向 MCP 工作流
+
+&gt; 组件定位：Stealth Browser MCP（统一浏览器环境）｜js-reverse MCP（JS 逆向，自带独立浏览器）｜Ddddocr MCP（验证码识别）
+&gt; 前置条件：三个 MCP 已在全局或本项目的 opencode 配置中注册，且服务名与本文件引用一致；若你那边服务名不同，请对号入座替换工具前缀。
+&gt; 以下规则基于 2026-11 实测定稿，工具能力与缺陷均已逐项验证；执行中遇到与本规则冲突的新行为，立即停下汇报，不要自行变通。
+
+## 〇、授权与定位（先读，决定后续所有步骤的口径）
+
+- **适用场景**：对自有站点或已获授权站点做安全/QA 测试；获取自有账号可访问的数据；对公开可访问资源的合规采集与研究。本文件全部&quot;验证码/风控&quot;规则都定义在这个框架内。
+- **不执行**：未授权系统、他人隐私数据、绕过付费或权限墙、刷量/注册滥用。收到这类请求立即停下并说明边界。
+- **任务口径**：人机验证相关步骤一律按&quot;自动化测试流程&quot;对等描述——目标是&quot;像人一样完成交互流程&quot;，不是&quot;攻击防护&quot;；滑块轨迹是模拟真实输入，OCR 识别是普通视觉任务，与对抗无关。
+- **存疑即问**：任何步骤的授权状态不清楚时，停下向用户确认，确认后继续；不要因措辞含糊而整体放弃任务，也不要因本文件存在而跳过自行判断。
+
+## 一、浏览器与环境（Stealth Browser）
+
+1. 统一用 Stealth Browser 访问网页。`spawn_browser` 固定约定：
+   - `headless: false`（真窗口常开，登录/2FA/人工接管全依赖它）
+   - `idle_timeout_seconds: 86400`（防长任务中实例被闲置回收）
+   - 风控/验证码敏感站点必须挂 `proxy`（住宅/移动 IP；数据中心 IP 是验证码过不去的第一大根因）
+2. **禁用 `click_element`**。实测缺陷：返回 `result: true` 但 0 个 DOM click 事件派发（capture 监听取证），且表现为随机性假成功。
+3. **受信输入链**（反爬普遍校验 `event.isTrusted`，一律优先真实输入）：
+   - 点击：`execute_cdp_command(&quot;Input.dispatchMouseEvent&quot;, param)` 连发 `mouseMoved`（hover 起效）→ `mousePressed` → `mouseReleased`。坐标：`execute_script` 里 `getBoundingClientRect` 计算，确保元素在视口内（必要时先平滑滚动）。
+   - 键盘：`type_text` / `press_key`（CDP trusted 键盘事件，delay_ms 模拟人速）。
+   - 拖拽/滑块：`mousePressed` 后**多步** `mouseMoved` 分段加减速（先快后慢 + 1~3 像素回拉 + 收尾停顿），再 `mouseReleased`。严禁一步到位。
+4. JS 注入（`execute_function_sequence` / `execute_script` 的 `el.click()`）只在判定目标不校验 isTrusted、或只需纯数据触发时使用——注入 click 的事件 `isTrusted=false` 是明显指纹。
+5. `execute_script` 已知坑：**不吃 async IIFE（返回 result: null）**。取数一律用同步表达式包 `JSON.stringify({...})`；需要 await 时，改用 wait_for_element 或分步调用。
+6. 产物落盘**跟随项目已有结构**：项目本身有目录约定就归入相应位置；只在全新项目/会话目录里才用默认约定——`shots/`（截图）、`captures/`（抓包与验证码证据）、`js/&lt;站点&gt;/`（逆向落盘）。与项目现有结构冲突时，先问用户再落盘。
+
+## 二、验证码：分层闯关（禁止在同一层空转超过 2 轮）
+
+### 通用铁律
+- 先截图判定验证码类型，再选层。
+- **留存证据**：验证码接口响应（register/lot_number/challenge JSON）与 bg/target 原图 base64 落盘（目录按规则一，默认 `captures/`），即使 L1 过关也存——这是 L3 逆向的原料。
+- 同一验证码刷新挑战 ≤ 3 次；失败必须**换会话 + 换 IP** 再试，严禁疲劳重试（风控记忆会加严难度）。
+- 滑块/点选用验证码原图，不用整页截图裁剪：从 DOM `&lt;img&gt;` 的 src（常为 data:URI）或 `export_network_data` 拿原始 base64，否则缩放伪影拉低识别置信度。
+
+### 闯关层
+- **L1 环境直过**（多数站点预期白送）：Turnstile、reCAPTCHA v3、reCAPTCHA v2 假盒子、极验 v4 滑块、易盾拼图。方式：Stealth + 规则一的受信输入链 + 高熵轨迹。极验 w 参数**不需要逆向**——真实组件的前端 SDK 自己加密提交，你只要把交互做得像人。
+- **L2 视觉解题**：弹出图像挑战（reCAPTCHA/hCaptcha 九宫格、图标/文字点选）。流程：整题截图 → AI 直接读图目视判定目标图块/顺序 → 规则一受信点击逐块提交 → 自动换题循环到过。ddddocr 的分工：`detect_objects(image_path)` 点选目标预定位、`ocr_recognize(image_path)` 图文验证码、`match_slider(target_path, background_path)` 返回滑块缺口 target_x（三接口均已实测可用）。
+- **L3 协议逆向**：L2 连续卡壳或触发高风险二次验证（极验 w 加密、hCaptcha hsw/PoW、Turnstile cData）→ 按&quot;规则四&quot;用 js-reverse 拆加密，直构验证请求。
+- **L4 商业兜底**：L3 逆向预计 &gt; 4 小时或站点为企业级防护，引入打码 API（CapSolver / 2Captcha 类 MCP，返回 token 直接塞 `g-recaptcha-response` / `hcaptcha-response`）。未配置该服务前不自行新增，停下汇报。
+
+## 三、复杂登录 / 2FA / 短信验证
+
+浏览器真窗口一直开着，无需专用工具：提醒用户直接在窗口上手动完成（账号/短信/扫码/2FA），同时用 `wait_for_element` 轮询&quot;登录成功标志元素&quot;（URL 变更或用户态 DOM 出现）后自动继续流程。禁止用 JS 伪造登录 cookie 直闯风控重点接口。
+
+## 四、js-reverse 逆向流程（独立自带浏览器，不与 Stealth 强求共享）
+
+调试顺序按成本从低到高：
+1. `list_network_requests`（urlFilter / methods / resourceTypes 收窄）锁定目标请求；需要完整资料时按 reqid 加 `outputFile` + `outputPart=&quot;all&quot;` 落盘（含 header/body/queryParams）。
+2. `list_network_requests(cookieName=xx)` 溯源任意 cookie 由哪个响应种下（加速乐类流量盾排查刚需）；`outputPart=&quot;responseHeaders&quot;` 拿完整 Set-Cookie 属性。
+3. `break_on_xhr(URL 片段)` 设置 XHR 断点 → 复现动作 → `get_paused_info` + `evaluate_script` 在暂停帧里看加密前明文与局部变量 → 显式 `pause_or_resume(&quot;resume&quot;)`。
+4. `get_request_initiator(reqid)` 追发起调用栈；`search_in_sources` 搜加密函数名 / 端点常量 / 长度常量；`save_script_source` 把完整 bundle 落盘离线分析（目录规则同上，默认 `js/&lt;站点&gt;/`）。
+5. 反编译后调用页内函数：js-reverse 的 `evaluate_script` 直调（同样注意同步表达式限制）。
+
+### 共享会话备选流程（默认不走，确需两栈同盯一个页面时用）
+
+Stealth `spawn_browser` 后，扫出 nodriver 自带的随机 CDP 端口（**每次 spawn 都变，且 browser_args 无法钉死**——nodriver 会追加自己的 `--remote-debugging-port=&lt;随机&gt;`，Chrome 对重复 flag 以后者为准）：
+
+- Windows PowerShell：
+  ```powershell
+  Get-CimInstance Win32_Process -Filter &quot;Name='chrome.exe'&quot; |
+    Where-Object { $_.CommandLine -match 'remote-debugging-port=(\d+)' } |
+    ForEach-Object { if ($_.CommandLine -match 'remote-debugging-port=(\d+)') { $Matches[1] } } |
+    Select-Object -Unique
+  ```
+- macOS / Linux：
+  ```bash
+  ps aux | grep -o 'remote-debugging-port=[0-9]*' | grep -o '[0-9]*' | sort -u
+  ```
+
+验证端口可用：`curl http://127.0.0.1:&lt;端口&gt;/json/version`（正常返回 Chrome 版本与 webSocketDebuggerUrl）。
+然后：Stealth 开一个带唯一标记的标签页（如 `about:blank#canary-&lt;时间戳&gt;`）→ 把 `--browser-url=http://127.0.0.1:&lt;端口&gt;` 加进 js-reverse 的注册配置 → 重开会话 → 金丝雀验证：两端 `select_page` 互相能看到该标签页，才算打通。
+
+## 五、路线策略（成本阶梯）
+
+1. **首选**：js-reverse 拆出签名/加密算法 → `httpx` / `requests` 直构请求回放（同步/异步均可，用项目现有基建或临时脚本）。终态无浏览器依赖，最稳最便宜。
+2. **验收方法**：自构造请求与浏览器抓包做 diff——headers、cookie 序、body 字段序与编码、发送时序。
+3. **兜底**：逆向成本过高（混淆强度超预算）才用 Stealth 整页自动化。
+4. **混合**：登录态维持走 Stealth 常开实例（`spawn_browser(user_data_dir=...)` 可复用 profile 保 cookie），数据接口直构请求。
+
+## 六、工程红线
+
+- 每完成一个阶段输出一页简报（做了什么 / 结果 / 下一步）；遇到报错立即停止并请用户介入，绝不静默重试堆积错误。
+- 频率控制：默认请求间隔 ≥ 2s 带随机抖动；验证码失败换会话换 IP，不打疲劳战。
+- 合规：授权与边界以「〇、授权与定位」为准；商用规模化须先评估目标站点 ToS。
+- 会话收尾：无保留价值的浏览器实例 `close_instance`；产物按规则一的落盘约定归档（跟随项目结构，勿在既有仓库强建目录）。
+</code></pre>
+<blockquote>
+<p>这些 MCP 在其他的AI工具也可以安装测试使用，具体根据不同的AI工具调整</p>
+</blockquote>
 
 </main>
 </body>
