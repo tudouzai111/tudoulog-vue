@@ -545,7 +545,8 @@ watch(
 
 /* 相关文章 */
 .related {
-  padding: var(--spacing) var(--spacing-lg) var(--spacing-lg);
+  /* 与 .article-nav 同基准：段落四周统一 --spacing-lg */
+  padding: var(--spacing-lg);
   border-top: 1px solid var(--light-gray);
 }
 
@@ -565,7 +566,8 @@ watch(
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-  padding: var(--spacing-sm);
+  /* 与 .article-nav-link 同规格的卡片内边距 */
+  padding: var(--spacing-sm) var(--spacing);
   border: var(--border);
   border-radius: var(--border-radius-sm);
   background: var(--off-white);
@@ -643,7 +645,8 @@ watch(
 
 .nav-title {
   color: var(--dark-gray);
-  font-size: 0.9375rem;
+  /* 与 .related-item-title 同级（0.875rem），同族卡片字号一致 */
+  font-size: 0.875rem;
   font-weight: 600;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -691,6 +694,10 @@ watch(
   }
   .article-nav {
     flex-direction: column;
+    padding: var(--spacing);
+  }
+  /* 移动端与 .article-nav / .article-content 的 1rem 基准对齐（原为 1.5rem，宽度错位） */
+  .related {
     padding: var(--spacing);
   }
   .article-nav-link {
