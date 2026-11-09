@@ -78,6 +78,8 @@ async function copyText(text: string): Promise<boolean> {
 // 代码块复制按钮（构建期由 Shiki transformer 注入），在正文容器上统一代理点击
 // 同时代理图片点击放大（lightbox）
 const lightboxSrc = ref('')
+// 遮罩需要程序聚焦：keydown 监听挂在遮罩上，不聚焦的话 Esc 永远落不到它
+const lightboxEl = ref<HTMLElement | null>(null)
 
 const handleContentClick = async (event: MouseEvent) => {
   const target = event.target as HTMLElement
@@ -120,9 +122,10 @@ const handleContentClick = async (event: MouseEvent) => {
   }, 1500)
 }
 
-// lightbox 打开时锁定背景滚动，Esc 关闭
+// lightbox 打开时锁定背景滚动，并把焦点移到遮罩上（Esc 关闭依赖监听挂载在遮罩上）
 watch(lightboxSrc, (src) => {
   document.body.style.overflow = src ? 'hidden' : ''
+  if (src) nextTick(() => lightboxEl.value?.focus())
 })
 
 onUnmounted(() => {
@@ -377,6 +380,7 @@ watch(
       <Transition name="lightbox">
         <div
           v-if="lightboxSrc"
+          ref="lightboxEl"
           aria-label="关闭图片预览"
           class="lightbox-overlay"
           role="button"
