@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import MarkdownIt from 'markdown-it'
 import { parse as parseYaml } from 'yaml'
 import { escapeXml } from './xml'
+import { foldTags } from './tagFold'
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '../src/constants/site'
 import type { Plugin, ViteDevServer } from 'vite'
 
@@ -145,7 +146,11 @@ export function readArticles(root: string): ArticleMetaEntry[] {
       readingMinutes,
     })
   }
-  return entries.sort((a, b) => b.date.localeCompare(a.date))
+  const sorted = entries.sort((a, b) => b.date.localeCompare(a.date))
+  // 构建期标签折算：大小写折叠 + 别名表（build/tagFold.ts），前端一律拿到统一写法；
+  // 源文件保持原样，折算日志只作收敛建议
+  foldTags(sorted)
+  return sorted
 }
 
 export function readWords(root: string): WordEntry[] {

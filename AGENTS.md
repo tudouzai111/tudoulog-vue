@@ -17,7 +17,7 @@ pnpm format      # prettier --write src/（--experimental-cli）
 
 ## 内容流水线（最容易搞错的部分）
 
-新增文章：往 `src/articles/` 放一个 `.md`，文件名即文章 ID（`foo.md` → `/article/foo`），**无需手动注册**；此目录只放文章，文件名避免空格和特殊字符。frontmatter 规范：`title` / `date`（`YYYY-MM-DD`，文章按日期倒序）必填；可选字段：`tags`（字符串数组）、`excerpt`（缺省时构建期自动截取正文开头，卡片摘要不会空白）、`coverImage`（只填**文件名**）、`updated`（`YYYY-MM-DD`，详情页与 sitemap lastmod）、`draft`、`ai`。`draft: true` 全链路隐藏——不进列表、不进打包产物、不进 sitemap/RSS/搜索索引，路由守卫兜底 404；AI 辅助撰写的文章必须标 `ai: true`。正文图片一律写根路径 `/img/…`——`/public/` 前缀会在构建期被自动改写并打警告（articlePlugin 的 normalizePublicImg），别依赖兜底。
+新增文章：往 `src/articles/` 放一个 `.md`，文件名即文章 ID（`foo.md` → `/article/foo`），**无需手动注册**；此目录只放文章，文件名避免空格和特殊字符。frontmatter 规范：`title` / `date`（`YYYY-MM-DD`，文章按日期倒序）必填；可选字段：`tags`（字符串数组；构建期经 `build/tagFold.ts` 折算——大小写漂移自动归一并输出建议日志，确认过的同义词/官方拼写去 `TAG_ALIASES` 表加一行，前端展示/筛选永远一致）、`excerpt`（缺省时构建期自动截取正文开头，卡片摘要不会空白）、`coverImage`（只填**文件名**）、`updated`（`YYYY-MM-DD`，详情页与 sitemap lastmod）、`draft`、`ai`。`draft: true` 全链路隐藏——不进列表、不进打包产物、不进 sitemap/RSS/搜索索引，路由守卫兜底 404；AI 辅助撰写的文章必须标 `ai: true`。正文图片一律写根路径 `/img/…`——`/public/` 前缀会在构建期被自动改写并打警告（articlePlugin 的 normalizePublicImg），别依赖兜底。
 
 Markdown → Vue 组件分两层，改行为时别找错地方：
 
